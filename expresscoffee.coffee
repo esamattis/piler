@@ -1,13 +1,9 @@
-
-# This is an experiment to weld client-side code sharing and  socket.io into
 # expressjs
 #
 #
 
 io = require "socket.io"
 express = require 'express'
-
-
 
 
 
@@ -57,8 +53,17 @@ addCodeSharing = (app) ->
     return fn
 
 
+  app.clientScripts = ["/shared.js"]
+
+
   app.dynamicHelpers bundleJavascript: (req, res) ->
-    return '<script src="/shared.js"></script>'
+
+    bundle = ""
+
+    for script in app.clientScripts
+      bundle += "<script src=\"#{ script }\"></script>"
+
+    return  bundle
 
 
   app.get "/shared.js", (req, res) ->
@@ -111,53 +116,7 @@ addSocketIO = (app) ->
 
 
 
-
-
-createServer = ->
+exports.createServer = ->
   app = express.createServer()
   addCodeSharing addSocketIO app
 
-
-
-
-
-
-
-
-testapp = createServer()
-testapp.configure ->
-  testapp.set 'views', __dirname + '/views'
-
-
-
-
-testapp.clientVar "my", 1
-testapp.clientVar "myregexp", /foo/
-testapp.clientVar "mys", "foo"
-testapp.clientVar "myOb", 
-  paska: NaN
-  taulukko: [1, 2, 3, {foo: 3}]
-  fun: -> 5
-  loo: "foo"
-  sub:
-    foo: 4
-    regexp: /Dfasd/
-    fn: (v) ->
-      "LOL" + v
-
-
-testapp.clientVar "myfjll", ->
-  alert "hello"
-
-
-testapp.clientExec ->
-  alert myOb.sub.fn(3)
-
-
-testapp.get "/", (req, res) ->
-  res.render 'hello.jade', title: "from code", contentText: "content tekit"
-
-
-
-
-testapp.listen 2222
