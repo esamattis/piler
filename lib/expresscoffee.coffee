@@ -34,7 +34,7 @@ codeFrom = (obj) ->
   types[typeof obj]?(obj)
 
 
-addCodeSharing = (app) ->
+exports.addCodeSharing = addCodeSharing = (app) ->
 
   clientVars = {}
   clientCodeblocks = []
@@ -92,7 +92,7 @@ addCodeSharing = (app) ->
 
 
 
-addSocketIO = (app) ->
+exports.addSocketIO = addSocketIO = (app) ->
 
   clients = {}
   msgListeners = {}
