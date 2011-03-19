@@ -25,9 +25,7 @@ types =
     return this._array obj if Array.isArray obj
 
     code = "{"
-    for k, v of obj
-      code +=  "\"#{ k }\": #{ codeFrom v },"
-
+    code +=  "\"#{ k }\": #{ codeFrom v }," for k, v of obj
     removeTrailingComma(code) + "}"
 
   _array: (array) ->
