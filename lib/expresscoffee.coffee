@@ -8,6 +8,8 @@ express = require 'express'
 coffeescript = require "coffee-script"
 
 
+{minify, beautify} = require "./minify"
+
 
 removeTrailingComma = (s) ->
   s.trim().replace(/,$/, "")
@@ -40,9 +42,9 @@ codeFrom = (obj) ->
   types[typeof obj]?(obj)
 
 
-executableFrom = (fn, namespace) ->
-  return "(#{ fn })();\n" unless namespace
-  return "(#{ fn }).call(#{ namespace });\n"
+executableFrom = (fn, context) ->
+  return "(#{ fn })();\n" unless context
+  return "(#{ fn }).call(#{ context });\n"
 
 
 wrapInScriptTagInline = (code) ->
@@ -64,8 +66,9 @@ exports.addCodeSharing = addCodeSharing = (app) ->
   # Path to a directory of client-side only scripts
   scriptDir = app.set "clientscripts"
 
-  # All code that is embedded in Node.js code that will be sent to browser
-  compiledEmbeddedCode = ""
+  # All code that is embedded in Node.js code that will be sent to browser.
+  # Create common namespace for shared code
+  compiledEmbeddedCode = "window.EXPRESS_NAMESPACE = {};\n"
 
   # All client-side code in production (except externals)
   productionClientCode = ""
@@ -91,9 +94,6 @@ exports.addCodeSharing = addCodeSharing = (app) ->
   runOnListen.push ->
     # Collect shared variables and functions
 
-    # Create common namespace for shared code
-    compiledEmbeddedCode = "var EXPRESS_NAMESPACE = {};\n"
-
     # Wrap in closure
     compiledEmbeddedCode += "(function(){\n"
 
@@ -110,6 +110,7 @@ exports.addCodeSharing = addCodeSharing = (app) ->
 
     # "this" will be EXPRESS_NAMESPACE instead of global window
     compiledEmbeddedCode += "}).call(EXPRESS_NAMESPACE);\n"
+    compiledEmbeddedCode = beautify compiledEmbeddedCode
     
 
 
@@ -136,7 +137,7 @@ exports.addCodeSharing = addCodeSharing = (app) ->
     getScriptTags = ->
 
       # External client scripts
-      tags = (wrapInScriptTag url, true for url  in scriptURLs)
+      tags = (wrapInScriptTag url for url  in scriptURLs)
       # Everything else is bundled in production.js
       tags.push wrapInScriptTag "/managedjs/production.js"
 
@@ -154,7 +155,8 @@ exports.addCodeSharing = addCodeSharing = (app) ->
           productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
 
       productionClientCode += compiledEmbeddedCode
-      # TODO: UglifyJS
+      productionClientCode = minify productionClientCode
+
 
     app.get "/managedjs/production.js", (req, res) ->
       # TODO: Set cache time to forever
@@ -188,9 +190,11 @@ exports.addCodeSharing = addCodeSharing = (app) ->
       else
         fs.readFile "#{ scriptDir }/#{ req.params.script }.coffee", (err, data) ->
           if not err
-            res.send coffeescript.compile(data.toString()), 'Content-Type': 'application/javascript'
+            res.send coffeescript.compile(data.toString())
+              , 'Content-Type': 'application/javascript'
           else
-            "TODO: respond 404"
+            res.send "Could not find script #{ req.params.script }.js"
+             , ('Content-Type': 'text/plain'), 404
 
 
   ## Expressjs extensions
