@@ -4,23 +4,23 @@
 
 Really Express is a set of extensions for [Express][] web framework. It focuses
 on bringing extraordinary features of [Node.js][] to Express. That is mainly
-code sharing between the server and the browser and integrating WebSockets as
-first class citizens. Really Express is somewhat inspired by [Zappa][] web DSL.
+**code sharing between the server and the browser** and **integrating
+WebSockets as first class citizens**. Really Express is somewhat inspired by
+[Zappa][] web DSL.
 
 
 # Code sharing and management
 
 Really Express takes browser script management by the balls. It handles all the
-scripts-tags which are sent to the browser. You can even embed client-side code
-directly to your Node.js files!
-
-You can also specify a folder from which client-side only
-Javascript/CoffeeScript files will be loaded and sent to the browser.
+scripts-tags which are sent to the browser. You can even **embed client-side
+code seamlessly to your Node.js files!** It is also possible to specify a
+folder from which client-side only Javascript/CoffeeScript files will be
+automatically loaded and sent to the browser.
 
 It is also aware of development and production modes. In development mode it
 makes sure that caching won't get in your way etc. In production mode it takes
-all the Javascript code and concatenates them in to a sinle .js file and
-minifies it using [Uglifyjs][].
+all the Javascript code and **concatenates them in to a single .js file,
+minifies it using [Uglifyjs][]** and caches it in memory.
 
 
 Lets start with a small [example][] code to get you excited!
