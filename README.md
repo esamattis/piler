@@ -23,7 +23,7 @@ all the Javascript code and concatenates them in to a sinle .js file and
 minifies it using [Uglifyjs][].
 
 
-Lets start with small [example][] code to get you excited!
+Lets start with a small [example][] code to get you excited!
 
 
 <pre>
@@ -86,14 +86,14 @@ Extends Express server object with following methods.
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
-or the context won't be same in the browser. Cannot handle objects circular
-references.
+or the context won't be same in the browser. Cannot handle objects with
+circular references.
 
 Variables will be added as local variables in browser and also in to a global
 *REALLYEXPRESS* object.
 
 - **params** name, object
-- **params** object
+- or **params** object
 - **returns** Express server object
 
 ### .exec()
