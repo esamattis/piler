@@ -1,2 +1,2 @@
-
-module.exports = require("./lib/expresscoffee");
+require("coffee-script");
+module.exports = require( __dirname + "/lib/expresscoffee");
