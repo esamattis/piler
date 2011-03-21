@@ -177,5 +177,5 @@ Questions and suggestions are very welcome
 [Zappa]: https://github.com/mauricemach/zappa
 [Uglifyjs]: https://github.com/mishoo/UglifyJS
 [Socket.io]: http://socket.io/
-[example]: https://github.com/epeli/reallyexpress/blob/master/exexamples/simple/app.js 
+[example]: https://github.com/epeli/reallyexpress/tree/master/examples/simple
 
