@@ -86,7 +86,8 @@ Extends Express server object with following methods.
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
-or the context wont't be same in the browser.
+or the context won't be same in the browser. Cannot handle objects circular
+references.
 
 Variables will be added as local variables in browser and also in to a global
 *REALLYEXPRESS* object.
