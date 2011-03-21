@@ -65,7 +65,7 @@ wrapInScriptTag = (uri, killcache) ->
 
 
 
-exports.addCodeSharing = addCodeSharing = (app) ->
+exports.addCodeSharingTo = (app) ->
 
   # Set default scripts-directory
   if not app.set "clientscripts"
@@ -81,11 +81,18 @@ exports.addCodeSharing = addCodeSharing = (app) ->
   # All client-side code in production (except externals).
   productionClientCode = ""
 
+  # Cache for compiled script-tags
+  compiledTags = null
+
   # List of functions that are ran when the app starts listening a port.
   runOnListen = []
 
   # Array of client-side script names
-  clientScriptsFs = fs.readdirSync(scriptDir).sort() # TODO: recursive.
+  try
+    clientScriptsFs = fs.readdirSync(scriptDir).sort() # TODO: recursive.
+  catch err
+    # Directory is just missing
+    clientScriptsFs = []
 
   # Array of external client-side script urls.
   scriptURLs = []
@@ -106,7 +113,7 @@ exports.addCodeSharing = addCodeSharing = (app) ->
   runOnListen.push ->
 
     # Create common namespace for shared code
-    compiledEmbeddedCode = "window.EXPRESS_NAMESPACE = {};\n"
+    compiledEmbeddedCode = "window.REALLYEXPRESS = {};\n"
 
     # Start closure.
     compiledEmbeddedCode += "(function(){\n"
@@ -124,8 +131,8 @@ exports.addCodeSharing = addCodeSharing = (app) ->
     for fn in clientExecs
       compiledEmbeddedCode += executableFrom fn
 
-    # "this" will be EXPRESS_NAMESPACE instead of global window.
-    compiledEmbeddedCode += "}).call(EXPRESS_NAMESPACE);\n"
+    # "this" will be REALLYEXPRESS instead of global window.
+    compiledEmbeddedCode += "}).call(REALLYEXPRESS);\n"
     compiledEmbeddedCode = beautify compiledEmbeddedCode
     
 
@@ -145,20 +152,21 @@ exports.addCodeSharing = addCodeSharing = (app) ->
 
       # Embedded scripts
       tags.push wrapInScriptTag "/managedjs/embedded.js", true
-      return tags
+      return tags.join "\n"
 
 
   app.configure "production", ->
 
     # Production version of getScriptTags
     getScriptTags = ->
+      return compiledTags if compiledTags
 
       # External client scripts
       tags = (wrapInScriptTag url for url  in scriptURLs)
       # Everything else is bundled in production.js
       tags.push wrapInScriptTag "/managedjs/production.js"
 
-      return tags
+      return compiledTags = tags.join "\n"
 
 
     # We will allow usage of production.js only in production mode 
@@ -182,18 +190,19 @@ exports.addCodeSharing = addCodeSharing = (app) ->
       res.send productionClientCode, 'Content-Type': 'application/javascript'
 
 
+
   # Dynamic helper for templates. bundleJavascript will return all required
   # script-tags.
   app.dynamicHelpers bundleJavascript: (req, res) ->
 
-    bundle = getScriptTags().join("\n")
+    bundle = getScriptTags()
 
     # Add code that should be executed only on this request
     if typeof res.exec == "function"
-      bundle += wrapInScriptTagInline executableFrom res.exec, "EXPRESS_NAMESPACE"
+      bundle += wrapInScriptTagInline executableFrom res.exec, "REALLYEXPRESS"
     else if  Array.isArray res.exec
       for fn in res.exec
-        bundle += wrapInScriptTagInline executableFrom fn, "EXPRESS_NAMESPACE"
+        bundle += wrapInScriptTagInline executableFrom fn, "REALLYEXPRESS"
 
     return  bundle
 
@@ -229,8 +238,8 @@ exports.addCodeSharing = addCodeSharing = (app) ->
   # use only pure functions. Scope or context will not be same in the browser.
   #
   # Variables will added as local variables in browser and also in to
-  # EXPRESS_NAMESPACE object.
-  app.var = (name, value) ->
+  # REALLYEXPRESS object.
+  app.share = (name, value) ->
     if typeof name is "object"
       for k, v of name
         clientVars[k] = v
@@ -238,7 +247,7 @@ exports.addCodeSharing = addCodeSharing = (app) ->
 
     clientVars[name] = value
 
-  # Extends Express server object with function that will execute given function in
+  # Extends Express server object with function that will executed given function in
   # the browser as soon as it is loaded.
   app.exec = (fn) ->
     clientExecs.push(fn)
