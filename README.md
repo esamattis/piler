@@ -2,20 +2,20 @@
 
 # Really Express
 
-Really Express is a set of extensions for [Express][]. It focuses on bringing
-extraordinary features of [Node.js][] to Express. That is mainly code sharing
-between the server and the browser and integrating WebSockets as first class
-citizens. Really Express is somewhat inspired by [Zappa][] web DSL.
+Really Express is a set of extensions for [Express][] web framework. It focuses
+on bringing extraordinary features of [Node.js][] to Express. That is mainly
+code sharing between the server and the browser and integrating WebSockets as
+first class citizens. Really Express is somewhat inspired by [Zappa][] web DSL.
 
 
 # Code sharing and management
 
 Really Express takes browser script management by the balls. It handles all the
-scripts-tags which are sent to the browser. You can embed client-side code directly
-to your Node.js files. 
+scripts-tags which are sent to the browser. You can even embed client-side code
+directly to your Node.js files!
 
 You can also specify a folder from which client-side only
-Javascript/CoffeeScript files will loaded and sent to the browser.
+Javascript/CoffeeScript files will be loaded and sent to the browser.
 
 It is also aware of development and production modes. In development mode it
 makes sure that caching won't get in your way etc. In production mode it takes
@@ -75,7 +75,7 @@ head tag of your layout template.
 
 ## Code sharing API
 
-###  addCodeSharingTo();
+###  addCodeSharingTo()
 
 Extends Express server object with following methods.
 
@@ -85,15 +85,15 @@ Extends Express server object with following methods.
 ### .share()
 
 Shares almost any given Javascript object with the browser. Will work for
-functions too, but make sure that you will use only pure functions. Scope or
-the context will not be same in the browser.
+functions too, but **make sure that you will use only pure functions**. Scope
+or the context wont't be same in the browser.
 
-Variables will added as local variables in browser and also in to a global
+Variables will be added as local variables in browser and also in to a global
 *REALLYEXPRESS* object.
 
 - **params** name, object
 - **params** object
-- **returns** this
+- **returns** Express server object
 
 ### .exec()
 
@@ -101,14 +101,14 @@ Executes the given function in every page in the browser as soon as it is
 loaded. Variable "this" in the function will be *REALLYEXPRESS*.
 
 - **params** function
-- **returns** this
+- **returns** Express server object
 
 ### .scriptURL()
 
 Executes given Javascript URL in the browser as soon as it is loaded.
 
 - **params** url to a .js file | array of urls
-- **returns** this
+- **returns** Express server object
 
 
 ### res.exec
@@ -141,16 +141,36 @@ html(lang="en")
 
 ### Settings
 
-Code sharing adds on extra setting, *clientscripts* to Express. It allows you
+Code sharing adds an extra setting, *clientscripts* to Express. It allows you
 to specify a directory where client-side only scripts can be loaded. They will
 be automatically added to browser by *bundleJavascript* helper. You can also
-use CoffeeScript files here. They will be automatically compiled to Javascript.
+use CoffeeScript files there. They will be automatically compiled to
+Javascript.
+
+Default is process.cwd() + "/clientscripts"
+
+#### Example
+
+Modify it by using set.
+
+<pre>
+app.set("clientscripts", __dirname + "/clientscripts");
+</pre>
 
 
 # Making WebSockets as first class citizens
 
 Not implemented yet. Will use [Socket.io][].
   
+# Contact
+
+Questions and suggestions are very welcome
+
+- Esa-Matti Suuronen
+- esa-matti [aet] suuronen dot org
+- Epeli @ freenode/IRCnet
+
+
 
 [Express]: http://expressjs.com/
 [Node.js]: http://nodejs.org/
