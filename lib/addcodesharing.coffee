@@ -20,10 +20,11 @@ startTime = getCurrentTimestamp()
 
 # Map of functions that can convert various Javascript objects to strings.
 types =
-  
+
   function: (fn) -> "#{ fn }"
   string: (s) -> "\"#{ s }\""
   number: (n) -> n.toString()
+  boolean: (n) -> n.toString()
 
   object: (obj) ->
 
@@ -65,11 +66,17 @@ wrapInScriptTag = (uri, killcache) ->
 
 
 
+
+
+
+
 exports.addCodeSharingTo = (app) ->
 
   # Set default scripts-directory
   if not app.set "clientscripts"
     app.set "clientscripts", "#{ process.cwd() }/clientscripts"
+
+
 
 
   # Path to a directory of client-side only scripts.
@@ -103,13 +110,13 @@ exports.addCodeSharingTo = (app) ->
   # Functions that will executed immediately in browser when loaded.
   clientExecs = []
 
-  # Function for getting all script tags. 
+  # Function for getting all script tags.
   # Configure will create this.
   getScriptTags = null
 
 
   # Collect shared variables and code and wrap them in a closure for browser
-  # execution. 
+  # execution.
   runOnListen.push ->
 
     # Create common namespace for shared code
@@ -134,7 +141,7 @@ exports.addCodeSharingTo = (app) ->
     # "this" will be REALLYEXPRESS instead of global window.
     compiledEmbeddedCode += "}).call(REALLYEXPRESS);\n"
     compiledEmbeddedCode = beautify compiledEmbeddedCode
-    
+
 
 
   app.configure "development", ->
@@ -168,27 +175,40 @@ exports.addCodeSharingTo = (app) ->
 
       return compiledTags = tags.join "\n"
 
+    for script in clientScriptsFs
+      script = "#{ scriptDir }/#{ script }"
+      console.log "compile #{ script }"
+      if script.match /\.js$/
+        productionClientCode +=  fs.readFileSync(script).toString()
+      else if script.match /\.coffee$/
+        productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
 
-    # We will allow usage of production.js only in production mode 
+
+    # We will allow usage of production.js only in production mode
     runOnListen.push ->
-      for script in clientScriptsFs
-        script = "#{ scriptDir }/#{ script }"
-        console.log "compile #{ script }"
-        if script.match /\.js$/
-          productionClientCode +=  fs.readFileSync(script).toString()
-        else if script.match /\.coffee$/
-          productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
-
       productionClientCode += compiledEmbeddedCode
       productionClientCode = minify productionClientCode
 
+      # All js code will be shared from here in production
+      app.get "/managedjs/production.js", (req, res) ->
+        # TODO: Set cache time to forever. Timestamps will kill the cache when
+        # required.
+        res.send productionClientCode, 'Content-Type': 'application/javascript'
 
-    # All js code will be shared from here in production
-    app.get "/managedjs/production.js", (req, res) ->
-      # TODO: Set cache time to forever. Timestamps will kill the cache when
-      # required.
-      res.send productionClientCode, 'Content-Type': 'application/javascript'
 
+
+
+
+
+
+  app.use (req, res, next) ->
+    console.log "testing"
+    console.log this
+    console.log this == app
+    res.share = () ->
+      console.log "SHARER!!!"
+    res.codeee = "CODE"
+    next()
 
 
   # Dynamic helper for templates. bundleJavascript will return all required
@@ -232,7 +252,7 @@ exports.addCodeSharingTo = (app) ->
              , ('Content-Type': 'text/plain'), 404
 
 
-  
+
   # Extends Express server object with function that will share given Javascript
   # object with browser. Will work for functions too, but be sure that you will
   # use only pure functions. Scope or context will not be same in the browser.
@@ -261,7 +281,7 @@ exports.addCodeSharingTo = (app) ->
       scriptURLs.unshift url for url in obj.reverse()
     else
       scriptURLs.unshift obj
-    
+
 
 
   # Run when app starts listening a port
