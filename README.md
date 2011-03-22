@@ -63,10 +63,11 @@ app.exec(function(){
 
 
 app.get("/", function(req, res){
+  res.share("variable", "You are at application root!");
 
   // You can also add client code by request basis
   res.exec(function(){
-    alert("Only in this path");
+    alert(variable);
   });
 
   res.render("index.jade");
@@ -75,7 +76,7 @@ app.get("/", function(req, res){
 app.listen(8001);
 </pre>
 
-And to achieve all this you only need to call *bundleJavascript* helper in the
+And to achieve all this you only need to call *renderScriptTags* helper in the
 head tag of your layout template.
 
 
