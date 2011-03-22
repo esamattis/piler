@@ -161,16 +161,18 @@ html(lang="en")
 </pre>
 
 
-Script tags will be rendered in following order.
+#### Script order
+
+Scripts will be rendered in following order in the browser.
 
 1. server.scriptURL()
 2. Scripts automatically loaded from the filesystem in alphabetical order
 3. server.share()
 4. server.exec()
-5. response.share() - as inline script
-6. response.exec() - as inline script
+5. response.share() as inline script
+6. response.exec() as inline script
 
-
+Production mode concatenates 2-4 levels into a single request.
 
 ### Settings
 
