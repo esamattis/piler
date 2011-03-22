@@ -76,14 +76,14 @@ executableFrom = (fn, context) ->
 
 
 wrapInScriptTagInline = (code) ->
-  "<script>\n#{ code }\n</script>\n"
+  "<script type=\"text/javascript\" >\n#{ code }\n</script>\n"
 
 
 # Wraps given URI to a script tag. Will kill browser cache using timestamp
 # query string if killcache is true.
 wrapInScriptTag = (uri, killcache) ->
   timestamp = if killcache then getCurrentTimestamp() else startTime
-  "<script type=\"text/javascript\" src=\"#{ uri }?v=#{ timestamp }\"></script>"
+  "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ timestamp }\"></script>"
 
 
 
@@ -211,8 +211,9 @@ exports.addCodeSharingTo = (app) ->
     if typeof name is "object"
       for k, v of name
         localVars[k] = v
+      return name
     else
-      localVars[name] = value
+      return localVars[name] = value
 
   # Same as responseShare but for executable code
   responseExec = (fn) ->
@@ -253,8 +254,8 @@ exports.addCodeSharingTo = (app) ->
       for k, v of name
         clientVars[k] = v
       return name
-
-    clientVars[name] = value
+    else
+      return clientVars[name] = value
 
 
 
