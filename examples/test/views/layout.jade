@@ -1,0 +1,23 @@
+!!! 5
+html(lang="en")
+  head
+    title Code sharing tests
+    !{renderScriptTags()}
+    :coffeescript
+      | $ -> 
+      |   res = $("#results")
+      |   res.empty()
+      |   for test in [ "test_basic_share", "test_object_share", "test_res_basic_share",  "test_res_object_share" ]
+      |     res.append "<p>cannot find '" + test + "' from _SC</p>\n" unless _SC[test]
+      |   for test in [ "test_fs_js", "test_fs_coffee", "test_exec", "test_res_exec", "ei ole" ]
+      |     res.append "<p>cannot find '" + test + "' from window</p>\n" unless window[test]
+    
+  body
+    h1 Code sharing tests
+
+    h2 Errors
+    #results Not ran yet!
+
+    #container !{body}
+
+
