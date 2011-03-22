@@ -47,6 +47,27 @@ codeFrom = (obj) ->
   types[typeof obj]?(obj)
 
 
+# Converts map of variables and array of functions to executable Javascript
+# code
+isolatedCodeFrom = (vars, execs, context) ->
+  code = "(function(){\n"
+
+  # Declare local variables
+  variableNames = (name for name, _ of vars).join(", ")
+  code += "var #{ removeTrailingComma variableNames };\n"
+
+  # Set local and context variables
+  for name, variable of vars
+    code += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
+
+  # Create immediately functions from the function array
+  for fn in execs
+    code += executableFrom fn, context
+
+  # Set context of this closure. ie. "this"
+  code += "}).call(#{ context });\n"
+  return code
+
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.
 executableFrom = (fn, context) ->
@@ -62,7 +83,7 @@ wrapInScriptTagInline = (code) ->
 # query string if killcache is true.
 wrapInScriptTag = (uri, killcache) ->
   timestamp = if killcache then getCurrentTimestamp() else startTime
-  "<script src=\"#{ uri }?v=#{ timestamp }\"></script>"
+  "<script type=\"text/javascript\" src=\"#{ uri }?v=#{ timestamp }\"></script>"
 
 
 
@@ -115,31 +136,17 @@ exports.addCodeSharingTo = (app) ->
   getScriptTags = null
 
 
+
+      
+
+
   # Collect shared variables and code and wrap them in a closure for browser
   # execution.
   runOnListen.push ->
 
     # Create common namespace for shared code
-    compiledEmbeddedCode = "window.REALLYEXPRESS = {};\n"
-
-    # Start closure.
-    compiledEmbeddedCode += "(function(){\n"
-
-    variableNames = (name for name, _ of clientVars).join(", ")
-
-    ## Collect shared variables and functions.
-
-    # Shared variables can be found from "this" or as variables in this scope
-    compiledEmbeddedCode += "var #{ removeTrailingComma variableNames };\n"
-    for name, variable of clientVars
-      compiledEmbeddedCode += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
-
-    # Collect immediately executable code
-    for fn in clientExecs
-      compiledEmbeddedCode += executableFrom fn
-
-    # "this" will be REALLYEXPRESS instead of global window.
-    compiledEmbeddedCode += "}).call(REALLYEXPRESS);\n"
+    compiledEmbeddedCode = "window._SC = {};\n"
+    compiledEmbeddedCode += isolatedCodeFrom clientVars, clientExecs, "_SC"
     compiledEmbeddedCode = beautify compiledEmbeddedCode
 
 
@@ -159,7 +166,7 @@ exports.addCodeSharingTo = (app) ->
 
       # Embedded scripts
       tags.push wrapInScriptTag "/managedjs/embedded.js", true
-      return tags.join "\n"
+      return tags.join("\n") + "\n"
 
 
   app.configure "production", ->
@@ -196,35 +203,82 @@ exports.addCodeSharingTo = (app) ->
         res.send productionClientCode, 'Content-Type': 'application/javascript'
 
 
+  # Exposed as share on response object.
+  # Works like app.share but for only this one response
+  responseShare = (name, value) ->
+    # "this" is the response object
+    localVars = this.localVars ?= {}
+    if typeof name is "object"
+      for k, v of name
+        localVars[k] = v
+    else
+      localVars[name] = value
+
+  # Same as responseShare but for executable code
+  responseExec = (fn) ->
+    # "this" is the response object
+    localExecs = this.localExecs ?= []
+    localExecs.push fn
 
 
 
-
-
+  # Middleware that adds share & exec methods to response objects.
   app.use (req, res, next) ->
-    console.log "testing"
-    console.log this
-    console.log this == app
-    res.share = () ->
-      console.log "SHARER!!!"
-    res.codeee = "CODE"
+    res.share = responseShare
+    res.exec = responseExec
     next()
+
+
 
 
   # Dynamic helper for templates. bundleJavascript will return all required
   # script-tags.
-  app.dynamicHelpers bundleJavascript: (req, res) ->
+  app.dynamicHelpers renderScriptTags: (req, res) ->
+    return ->
+      bundle = getScriptTags()
+      localCode = isolatedCodeFrom res.localVars, res.localExecs, "_SC"
+      bundle += wrapInScriptTagInline localCode
+      return  bundle
 
-    bundle = getScriptTags()
 
-    # Add code that should be executed only on this request
-    if typeof res.exec == "function"
-      bundle += wrapInScriptTagInline executableFrom res.exec, "REALLYEXPRESS"
-    else if  Array.isArray res.exec
-      for fn in res.exec
-        bundle += wrapInScriptTagInline executableFrom fn, "REALLYEXPRESS"
 
-    return  bundle
+  # Extends Express server object with function that will share given Javascript
+  # object with browser. Will work for functions too, but be sure that you will
+  # use only pure functions. Scope or context will not be same in the browser.
+  #
+  # Variables will added as local variables in browser and also in to
+  # _SC object.
+  app.share = (name, value) ->
+    if typeof name is "object"
+      for k, v of name
+        clientVars[k] = v
+      return name
+
+    clientVars[name] = value
+
+
+
+
+
+
+
+
+  # Extends Express server object with function that will executed given function in
+  # the browser as soon as it is loaded.
+  app.exec = (fn) ->
+    clientExecs.push(fn)
+    return fn
+
+
+  # Extends Express server object with function that will execute given
+  # Javascript URL  in the browser as soon as it is loaded.
+  app.scriptURL = (obj) ->
+    if Array.isArray obj
+      scriptURLs.unshift url for url in obj.reverse()
+    else
+      scriptURLs.unshift obj
+
+
 
 
 
@@ -250,38 +304,6 @@ exports.addCodeSharingTo = (app) ->
           else
             res.send "Could not find script #{ req.params.script }.js"
              , ('Content-Type': 'text/plain'), 404
-
-
-
-  # Extends Express server object with function that will share given Javascript
-  # object with browser. Will work for functions too, but be sure that you will
-  # use only pure functions. Scope or context will not be same in the browser.
-  #
-  # Variables will added as local variables in browser and also in to
-  # REALLYEXPRESS object.
-  app.share = (name, value) ->
-    if typeof name is "object"
-      for k, v of name
-        clientVars[k] = v
-      return name
-
-    clientVars[name] = value
-
-  # Extends Express server object with function that will executed given function in
-  # the browser as soon as it is loaded.
-  app.exec = (fn) ->
-    clientExecs.push(fn)
-    return fn
-
-
-  # Extends Express server object with function that will execute given
-  # Javascript URL  in the browser as soon as it is loaded.
-  app.scriptURL = (obj) ->
-    if Array.isArray obj
-      scriptURLs.unshift url for url in obj.reverse()
-    else
-      scriptURLs.unshift obj
-
 
 
   # Run when app starts listening a port

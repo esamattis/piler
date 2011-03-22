@@ -12,10 +12,16 @@ WebSockets as first class citizens**. Really Express is somewhat inspired by
 # Code sharing and management
 
 Really Express takes browser script management by the balls. It handles all the
-scripts-tags which are sent to the browser. You can even **embed client-side
-code seamlessly to your Node.js files!** It is also possible to specify a
-folder from which client-side only Javascript/CoffeeScript files will be
-automatically loaded and sent to the browser.
+scripts-tags which are sent to the browser.
+
+The grand scheme is that the you can seamlessly write server and client-side
+code. You can **embed client-side code in to your Node.js files!** It should be
+trivial to change code execution from the server to the client. Also function
+and variable sharing is a breeze.
+
+It is also possible to specify a folder from which client-side only
+Javascript/CoffeeScript files will be automatically loaded and sent to the
+browser.
 
 It is also aware of development and production modes. In development mode it
 makes sure that caching won't get in your way etc. In production mode it takes
@@ -59,9 +65,9 @@ app.exec(function(){
 app.get("/", function(req, res){
 
   // You can also add client code by request basis
-  res.exec = function(){
+  res.exec(function(){
     alert("Only in this path");
-  };
+  });
 
   res.render("index.jade");
 });
@@ -77,53 +83,67 @@ head tag of your layout template.
 
 ###  addCodeSharingTo()
 
-Extends Express server object with following methods.
+Extends Express server object and response objects with *share* and *exec*
+methods.
 
 - **params** Express server object
 - **returns** Express server object
 
-### .share()
+### server.share()
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
 or the context won't be same in the browser. Cannot handle objects with
 circular references.
 
-Variables will be added as local variables in browser and also in to a global
-*REALLYEXPRESS* object.
+- **params** variable name, object
+- or **params** map of variable names and objects
+- **returns** shared object
 
-- **params** name, object
-- or **params** object
-- **returns** Express server object
+### server.exec()
 
-### .exec()
-
-Executes the given function in every page in the browser as soon as it is
-loaded. Variable "this" in the function will be *REALLYEXPRESS*.
+Executes the given function at every page load in the browser as soon as it is
+loaded. Variables shared with server.share() can be found from the parent scope
+or from from the context of the function (ie. this-variable).
 
 - **params** function
-- **returns** Express server object
 
-### .scriptURL()
 
-Executes given Javascript URL in the browser as soon as it is loaded.
+### server.scriptURL()
+
+Executes given Javascript URL in the browser as soon as it is loaded. Will be
+executed before any other code.
 
 - **params** url to a .js file | array of urls
-- **returns** Express server object
 
 
-### res.exec
+### response.share()
 
-Really Express also makes "exec" attribute of response objects special.  You
-can set it to a function or a array of functions that will be then executed on
-the response page.  Variable "this" in the the function will be *REALLYEXPRESS*.
+Same as server.share(), but shared object(s) will be sent to browser only with
+this response as inline script.
+
+- **params** variable name, object
+- or **params** map of variable names and objects
+- **returns** shared object
+
+### response.exec()
+
+Same as server.exec(), but the given function will be executed only with this
+response as inline script. 
+
+Function can access variables shared with response.share() from parent scope,
+but not the variables shared by server.share(). Those can be accessed from the
+context of the function.
+
+- **params** function
 
 
-### Dynamic helper *bundleJavascript*
 
-Really Express also registers an essential dynamic helper, *bundleJavascript*,
-for embedding all the Javascripts. Just include it as raw html in your layout
-template
+### Dynamic helper *renderScriptTags*
+
+Really Express also registers an essential dynamic helper function,
+*renderScriptTags*, for embedding all the script-tags. Just include ouput of
+it as raw html in your layout template.
 
 #### Example
 
@@ -134,7 +154,7 @@ views/layout.jade
 html(lang="en")                      
   head                               
     title= title                     
-    !{bundleJavascript}              
+    !{renderScriptTags}              
   body                               
     h1= title                        
     #container !{body}               
