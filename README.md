@@ -154,19 +154,31 @@ views/layout.jade
 html(lang="en")                      
   head                               
     title= title                     
-    !{renderScriptTags}              
+    !{renderScriptTags()}              
   body                               
     h1= title                        
     #container !{body}               
 </pre>
 
+
+Script tags will be rendered in following order.
+
+1. server.scriptURL()
+2. Scripts automatically loaded from the filesystem in alphabetical order
+3. server.share()
+4. server.exec()
+5. response.share() - as inline script
+6. response.exec() - as inline script
+
+
+
 ### Settings
 
 Code sharing adds an extra setting, *clientscripts* to Express. It allows you
 to specify a directory where client-side only scripts can be loaded. They will
-be automatically added to browser by *bundleJavascript* helper. You can also
-use CoffeeScript files there. They will be automatically compiled to
-Javascript.
+be automatically sent to browser in alphabetical order by *renderScriptTags*
+helper. You can also use CoffeeScript files there. They will be automatically
+compiled to Javascript.
 
 Default is process.cwd() + "/clientscripts"
 
