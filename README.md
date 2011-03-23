@@ -14,8 +14,8 @@ WebSockets as first class citizens**. Really Express is somewhat inspired by
 Really Express takes browser script management by the balls. It handles all the
 scripts-tags which are sent to the browser.
 
-The grand scheme is that the you can seamlessly write server and client-side
-code. You can **embed client-side code in to your Node.js files!** It should be
+The grand scheme is that you can seamlessly write server and client-side code.
+You can **embed client-side code in to your Node.js files!** It should be
 trivial to change code execution from the server to the client. Also function
 and variable sharing is a breeze.
 
@@ -179,9 +179,9 @@ Production mode concatenates 2-4 levels into a single request.
 
 Code sharing adds an extra setting, *clientscripts* to Express. It allows you
 to specify a directory where client-side only scripts can be loaded. They will
-be automatically sent to browser in alphabetical order by *renderScriptTags*
-helper. You can also use CoffeeScript files there. They will be automatically
-compiled to Javascript.
+be automatically sent to browser in alphabetical order by the
+*renderScriptTags* helper. You can also use CoffeeScript files there. They will
+be automatically compiled to Javascript.
 
 Default is process.cwd() + "/clientscripts"
 
