@@ -1,9 +1,9 @@
 
-# Code sharing and management
+# Client-side code sharing and management for Express
 
-**Express-share** is an extension for [Express][] which takes browser script
-management by the balls.  It handles all the scripts-tags which are sent to the
-browser.
+**Express-share** is an extension for the [Express][] web framework. It takes
+browser script management by the balls.  It handles all the scripts-tags which
+are sent to the browser.
 
 The grand scheme is that you can seamlessly write server and client-side code.
 You can **embed client-side code in to your Node.js files!** It should be
