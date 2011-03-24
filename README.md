@@ -185,10 +185,6 @@ app.set("clientscripts", __dirname + "/clientscripts");
 </pre>
 
 
-# Making WebSockets as first class citizens
-
-Not implemented yet. Will use [Socket.io][].
-  
 # Contact
 
 Questions and suggestions are very welcome
@@ -203,5 +199,4 @@ Questions and suggestions are very welcome
 [Node.js]: http://nodejs.org/
 [Zappa]: https://github.com/mauricemach/zappa
 [Uglifyjs]: https://github.com/mishoo/UglifyJS
-[Socket.io]: http://socket.io/
 [example]: https://github.com/epeli/reallyexpress/tree/master/examples/simple
