@@ -61,6 +61,7 @@ isolatedCodeFrom = (vars, execs, context) ->
     code += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
 
   # Create immediately functions from the function array
+  
   for fn in execs
     code += executableFrom fn, context
 

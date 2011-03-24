@@ -1,6 +1,6 @@
 
 var createServer = require("express").createServer;
-var addCodeSharingTo = require("reallyexpress").addCodeSharingTo;
+var addCodeSharingTo = require("express-share").addCodeSharingTo;
 
 function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
@@ -31,9 +31,9 @@ app.exec(function(){
 app.get("/", function(req, res){
 
   // You can also add client code by request basis
-  res.exec = function(){
+  res.exec(function(){
     alert("Only in this path");
-  };
+  });
 
   res.render("index.jade");
 });

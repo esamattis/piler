@@ -1,18 +1,9 @@
 
-
-# Really Express
-
-Really Express is a set of extensions for [Express][] web framework. It focuses
-on bringing extraordinary features of [Node.js][] to Express. That is mainly
-**code sharing between the server and the browser** and **integrating
-WebSockets as first class citizens**. Really Express is somewhat inspired by
-[Zappa][] web DSL.
-
-
 # Code sharing and management
 
-Really Express takes browser script management by the balls. It handles all the
-scripts-tags which are sent to the browser.
+**Express-share** is an extension for [Express][] which takes browser script
+management by the balls.  It handles all the scripts-tags which are sent to the
+browser.
 
 The grand scheme is that you can seamlessly write server and client-side code.
 You can **embed client-side code in to your Node.js files!** It should be
@@ -214,4 +205,3 @@ Questions and suggestions are very welcome
 [Uglifyjs]: https://github.com/mishoo/UglifyJS
 [Socket.io]: http://socket.io/
 [example]: https://github.com/epeli/reallyexpress/tree/master/examples/simple
-

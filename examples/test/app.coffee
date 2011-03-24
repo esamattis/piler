@@ -2,12 +2,13 @@
 fs = require "fs"
 
 express = require 'express'
-{createServer} = require "reallyexpress"
+{addCodeSharingTo} = require "express-share"
 
 # Read to fake db
 db = JSON.parse fs.readFileSync "candidates.json"
 
-app = createServer()
+app = express.createServer()
+addCodeSharingTo app
 
 
 app.scriptURL "https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"
