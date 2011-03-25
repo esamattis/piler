@@ -25,7 +25,7 @@ Lets start with a small [example][] code to get you excited!
 
 <pre>
 var createServer = require("express").createServer;
-var addCodeSharingTo = require("reallyexpress").addCodeSharingTo;
+var addCodeSharingTo = require("express-share").addCodeSharingTo;
 
 function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
