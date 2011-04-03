@@ -50,20 +50,25 @@ codeFrom = (obj) ->
 # Converts map of variables and array of functions to executable Javascript
 # code
 isolatedCodeFrom = (vars, execs, context) ->
+  
+
   code = "(function(){\n"
 
-  # Declare local variables
-  variableNames = (name for name, _ of vars).join(", ")
-  code += "var #{ removeTrailingComma variableNames };\n"
+  # variables are not always set when using reponses
+  if vars?
+    # Declare local variables
+    variableNames = (name for name, _ of vars).join(", ")
 
-  # Set local and context variables
-  for name, variable of vars
-    code += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
+    code += "var #{ removeTrailingComma variableNames };\n"
 
-  # Create immediately functions from the function array
-  
-  for fn in execs
-    code += executableFrom fn, context
+    # Set local and context variables
+    for name, variable of vars
+      code += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
+
+  if execs?
+    # Create immediately functions from the function array
+    for fn in execs
+      code += executableFrom fn, context
 
   # Set context of this closure. ie. "this"
   code += "}).call(#{ context });\n"
@@ -208,7 +213,8 @@ exports.addCodeSharingTo = (app) ->
   # Works like app.share but for only this one response
   responseShare = (name, value) ->
     # "this" is the response object
-    localVars = this.localVars ?= {}
+    this.localVars ?= {}
+    localVars = this.localVars
     if typeof name is "object"
       for k, v of name
         localVars[k] = v
