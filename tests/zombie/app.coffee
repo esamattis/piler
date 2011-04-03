@@ -11,8 +11,6 @@ app = express.createServer()
 addCodeSharingTo app
 
 
-app.scriptURL "https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"
-
 app.configure ->
   app.set 'views', __dirname + '/views'
   app.set "home", "/Foo"
@@ -21,11 +19,23 @@ app.configure ->
   app.use express.static __dirname + '/public'
 
 
-app.share "test_basic_share", true
-app.share test_object_share: true
+app.share "basic_boolean", true
+
+app.share "basic_function", ->
+  "cool"
+
+app.share 
+  from_object: true
+
+app.share "nested",
+  first:
+    second_a: "a"
+    second_b: "b"
+
+
 
 app.exec ->
-  window.test_exec = true
+  window.GLOBAL_VAR = true
 
 
 
@@ -33,12 +43,17 @@ app.get "/", (req, res) ->
   res.share "test_res_basic_share", true
   res.share test_res_object_share: true
   res.exec ->
-    window.test_res_exec = true
+    window.GLOBAL_VAR_EXEC = true
 
   res.render 'index.jade',
     title: "Testing"
     contentText: "content tekit"
 
+
+app.get "/subpage", (req, res) ->
+  res.render 'index.jade',
+    title: "Testing subpage"
+    contentText: "content tekit"
 
 app.listen 1234
 

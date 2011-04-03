@@ -14,10 +14,10 @@ It is also possible to specify a folder from which client-side only
 Javascript/CoffeeScript files will be automatically loaded and sent to the
 browser.
 
-It is also aware of development and production modes. In development mode it
-makes sure that caching won't get in your way etc. In production mode it takes
-all the Javascript code and **concatenates them in to a single .js file,
-minifies it using [Uglifyjs][]** and caches it in memory.
+Express-share is also aware of development and production modes. In development
+mode it makes sure that caching won't get in your way etc. In production mode
+it takes all the Javascript code and **concatenates them in to a single .js
+file, minifies it using [Uglifyjs][]** and caches it in memory.
 
 
 Lets start with a small [example][] code to get you excited!

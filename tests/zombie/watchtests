@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+supervisor -w ../../lib/,. app.coffee &
+
+while [ 1 ]; do 
+    inotifywait -e close_write . test/
+    sleep 1 # Allow supervisor to reload
+    vows test/*
+done
+
+
+
+
+
