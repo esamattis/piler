@@ -4,8 +4,6 @@ fs = require "fs"
 express = require 'express'
 {addCodeSharingTo} = require "express-share"
 
-# Read to fake db
-db = JSON.parse fs.readFileSync "candidates.json"
 
 app = express.createServer()
 addCodeSharingTo app
@@ -24,7 +22,7 @@ app.share "basic_boolean", true
 app.share "basic_function", ->
   "cool"
 
-app.share 
+app.share
   from_object: true
 
 app.share "nested",

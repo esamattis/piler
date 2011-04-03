@@ -46,7 +46,7 @@ batch =
 
     "test global variabl set by server.exec": (window, status) ->
       assert.isTrue window.GLOBAL_VAR
-      
+
     "test global variabl set by res.exec": (window, status) ->
       assert.isTrue window.GLOBAL_VAR_EXEC
 
