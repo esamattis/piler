@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
+[ -z $(which inotifywait)  ] && echo "Cannot find inotifywait. sudo apt-get install inotify-tools" && exit 1
+
 supervisor -w ../../lib/,. app.coffee &
+sleep 1
+vows test/*
 
 while [ 1 ]; do 
     inotifywait -e close_write . test/

@@ -8,5 +8,10 @@
         , "express": ""
         , "coffee-script": ""
     }
+    , "devDependencies": {
+        "zombie": ""
+        , "vows": ""
+        , "supervisor": ""
+    }
 }
 
