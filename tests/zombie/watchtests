@@ -7,7 +7,7 @@ sleep 1
 vows test/*
 
 while [ 1 ]; do 
-    inotifywait -e close_write . test/
+    inotifywait -e close_write ../../lib/ . test/
     sleep 1 # Allow supervisor to reload
     vows test/*
 done

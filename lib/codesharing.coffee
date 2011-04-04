@@ -5,7 +5,6 @@ fs = require "fs"
 {minify, beautify} = require "./minify"
 
 
-
 # Remove last comma from string
 removeTrailingComma = (s) ->
   s.trim().replace(/,$/, "")
@@ -50,7 +49,7 @@ codeFrom = (obj) ->
 # Converts map of variables and array of functions to executable Javascript
 # code
 isolatedCodeFrom = (vars, execs, context) ->
-  
+
 
   code = "(function(){\n"
 
@@ -131,11 +130,18 @@ exports.addCodeSharingTo = (app) ->
   # Array of external client-side script urls.
   scriptURLs = []
 
-  # Variables that are shared with Node.js and browser.
+  # Variables that are shared with Node.js and browser on every page
   clientVars = {}
+
+  # Namespaced client variables
+  nsClientVars = []
 
   # Functions that will executed immediately in browser when loaded.
   clientExecs = []
+
+  # Namespaced client functions
+  nsClientExecs = []
+
 
   # Function for getting all script tags.
   # Configure will create this.
@@ -143,7 +149,7 @@ exports.addCodeSharingTo = (app) ->
 
 
 
-      
+
 
 
   # Collect shared variables and code and wrap them in a closure for browser
@@ -246,6 +252,7 @@ exports.addCodeSharingTo = (app) ->
       bundle = getScriptTags()
       localCode = isolatedCodeFrom res.localVars, res.localExecs, "_SC"
       bundle += wrapInScriptTagInline localCode
+      # TODO: get namespaced code
       return  bundle
 
 
@@ -256,13 +263,17 @@ exports.addCodeSharingTo = (app) ->
   #
   # Variables will added as local variables in browser and also in to
   # _SC object.
-  app.share = (name, value) ->
-    if typeof name is "object"
-      for k, v of name
+  app.share = (ns) ->
+    obj = arguments[arguments.length-1]
+
+    if ns is obj
+      for k, v of obj
         clientVars[k] = v
-      return name
     else
-      return clientVars[name] = value
+      for k, v of obj
+        nsClientVars[ns][k] = v
+
+    return obj
 
 
 

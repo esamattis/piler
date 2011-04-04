@@ -19,8 +19,6 @@ batch =
     "test variable by res.share": (privates, status) ->
       assert.isTrue privates.test_res_basic_share
 
-    "test variable by res.share (object)": (privates, status) ->
-      assert.isTrue privates.test_res_object_share
 
   'response at subpage':
     topic: ->
@@ -33,6 +31,22 @@ batch =
 
     "test variable by res.share (object) does not exist": (privates, status) ->
       assert.isUndefined privates.test_res_object_share
+
+    "subpage res.share works": (privates, status) ->
+      assert.isTrue privates.sub_page_res
+
+
+
+
+  'no reponse.share here':
+    topic: ->
+      browser = new zombie.Browser debug: true
+      browser.visit url + "/noresshare", (err, browser, status) =>
+        @callback(browser.window._SC, status)
+
+    "just works": (privates, status) ->
+      assert.isTrue privates.basic_boolean
+
 
 
   'global variables in application root':

@@ -38,7 +38,7 @@ addCodeSharingTo(app);
 app.scriptURL("https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js");
 
 // Share isEmail with the browser
-app.share("isEmail", isEmail);
+app.share({isEmail: isEmail});
 
 // This function will be actually executed in the browser!
 app.exec(function(){
@@ -54,7 +54,7 @@ app.exec(function(){
 
 
 app.get("/", function(req, res){
-  res.share("variable", "You are at application root!");
+  res.share({variable: "You are at application root!"});
 
   // You can also add client code by request basis
   res.exec(function(){

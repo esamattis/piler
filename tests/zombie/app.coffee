@@ -17,15 +17,12 @@ app.configure ->
   app.use express.static __dirname + '/public'
 
 
-app.share "basic_boolean", true
+app.share basic_boolean: true
 
-app.share "basic_function", ->
+app.share basic_function: ->
   "cool"
 
-app.share
-  from_object: true
-
-app.share "nested",
+app.share nested:
   first:
     second_a: "a"
     second_b: "b"
@@ -38,8 +35,7 @@ app.exec ->
 
 
 app.get "/", (req, res) ->
-  res.share "test_res_basic_share", true
-  res.share test_res_object_share: true
+  res.share test_res_basic_share: true
   res.exec ->
     window.GLOBAL_VAR_EXEC = true
 
@@ -49,9 +45,14 @@ app.get "/", (req, res) ->
 
 
 app.get "/subpage", (req, res) ->
+  res.share sub_page_res: true
   res.render 'index.jade',
     title: "Testing subpage"
     contentText: "content tekit"
+
+app.get "/noresshare", (req, res) ->
+  res.render 'index.jade',
+    title: "No res.share is used"
 
 app.listen 1234
 
