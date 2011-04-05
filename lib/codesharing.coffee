@@ -117,8 +117,6 @@ exports.addCodeSharingTo = (app) ->
   # Cache for compiled script-tags
   compiledTags = null
 
-  # List of functions that are ran when the app starts listening a port.
-  runOnListen = []
 
   # Array of client-side script names
   try
@@ -152,8 +150,13 @@ exports.addCodeSharingTo = (app) ->
   getScriptTags = null
 
 
+  # List of functions that are ran when the app starts listening a port.
+  runOnListen = []
 
 
+  # Run when app starts listening a port
+  app.on 'listening', ->
+    fn() for fn in runOnListen
 
 
   # Collect shared variables and code and wrap them in a closure for browser
@@ -218,7 +221,7 @@ exports.addCodeSharingTo = (app) ->
 
       # All js code will be shared from here in production
       app.get "/managedjs/production.js", (req, res) ->
-        # Cache for a year. Server restarts will reset the cache.
+        # Cache for an year. Server restarts will reset the cache.
         res.setHeader 'Cache-Control', 'public, max-age=31556926'
         res.send productionClientCode, 'Content-Type': 'application/javascript'
 
@@ -377,9 +380,6 @@ exports.addCodeSharingTo = (app) ->
             
 
 
-  # Run when app starts listening a port
-  app.on 'listening', ->
-    fn() for fn in runOnListen
 
 
   return app
