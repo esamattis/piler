@@ -203,12 +203,15 @@ html(lang="en")
 Scripts will be rendered in following order in the browser.
 
 1. server.scriptURL()
-2. Scripts automatically loaded from the filesystem in alphabetical order
-3. server.shareFs()
-4. server.share()
-5. server.exec()
-6. response.share()
-7. response.exec()
+1. Scripts automatically loaded from the filesystem in alphabetical order
+1. server.shareFs()
+1. server.share()
+1. server.exec()
+1. server.shareFs() namespaced
+1. server.share() namespaced
+1. server.exec() namespaced
+1. response.share()
+1. response.exec()
 
 Production mode concatenates 2-4 levels into a single request.
 
