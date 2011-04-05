@@ -88,8 +88,11 @@ functions too, but **make sure that you will use only pure functions**. Scope
 or the context won't be same in the browser. Cannot handle objects with
 circular references.
 
-Variable is shared if the given namespace regexp matches on request.url. If
-namespace regexp is omitted variables will shared on every page.
+Variable is shared if the given namespace regexp matches on request.url. If the
+namespace regexp is omitted variables will be shared on every page.
+
+If the namespace is used, the code will shared as inline script. Otherwise it
+will be concatenated in to a single js file in production mode.
 
 server.share will be set only once on server startup. So you can only use this
 to share general purpose functions and variables. Use response.share to share
@@ -110,6 +113,9 @@ Executes the given function at page load in the browser as soon as it is loaded
 if the given namespace regexp matches. If namespace is omitted the function
 will be executed on every page.
 
+If the namespace is used, the code will shared as inline script. Otherwise it
+will be concatenated in to a single js file in production mode.
+
 Variables shared with server.share() can be found from the parent scope or from
 from the context of the function (ie.  this-variable).
 
@@ -125,12 +131,29 @@ from the context of the function (ie.  this-variable).
         alert(subPageVariable); 
     });
 
-### server.scriptURL()
+### server.scriptURL(url to a .js file | array of urls)
 
 Executes given Javascript URL in the browser as soon as it is loaded. Will be
 executed before any other code.
 
-- **params** url to a .js file | array of urls
+- **returns** undefined
+
+### server.shareFs([namespace regexp], path to a script file)
+
+Share given script file from filesystem with the browser. Can be .js or .coffee
+file.
+
+If the namespace is used, the code will shared as inline script. Otherwise it
+will be concatenated in to a single js file in production mode.
+
+Script is shared if the given namespace regexp matches on request.url. If
+namespace regexp is omitted the script will be shared on every page.
+
+- **returns** undefined
+
+#### Examples
+
+    server.shareFs(/^\/subpage.*/, __dirname + "myscript.js");
 
 
 ### response.share(map of variables)
@@ -140,7 +163,8 @@ browser only with this response as inline script.
 
 - **returns** shared object
 
-### response.exec()
+
+### response.exec(fucntion)
 
 Same as server.exec(), but the given function will be executed only with this
 response as inline script. 
@@ -149,8 +173,7 @@ Function can access variables shared with response.share() from parent scope,
 but not the variables shared by server.share(). Those can be accessed from the
 context of the function.
 
-- **params** function
-
+- **returns** shared function
 
 
 ### Dynamic helper *renderScriptTags*
@@ -181,10 +204,11 @@ Scripts will be rendered in following order in the browser.
 
 1. server.scriptURL()
 2. Scripts automatically loaded from the filesystem in alphabetical order
-3. server.share()
-4. server.exec()
-5. response.share() as inline script
-6. response.exec() as inline script
+3. server.shareFs()
+4. server.share()
+5. server.exec()
+6. response.share()
+7. response.exec()
 
 Production mode concatenates 2-4 levels into a single request.
 

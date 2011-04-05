@@ -38,6 +38,10 @@ app.exec ->
   window.GLOBAL_VAR = true
 
 
+app.shareFs "fsscript.js"
+
+app.shareFs /^\/subpage.*/, "fsnsscript.js"
+
 
 app.get "/", (req, res) ->
   res.share test_res_basic_share: true

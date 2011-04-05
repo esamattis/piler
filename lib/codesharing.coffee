@@ -1,6 +1,7 @@
 
 coffeescript = require "coffee-script"
 fs = require "fs"
+path = require "path"
 
 {minify, beautify} = require "./minify"
 
@@ -121,10 +122,14 @@ exports.addCodeSharingTo = (app) ->
 
   # Array of client-side script names
   try
-    clientScriptsFs = fs.readdirSync(scriptDir).sort() # TODO: recursive.
+    base = path.basename scriptDir
+    clientScriptsFs = ("#{ base }/#{ script }" for script in fs.readdirSync(scriptDir).sort())
   catch err
     # Directory is just missing
     clientScriptsFs = []
+
+  nsClientScriptsFs = []
+
 
   # Array of external client-side script urls.
   scriptURLs = []
@@ -155,6 +160,7 @@ exports.addCodeSharingTo = (app) ->
   # execution.
   runOnListen.push ->
 
+
     # Create common namespace for shared code
     compiledEmbeddedCode = "window._SC = {};\n"
     compiledEmbeddedCode += isolatedCodeFrom clientVars, clientExecs, "_SC"
@@ -165,7 +171,7 @@ exports.addCodeSharingTo = (app) ->
   app.configure "development", ->
 
     # Development version getScriptTags
-    getScriptTags = ->
+    getScriptTags = (req) ->
 
       # External client scripts. CDNs etc.
       tags = (wrapInScriptTag url, true for url  in scriptURLs)
@@ -179,11 +185,10 @@ exports.addCodeSharingTo = (app) ->
       tags.push wrapInScriptTag "/managedjs/embedded.js", true
       return tags.join("\n") + "\n"
 
-
   app.configure "production", ->
 
     # Production version of getScriptTags
-    getScriptTags = ->
+    getScriptTags = (req) ->
       return compiledTags if compiledTags
 
       # External client scripts
@@ -193,38 +198,41 @@ exports.addCodeSharingTo = (app) ->
 
       return compiledTags = tags.join "\n"
 
-    for script in clientScriptsFs
-      script = "#{ scriptDir }/#{ script }"
-      console.log "compile #{ script }"
-      if script.match /\.js$/
-        productionClientCode +=  fs.readFileSync(script).toString()
-      else if script.match /\.coffee$/
-        productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
+
+
+  app.configure "production", ->
+
 
 
     # We will allow usage of production.js only in production mode
     runOnListen.push ->
+
+      for script in clientScriptsFs
+        if script.match /\.js$/
+          productionClientCode +=  fs.readFileSync(script).toString()
+        else if script.match /\.coffee$/
+          productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
+
       productionClientCode += compiledEmbeddedCode
       productionClientCode = minify productionClientCode
 
       # All js code will be shared from here in production
       app.get "/managedjs/production.js", (req, res) ->
-        # TODO: Set cache time to forever. Timestamps will kill the cache when
-        # required.
+        # Cache for a year. Server restarts will reset the cache.
+        res.setHeader 'Cache-Control', 'public, max-age=31556926'
         res.send productionClientCode, 'Content-Type': 'application/javascript'
 
 
   # Exposed as share on response object.
   # Works like app.share but for only this one response
-  responseShare = (name, value) ->
+  responseShare = (obj) ->
     # "this" is the response object
     localVars = this.localVars
-    if typeof name is "object"
-      for k, v of name
-        localVars[k] = v
-      return name
-    else
-      return localVars[name] = value
+
+    for k, v of obj
+      localVars[k] = v
+
+    return obj
 
   # Same as responseShare but for executable code
   responseExec = (fn) ->
@@ -248,7 +256,12 @@ exports.addCodeSharingTo = (app) ->
   # script-tags.
   app.dynamicHelpers renderScriptTags: (req, res) ->
     return ->
-      bundle = getScriptTags()
+      bundle = getScriptTags(req)
+
+      for ns in nsClientScriptsFs
+        if ns.matcher.exec req.url
+          bundle += wrapInScriptTagInline ns.code
+          
 
       for ns in nsClientExecs
         if ns.matcher.exec req.url
@@ -260,12 +273,10 @@ exports.addCodeSharingTo = (app) ->
           for k, v of ns.obj
             # ns vars cannot override locals
             res.localVars[k] = v if not res.localVars[k]
-          
 
 
       localCode = isolatedCodeFrom res.localVars, res.localExecs, "_SC"
       bundle += wrapInScriptTagInline localCode
-      # TODO: get namespaced code
 
       return  bundle
 
@@ -287,6 +298,19 @@ exports.addCodeSharingTo = (app) ->
       nsClientVars.push matcher: ns, obj: obj
 
     return obj
+
+  
+  app.shareFs = (ns) ->
+    filePath = arguments[arguments.length-1]
+
+    if ns is filePath
+      clientScriptsFs.push filePath
+    else
+      obj = matcher: ns
+      nsClientScriptsFs.push obj
+      fs.readFile filePath, (err, data) ->
+        throw err if err
+        obj.code = minify data.toString()
 
 
 
@@ -316,29 +340,41 @@ exports.addCodeSharingTo = (app) ->
 
 
 
+  app.configure "development", ->
 
-  # All client-side code embedded in node.js code will shared from here.
-  app.get "/managedjs/embedded.js", (req, res) ->
-    res.send compiledEmbeddedCode, 'Content-Type': 'application/javascript'
+    # All client-side code embedded in node.js code will shared from here.
+    app.get "/managedjs/embedded.js", (req, res) ->
+      res.send compiledEmbeddedCode, 'Content-Type': 'application/javascript'
 
+    responseWith404 = (res, scriptName) ->
+      res.send "Could not find script #{ scriptName }.js"
+                   , ('Content-Type': 'text/plain'), 404
 
-  # Client-side only script are shared from here.
-  app.get "/managedjs/dev/:script.js", (req, res) ->
+    # Client-side only script are shared from here.
+    app.get /^\/managedjs\/dev\/(.+)\.js/, (req, res) ->
+      # TODO: we should only compile when file really changed by checking
+      # modified timestamp. Does this really matter in development-mode?
 
-    # TODO: we should only compile when file really changed by checking
-    # modified timestamp. Does this really matter in development-mode?
+      scriptName  = req.params[0]
 
-    fs.readFile "#{ scriptDir }/#{ req.params.script }.js", (err, data) ->
-      if not err
-        res.send data, 'Content-Type': 'application/javascript'
-      else
-        fs.readFile "#{ scriptDir }/#{ req.params.script }.coffee", (err, data) ->
+      if  scriptName + ".js" in clientScriptsFs
+        fs.readFile "#{ scriptName }.js", (err, data) ->
+          if not err
+            res.send data, 'Content-Type': 'application/javascript'
+          else
+              responseWith404 res, scriptName
+
+      else if scriptName + ".coffee" in clientScriptsFs
+        fs.readFile "#{ scriptName }.coffee", (err, data) ->
           if not err
             res.send coffeescript.compile(data.toString())
               , 'Content-Type': 'application/javascript'
           else
-            res.send "Could not find script #{ req.params.script }.js"
-             , ('Content-Type': 'text/plain'), 404
+            responseWith404 res, scriptName
+      else
+        responseWith404 res, scriptName
+              
+            
 
 
   # Run when app starts listening a port
