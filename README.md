@@ -78,7 +78,7 @@ head tag of your layout template.
 
 ## Code sharing API
 
-###  addCodeSharingTo(expressServerObj)
+###  addCodeSharingTo(Express server object)
 
 Extends Express server object and response objects with *share* and *exec*
 methods.
@@ -86,7 +86,7 @@ methods.
 
 - **returns** Express server object
 
-### server.share([namespace regexp], map of variables)
+### server.share([namespace regexp,] map of variables)
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
@@ -109,7 +109,7 @@ variables more dynamically.
 
 
 
-### server.exec([namespace regexp], function)
+### server.exec([namespace regexp,] function)
 
 Executes the given function at page load in the browser as soon as it is loaded
 if the given namespace regexp matches. If namespace is omitted the function
@@ -135,7 +135,7 @@ it is omitted.
 
 
 
-### server.shareFs([namespace regexp], path to a script file)
+### server.shareFs([namespace regexp, ] path to a script file)
 
 Share given script file from filesystem with the browser. Can be .js or .coffee
 file.
@@ -215,7 +215,7 @@ Scripts will be rendered in following order in the browser.
 1. response.exec()
 
 Production mode concatenates 2-5 levels into a single request. Rest will be
-server as inline scripts.
+served as inline scripts.
 
 ### Settings
 
