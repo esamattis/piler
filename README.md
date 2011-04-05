@@ -226,10 +226,13 @@ Default is process.cwd() + "/clientscripts"
 
 Modify it by using set.
 
-<pre>
-app.set("clientscripts", __dirname + "/clientscripts");
-</pre>
+    app.set("clientscripts", __dirname + "/clientscripts");
 
+# TODOs
+
+- Sanitize script order
+- Add tests for script order
+- Do not inline namespaced scripts?
 
 # Contact
 
