@@ -19,6 +19,11 @@ mode it makes sure that caching won't get in your way etc. In production mode
 it takes all the Javascript code and **concatenates them in to a single .js
 file, minifies it using [Uglifyjs][]** and caches it in memory.
 
+# Install
+
+    npm install express-share
+
+# Example
 
 Lets start with a small [example][] code to get you excited!
 
