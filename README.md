@@ -88,11 +88,8 @@ functions too, but **make sure that you will use only pure functions**. Scope
 or the context won't be same in the browser. Cannot handle objects with
 circular references.
 
-Variable is shared if the given namespace regexp matches on request.url. If the
-namespace regexp is omitted variables will be shared on every page.
-
-If the namespace is used, the code will shared as inline script. Otherwise it
-will be concatenated in to a single js file in production mode.
+Code will be shared where the regexp matches on request.url or on every page if
+it is omitted.
 
 server.share will be set only once on server startup. So you can only use this
 to share general purpose functions and variables. Use response.share to share
@@ -113,11 +110,11 @@ Executes the given function at page load in the browser as soon as it is loaded
 if the given namespace regexp matches. If namespace is omitted the function
 will be executed on every page.
 
-If the namespace is used, the code will shared as inline script. Otherwise it
-will be concatenated in to a single js file in production mode.
-
 Variables shared with server.share() can be found from the parent scope or from
 from the context of the function (ie.  this-variable).
+
+Code will be shared where the regexp matches on request.url or on every page if
+it is omitted.
 
 - **returns** shared function
 
@@ -131,23 +128,22 @@ from the context of the function (ie.  this-variable).
         alert(subPageVariable); 
     });
 
-### server.scriptURL(url to a .js file | array of urls)
 
-Executes given Javascript URL in the browser as soon as it is loaded. Will be
-executed before any other code.
-
-- **returns** undefined
 
 ### server.shareFs([namespace regexp], path to a script file)
 
 Share given script file from filesystem with the browser. Can be .js or .coffee
 file.
 
-If the namespace is used, the code will shared as inline script. Otherwise it
-will be concatenated in to a single js file in production mode.
+Code will be shared where the regexp matches on request.url or on every page if
+it is omitted.
 
-Script is shared if the given namespace regexp matches on request.url. If
-namespace regexp is omitted the script will be shared on every page.
+- **returns** undefined
+
+### server.scriptURL(url to a .js file | array of urls)
+
+Executes given Javascript URL in the browser as soon as it is loaded. Will be
+executed before any other code.
 
 - **returns** undefined
 
@@ -213,7 +209,8 @@ Scripts will be rendered in following order in the browser.
 1. response.share()
 1. response.exec()
 
-Production mode concatenates 2-4 levels into a single request.
+Production mode concatenates 2-5 levels into a single request. Rest will be
+server as inline scripts.
 
 ### Settings
 
