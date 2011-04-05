@@ -28,6 +28,11 @@ app.share nested:
     second_b: "b"
 
 
+app.share /^\/subpage.*/, ns_shared_on_subpage: true
+
+app.exec /^\/subpage.*/, ->
+  window.NS_EXEC_ON_SUBPAGE = true
+
 
 app.exec ->
   window.GLOBAL_VAR = true
@@ -37,7 +42,7 @@ app.exec ->
 app.get "/", (req, res) ->
   res.share test_res_basic_share: true
   res.exec ->
-    window.GLOBAL_VAR_EXEC = true
+    window.GLOBAL_RES_EXEC = true
 
   res.render 'index.jade',
     title: "Testing"

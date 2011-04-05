@@ -73,33 +73,57 @@ head tag of your layout template.
 
 ## Code sharing API
 
-###  addCodeSharingTo()
+###  addCodeSharingTo(expressServerObj)
 
 Extends Express server object and response objects with *share* and *exec*
 methods.
 
-- **params** Express server object
+
 - **returns** Express server object
 
-### server.share()
+### server.share([namespace regexp], map of variables)
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
 or the context won't be same in the browser. Cannot handle objects with
 circular references.
 
-- **params** variable name, object
-- or **params** map of variable names and objects
+Variable is shared if the given namespace regexp matches on request.url. If
+namespace regexp is omitted variables will shared on every page.
+
+server.share will be set only once on server startup. So you can only use this
+to share general purpose functions and variables. Use response.share to share
+variables more dynamically.
+
 - **returns** shared object
 
-### server.exec()
+#### Examples
 
-Executes the given function at every page load in the browser as soon as it is
-loaded. Variables shared with server.share() can be found from the parent scope
-or from from the context of the function (ie. this-variable).
+    server.share({onEveryPage: "This string will be found on every page"});
+    server.share(/^\/subpage.*/, {subPageVariable: "This string is found only from /subpage and its sub pages"});
 
-- **params** function
 
+
+### server.exec([namespace regexp], function)
+
+Executes the given function at page load in the browser as soon as it is loaded
+if the given namespace regexp matches. If namespace is omitted the function
+will be executed on every page.
+
+Variables shared with server.share() can be found from the parent scope or from
+from the context of the function (ie.  this-variable).
+
+- **returns** shared function
+
+#### Examples
+
+    server.exec(function()
+        alert(onEveryPage); 
+    });
+
+    server.exec(/^\/subpage.*/, function()
+        alert(subPageVariable); 
+    });
 
 ### server.scriptURL()
 
@@ -109,13 +133,11 @@ executed before any other code.
 - **params** url to a .js file | array of urls
 
 
-### response.share()
+### response.share(map of variables)
 
-Same as server.share(), but shared object(s) will be sent to browser only with
-this response as inline script.
+Same as server.share(), but shared object(s) will be dynamically sent to
+browser only with this response as inline script.
 
-- **params** variable name, object
-- or **params** map of variable names and objects
 - **returns** shared object
 
 ### response.exec()

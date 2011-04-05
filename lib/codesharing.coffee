@@ -54,20 +54,19 @@ isolatedCodeFrom = (vars, execs, context) ->
   code = "(function(){\n"
 
   # variables are not always set when using reponses
-  if vars?
-    # Declare local variables
-    variableNames = (name for name, _ of vars).join(", ")
+  # Declare local variables
+  variableNames = (name for name, _ of vars).join(", ")
 
+  if variableNames.length > 0
     code += "var #{ removeTrailingComma variableNames };\n"
 
     # Set local and context variables
     for name, variable of vars
       code += "#{ name } = this.#{ name } = #{ codeFrom variable };\n"
 
-  if execs?
-    # Create immediately functions from the function array
-    for fn in execs
-      code += executableFrom fn, context
+  # Create immediately functions from the function array
+  for fn in execs
+    code += executableFrom fn, context
 
   # Set context of this closure. ie. "this"
   code += "}).call(#{ context });\n"
@@ -219,7 +218,6 @@ exports.addCodeSharingTo = (app) ->
   # Works like app.share but for only this one response
   responseShare = (name, value) ->
     # "this" is the response object
-    this.localVars ?= {}
     localVars = this.localVars
     if typeof name is "object"
       for k, v of name
@@ -231,13 +229,14 @@ exports.addCodeSharingTo = (app) ->
   # Same as responseShare but for executable code
   responseExec = (fn) ->
     # "this" is the response object
-    localExecs = this.localExecs ?= []
-    localExecs.push fn
+    this.localExecs.push fn
 
 
 
   # Middleware that adds share & exec methods to response objects.
   app.use (req, res, next) ->
+    res.localVars ?= {}
+    res.localExecs ?= []
     res.share = responseShare
     res.exec = responseExec
     next()
@@ -250,9 +249,24 @@ exports.addCodeSharingTo = (app) ->
   app.dynamicHelpers renderScriptTags: (req, res) ->
     return ->
       bundle = getScriptTags()
+
+      for ns in nsClientExecs
+        if ns.matcher.exec req.url
+          # ns execs will be executed before reponse execs
+          res.localExecs.unshift ns.fn
+
+      for ns in nsClientVars
+        if ns.matcher.exec req.url
+          for k, v of ns.obj
+            # ns vars cannot override locals
+            res.localVars[k] = v if not res.localVars[k]
+          
+
+
       localCode = isolatedCodeFrom res.localVars, res.localExecs, "_SC"
       bundle += wrapInScriptTagInline localCode
       # TODO: get namespaced code
+
       return  bundle
 
 
@@ -270,8 +284,7 @@ exports.addCodeSharingTo = (app) ->
       for k, v of obj
         clientVars[k] = v
     else
-      for k, v of obj
-        nsClientVars[ns][k] = v
+      nsClientVars.push matcher: ns, obj: obj
 
     return obj
 
@@ -279,13 +292,16 @@ exports.addCodeSharingTo = (app) ->
 
 
 
-
-
-
   # Extends Express server object with function that will executed given function in
   # the browser as soon as it is loaded.
-  app.exec = (fn) ->
-    clientExecs.push(fn)
+  app.exec = (ns, fn) ->
+    fn = arguments[arguments.length-1]
+
+    if ns is fn
+      clientExecs.push(fn)
+    else
+      nsClientExecs.push matcher: ns, fn: fn
+
     return fn
 
 
