@@ -86,7 +86,7 @@ methods.
 
 - **returns** Express server object
 
-### server.share([namespace regexp,] map of variables)
+### server.share([namespace regexp, ] map of variables)
 
 Shares almost any given Javascript object with the browser. Will work for
 functions too, but **make sure that you will use only pure functions**. Scope
@@ -109,7 +109,7 @@ variables more dynamically.
 
 
 
-### server.exec([namespace regexp,] function)
+### server.exec([namespace regexp, ] function)
 
 Executes the given function at page load in the browser as soon as it is loaded
 if the given namespace regexp matches. If namespace is omitted the function
@@ -123,14 +123,14 @@ it is omitted.
 
 - **returns** shared function
 
-#### Examples
+#### Example
 
     server.exec(function()
-        alert(onEveryPage); 
+        alert(onEveryPage);
     });
 
     server.exec(/^\/subpage.*/, function()
-        alert(subPageVariable); 
+        alert(subPageVariable);
     });
 
 
@@ -145,16 +145,16 @@ it is omitted.
 
 - **returns** undefined
 
+#### Example
+
+    server.shareFs(/^\/subpage.*/, __dirname + "myscript.js");
+
 ### server.scriptURL(url to a .js file | array of urls)
 
 Executes given Javascript URL in the browser as soon as it is loaded. Will be
 executed before any other code.
 
 - **returns** undefined
-
-#### Examples
-
-    server.shareFs(/^\/subpage.*/, __dirname + "myscript.js");
 
 
 ### response.share(map of variables)
@@ -165,10 +165,10 @@ browser only with this response as inline script.
 - **returns** shared object
 
 
-### response.exec(fucntion)
+### response.exec(function)
 
 Same as server.exec(), but the given function will be executed only with this
-response as inline script. 
+response as inline script.
 
 Function can access variables shared with response.share() from parent scope,
 but not the variables shared by server.share(). Those can be accessed from the
@@ -188,14 +188,14 @@ it as raw html in your layout template.
 views/layout.jade
 
 <pre>
-!!! 5                                
-html(lang="en")                      
-  head                               
-    title= title                     
-    !{renderScriptTags()}              
-  body                               
-    h1= title                        
-    #container !{body}               
+!!! 5
+html(lang="en")
+  head
+    title= title
+    !{renderScriptTags()}
+  body
+    h1= title
+    #container !{body}
 </pre>
 
 
