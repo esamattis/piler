@@ -40,7 +40,7 @@ var app = createServer();
 addCodeSharingTo(app);
 
 // Add external script to browser
-app.scriptURL("https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js");
+app.shareUrl("https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js");
 
 // Share isEmail with the browser
 app.share({isEmail: isEmail});
@@ -149,7 +149,7 @@ it is omitted.
 
     server.shareFs(/^\/subpage.*/, __dirname + "myscript.js");
 
-### server.scriptURL(url to a .js file | array of urls)
+### server.shareUrl(url to a .js file | array of urls)
 
 Executes given Javascript URL in the browser as soon as it is loaded. Will be
 executed before any other code.
@@ -203,7 +203,7 @@ html(lang="en")
 
 Scripts will be rendered in following order in the browser.
 
-1. server.scriptURL()
+1. server.shareUrl()
 1. Scripts automatically loaded from the filesystem in alphabetical order
 1. server.shareFs()
 1. server.share()

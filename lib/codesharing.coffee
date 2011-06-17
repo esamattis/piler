@@ -334,7 +334,7 @@ exports.addCodeSharingTo = (app) ->
 
   # Extends Express server object with function that will execute given
   # Javascript URL  in the browser as soon as it is loaded.
-  app.scriptURL = (obj) ->
+  app.shareUrl = (obj) ->
     if Array.isArray obj
       scriptURLs.unshift url for url in obj.reverse()
     else

@@ -9,6 +9,10 @@ app = express.createServer()
 addCodeSharingTo app
 
 
+
+
+
+
 app.configure ->
   app.set 'views', __dirname + '/views'
   app.set "home", "/Foo"
@@ -26,6 +30,17 @@ app.share nested:
   first:
     second_a: "a"
     second_b: "b"
+
+
+MyClass = (arg) ->
+  this.arg = arg
+MyClass.prototype.foo = ->
+  console.log 2345
+
+obj = new MyClass("secret")
+app.share 
+  obj: obj
+  MyClass: MyClass
 
 
 app.share /^\/subpage.*/, ns_shared_on_subpage: true
