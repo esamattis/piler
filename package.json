@@ -1,6 +1,6 @@
 {
     "name" : "express-share"
-    , "version": "0.1.0"
+    , "version": "0.1.1"
     , "author": "Esa-Matti Suuronen"
     , "main": "./lib/index"
     , "dependencies": {
@@ -9,8 +9,7 @@
         , "coffee-script": ""
     }
     , "devDependencies": {
-        "zombie": ""
-        , "vows": ""
+          "vows": ""
         , "supervisor": ""
     }
 }

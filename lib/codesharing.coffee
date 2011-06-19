@@ -22,7 +22,7 @@ startTime = getCurrentTimestamp()
 types =
 
   function: (fn) -> "#{ fn }"
-  string: (s) -> "\"#{ s }\""
+  string: (s) -> JSON.stringify s # Knows how to correctly serialize strings to String literals
   number: (n) -> n.toString()
   boolean: (n) -> n.toString()
 
@@ -120,11 +120,11 @@ exports.addCodeSharingTo = (app) ->
 
   # Array of client-side script names
   try
-    base = path.basename scriptDir
-    clientScriptsFs = ("#{ base }/#{ script }" for script in fs.readdirSync(scriptDir).sort())
+    clientScriptsFs = ("#{ scriptDir }/#{ script }" for script in fs.readdirSync(scriptDir).sort())
   catch err
     # Directory is just missing
     clientScriptsFs = []
+
 
   nsClientScriptsFs = []
 
@@ -182,7 +182,7 @@ exports.addCodeSharingTo = (app) ->
       # Client scripts on filesystem
       for  script in clientScriptsFs
         script = script.trim().replace(/\.coffee$/, ".js")
-        tags.push wrapInScriptTag "/managedjs/dev/#{ script }", true
+        tags.push wrapInScriptTag "/managedjs/dev/#{ path.basename script }", true
 
       # Embedded scripts
       tags.push wrapInScriptTag "/managedjs/embedded.js", true
@@ -212,6 +212,7 @@ exports.addCodeSharingTo = (app) ->
 
       for script in clientScriptsFs
         if script.match /\.js$/
+          console.log "CLIENT", script
           productionClientCode +=  fs.readFileSync(script).toString()
         else if script.match /\.coffee$/
           productionClientCode += coffeescript.compile fs.readFileSync(script).toString()
@@ -264,7 +265,6 @@ exports.addCodeSharingTo = (app) ->
       for ns in nsClientScriptsFs
         if ns.matcher.exec req.url
           bundle += wrapInScriptTagInline ns.code
-          
 
       for ns in nsClientExecs
         if ns.matcher.exec req.url
@@ -302,7 +302,7 @@ exports.addCodeSharingTo = (app) ->
 
     return obj
 
-  
+
   app.shareFs = (ns) ->
     filePath = arguments[arguments.length-1]
 
@@ -359,25 +359,31 @@ exports.addCodeSharingTo = (app) ->
       # modified timestamp. Does this really matter in development-mode?
 
       scriptName  = req.params[0]
+      for ourScript in clientScriptsFs
 
-      if  scriptName + ".js" in clientScriptsFs
-        fs.readFile "#{ scriptName }.js", (err, data) ->
-          if not err
-            res.send data, 'Content-Type': 'application/javascript'
-          else
+        # TODO; better test
+        if ourScript.indexOf(scriptName + ".js") isnt -1
+          fs.readFile ourScript, (err, data) ->
+            if not err
+              res.send data, 'Content-Type': 'application/javascript'
+            else
+                responseWith404 res, scriptName
+
+          return
+
+        # TODO; better test
+        else if ourScript.indexOf(scriptName + ".coffee") isnt -1
+          fs.readFile ourScript, (err, data) ->
+            if not err
+              res.send coffeescript.compile(data.toString())
+                , 'Content-Type': 'application/javascript'
+            else
               responseWith404 res, scriptName
+          return
 
-      else if scriptName + ".coffee" in clientScriptsFs
-        fs.readFile "#{ scriptName }.coffee", (err, data) ->
-          if not err
-            res.send coffeescript.compile(data.toString())
-              , 'Content-Type': 'application/javascript'
-          else
-            responseWith404 res, scriptName
-      else
-        responseWith404 res, scriptName
-              
-            
+      responseWith404 res, "not match: " + scriptName
+
+
 
 
 
