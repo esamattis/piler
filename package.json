@@ -1,16 +1,18 @@
 {
-    "name" : "express-share"
-    , "version": "0.1.1"
+    "name" : "piles"
+    , "version": "0.1.0"
     , "author": "Esa-Matti Suuronen"
     , "main": "./lib/index"
     , "dependencies": {
-        "socket.io": ""
-        , "express": ""
-        , "coffee-script": ""
+        "coffee-script": ""
+        , "underscore": ""
+        , "async": ""
     }
     , "devDependencies": {
           "vows": ""
         , "supervisor": ""
+        , "jade": ""
+        , "stylus": ""
     }
 }
 

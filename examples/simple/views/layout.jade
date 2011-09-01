@@ -1,7 +1,8 @@
 !!! 5
 html(lang="en")
   head
-    !{renderScriptTags()}
+    !{renderStyleTags()}
   body
     h1 Really Express
     #container !{body}
+    !{renderScriptTags("foo")}
