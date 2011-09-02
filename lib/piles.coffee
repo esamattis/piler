@@ -45,7 +45,7 @@ class BasePile
 
   constructor: (@name, @production) ->
     @files = []
-    @pile = null
+    @rawPile = null
     @urls = []
     @devMapping = {}
 
@@ -73,6 +73,9 @@ class BasePile
 
   readDev: (devpath, cb) ->
     filePath = @devMapping[devpath]
+
+    return cb new Error "No such dev file #{ devpath }" unless filePath
+
     fs.readFile filePath, (err, data) =>
       return cb err if err
       @getCompiler(filePath) data.toString(), (err, code) ->
@@ -131,7 +134,7 @@ class BasePile
 
   _computeHash: ->
     sum = crypto.createHash('sha1')
-    sum.update @pile
+    sum.update @rawPile
     @pileHash = sum.digest('hex')
 
 
@@ -165,7 +168,7 @@ class JSPile extends BasePile
   pileUp: (cb) ->
     # TODO: pile as cb param
     @_pileUpFiles (err, code) =>
-      @pile = @minify  @_pileObjecs() + code
+      @rawPile = @minify  @_pileObjecs() + code
       @_computeHash()
       cb?()
 
@@ -179,7 +182,7 @@ class CSSPile extends BasePile
 
   pileUp: ->
     @_pileUpFiles (err, code) =>
-      @pile = @minify code
+      @rawPile = @minify code
       @_computeHash()
 
 
@@ -238,17 +241,22 @@ class PileManager
 
     @addMiddleware app
 
-    # TODO: 404s!
-
     app.get @Type::urlRoot + ":filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
       console.log "need to get ", pileName
-      res.send @piles[pileName].pile, 'Content-Type': @contentType
+      pile = @piles[pileName]
+      if not pile
+        res.send "Cannot find pile #{ pileName }"
+      else
+        res.send pile.rawPile, 'Content-Type': @contentType
 
     app.get @Type::urlRoot + "dev/:name/:filename", (req, res) =>
       pile = @piles[req.params.name]
       pile.readDev req.params.filename, (err, code) =>
-        res.send code, 'Content-Type': @contentType
+        if err
+          res.send "#{ err }", 404
+        else
+          res.send code, 'Content-Type': @contentType
 
 
 
