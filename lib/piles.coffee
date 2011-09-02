@@ -4,30 +4,11 @@ crypto = require 'crypto'
 
 _ = require "underscore"
 async = require "async"
-coffeescript = require "coffee-script"
 
 {minify, beautify} = require "./minify"
 OB = require "./serialize"
+compilers = require "./compilers"
 
-compilers =
-  css: (code, cb) -> cb null, code
-  js: (code, cb) -> cb null, code
-  coffee: (code, cb) ->
-    try
-      cb null, coffeescript.compile code
-    catch e
-      cb e
-
-compilerExtensionMap =
-  coffee: "js"
-
-try
-  stylus = require "stylus"
-  compilers.styl = (code, cb) ->
-    stylus.render code, cb
-  compilerExtensionMap.styl = "css"
-catch e
-  console.log "No stylus", e
 
 extension = (filename) ->
   parts = filename.split "."
@@ -51,18 +32,17 @@ class BasePile
 
   pathToId: (path) ->
     path = path.replace /\//g, "-"
-    for ext, to of compilerExtensionMap
-      reg = new RegExp "\.#{ ext }$"
-      if reg.test path
-        return path + ".#{ to }"
+    newExt = @compilers[extension path]?.targetExt
+    if newExt
+        path + ".#{ newExt }"
+    else
+      path
 
-    path
-
-  shareFile: (filePath) ->
+  addFile: (filePath) ->
     @files.push filePath
     @devMapping[@pathToId filePath] = filePath
 
-  shareUrl: (url) ->
+  addUrl: (url) ->
     @urls.push url
 
   minify: (code) ->
@@ -73,7 +53,6 @@ class BasePile
 
   readDev: (devpath, cb) ->
     filePath = @devMapping[devpath]
-
     return cb new Error "No such dev file #{ devpath }" unless filePath
 
     fs.readFile filePath, (err, data) =>
@@ -85,7 +64,7 @@ class BasePile
     compiler = @compilers[extension filePath]
     if not compiler
       throw new Error "Could not find compiler for #{ filePath }"
-    compiler
+    compiler.render
 
   _pileUpFiles: (lastCb) ->
     # ugly as hell
@@ -152,21 +131,20 @@ class JSPile extends BasePile
     else
       ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
 
-  shareOb: (ob) ->
+  addOb: (ob) ->
     @objects.push ob
 
   _pileObjecs: ->
-    pile = ""
+    code = ""
     for ob in @objects
       for global, value of ob
-          pile += "window['#{ global }'] = #{ OB.stringify value };\n"
-      pile
+          code += "  w['#{ global }'] = #{ OB.stringify value };\n"
+      "(function(w) {\n#{code} }\n)(window);"
 
   wrapInTag: (uri) ->
     "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\"></script>"
 
   pileUp: (cb) ->
-    # TODO: pile as cb param
     @_pileUpFiles (err, code) =>
       @rawPile = @minify  @_pileObjecs() + code
       @_computeHash()
@@ -180,10 +158,11 @@ class CSSPile extends BasePile
   wrapInTag: (uri) ->
     "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\"/>"
 
-  pileUp: ->
+  pileUp: (cb) ->
     @_pileUpFiles (err, code) =>
-      @rawPile = @minify code
+      @rawPile = code
       @_computeHash()
+      cb?()
 
 
   getUrls: ->
@@ -214,13 +193,13 @@ class PileManager
       pile =  @piles[ns] = new @Type ns, @production
     pile
 
-  shareFile: defNs (ns, path) ->
+  addFile: defNs (ns, path) ->
     pile = @getPile ns
-    pile.shareFile path
+    pile.addFile path
 
-  shareUrl: defNs (ns, url) ->
+  addUrl: defNs (ns, url) ->
     pile = @getPile ns
-    pile.shareUrl url
+    pile.addUrl url
 
   pileUp: ->
     for name, pile of @piles
@@ -237,9 +216,9 @@ class PileManager
   bind: (app) ->
     app.on 'listening', =>
       @pileUp()
-    @addDynamicHelper app
+    @setDynamicHelpoer app
 
-    @addMiddleware app
+    @setMiddleware app
 
     app.get @Type::urlRoot + ":filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
@@ -254,7 +233,7 @@ class PileManager
       pile = @piles[req.params.name]
       pile.readDev req.params.filename, (err, code) =>
         if err
-          res.send "#{ err }", 404
+          res.send "error reading: #{ err }", 404
         else
           res.send code, 'Content-Type': @contentType
 
@@ -264,11 +243,11 @@ class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
 
-  shareOb: defNs (ns, ob) ->
+  addOb: defNs (ns, ob) ->
     pile = @getPile ns
-    pile.shareOb ob
+    pile.addOb ob
 
-  addDynamicHelper: (app) ->
+  setDynamicHelpoer: (app) ->
     app.dynamicHelpers renderScriptTags: (req, res) =>
       return =>
         bundle = @renderTags.apply this, arguments
@@ -276,12 +255,12 @@ class JSManager extends PileManager
           bundle += wrapInScriptTagInline executableFrom fn
         bundle
 
-  addMiddleware: (app) ->
+  setMiddleware: (app) ->
     responseExec = (fn) ->
       # "this" is the response object
       this._responseFns.push fn
 
-    # Middleware that adds share & exec methods to response objects.
+    # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
       res._responseFns ?= []
       res.exec = responseExec
@@ -291,12 +270,12 @@ class CSSManager extends PileManager
   Type: CSSPile
   contentType: "text/css"
 
-  addDynamicHelper: (app) ->
+  setDynamicHelpoer: (app) ->
     app.dynamicHelpers renderStyleTags: (req, res) =>
       return => @renderTags.apply this, arguments
 
 
-  addMiddleware: (app) ->
+  setMiddleware: (app) ->
 
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.
@@ -317,10 +296,10 @@ exports.createCSSManager = -> new CSSManager production
 if require.main is module
   m = new JSManager true
 
-  m.shareUrl "http://goo"
-  m.shareFile "foo", "/home/epeli/projects/node-pile/lib/codesharing.coffee"
-  m.shareFile "bar", "/home/epeli/projects/node-pile/lib/serialize.coffee"
-  m.shareFile "/home/epeli/projects/node-pile/lib/minify.coffee"
+  m.addUrl "http://goo"
+  m.addFile "foo", "/home/epeli/projects/node-pile/lib/codesharing.coffee"
+  m.addFile "bar", "/home/epeli/projects/node-pile/lib/serialize.coffee"
+  m.addFile "/home/epeli/projects/node-pile/lib/minify.coffee"
 
   m.pileUp()
   console.log m.renderTags("bar")

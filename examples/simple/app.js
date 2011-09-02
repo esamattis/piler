@@ -16,17 +16,20 @@ js.bind(app);
 css.bind(app);
 
 
-css.shareFile(__dirname + "/style.css");
-css.shareFile(__dirname + "/style.styl");
+css.addFile(__dirname + "/style.css");
+css.addFile(__dirname + "/style.styl");
+css.addFile(__dirname + "/style.less");
 
 
-js.shareOb({FOO: "bar"});
-js.shareUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+js.addOb({FOO: "bar"});
+js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
 
-js.shareFile(__dirname + "/client/hello.js");
-js.shareFile(__dirname + "/client/hello.coffee");
-js.shareFile("foo", __dirname + "/client/foo.coffee");
-js.shareFile("bar", __dirname + "/client/bar.coffee");
+js.addFile(__dirname + "/client/underscore.js");
+js.addFile(__dirname + "/client/backbone.js");
+js.addFile(__dirname + "/client/hello.js");
+js.addFile(__dirname + "/client/hello.coffee");
+js.addFile("foo", __dirname + "/client/foo.coffee");
+js.addFile("bar", __dirname + "/client/bar.coffee");
 
 app.get("/", function(req, res){
 

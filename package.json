@@ -6,6 +6,7 @@
     , "dependencies": {
         "coffee-script": ""
         , "underscore": ""
+        , "uglify-js": ""
         , "async": ""
     }
     , "devDependencies": {
@@ -13,6 +14,7 @@
         , "supervisor": ""
         , "jade": ""
         , "stylus": ""
+        , "less": ""
     }
 }
 

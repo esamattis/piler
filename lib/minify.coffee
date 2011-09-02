@@ -4,6 +4,7 @@ try
   uglify = require("uglify-js")
 catch error
   # uglify-js' packaging currently sucks. Add fallback.
+  console.log "no uglify", error
   exports.minify = (code) -> code
   exports.beautify = (code) -> code
 
