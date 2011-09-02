@@ -210,7 +210,9 @@ class PileManager
     namespaces.unshift "_global"
     tags = ""
     for ns in namespaces
-      tags += @piles[ns].renderTags()
+      pile = @piles[ns]
+      if pile
+        tags += pile.renderTags()
     tags
 
   bind: (app) ->
@@ -218,7 +220,9 @@ class PileManager
       @pileUp()
     @setDynamicHelpoer app
 
+
     @setMiddleware app
+
 
     app.get @Type::urlRoot + ":filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
@@ -228,6 +232,7 @@ class PileManager
         res.send "Cannot find pile #{ pileName }"
       else
         res.send pile.rawPile, 'Content-Type': @contentType
+
 
     app.get @Type::urlRoot + "dev/:name/:filename", (req, res) =>
       pile = @piles[req.params.name]
@@ -251,8 +256,9 @@ class JSManager extends PileManager
     app.dynamicHelpers renderScriptTags: (req, res) =>
       return =>
         bundle = @renderTags.apply this, arguments
-        for fn in res._responseFns
-          bundle += wrapInScriptTagInline executableFrom fn
+        if res._responseFns
+          for fn in res._responseFns
+            bundle += wrapInScriptTagInline executableFrom fn
         bundle
 
   setMiddleware: (app) ->
