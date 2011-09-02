@@ -5,19 +5,40 @@ crypto = require 'crypto'
 _ = require "underscore"
 async = require "async"
 coffeescript = require "coffee-script"
-stylus = require "stylus"
 
 {minify, beautify} = require "./minify"
-ob = require "./serialize"
+OB = require "./serialize"
 
+compilers =
+  css: (code, cb) -> cb null, code
+  js: (code, cb) -> cb null, code
+  coffee: (code, cb) ->
+    try
+      cb null, coffeescript.compile code
+    catch e
+      cb e
+
+compilerExtensionMap =
+  coffee: "js"
+
+try
+  stylus = require "stylus"
+  compilers.styl = (code, cb) ->
+    stylus.render code, cb
+  compilerExtensionMap.styl = "css"
+catch e
+  console.log "No stylus", e
 
 extension = (filename) ->
   parts = filename.split "."
   parts[parts.length-1]
 
-
+wrapInScriptTagInline = (code) ->
+  "<script type=\"text/javascript\" >\n#{ code }\n</script>\n"
 
 class BasePile
+
+  compilers: compilers
 
   urlRoot: "/piles"
   production: false
@@ -29,22 +50,28 @@ class BasePile
     @devMapping = {}
 
   pathToId: (path) ->
-    path.replace(/\//g, "-")
+    path = path.replace /\//g, "-"
+    for ext, to of compilerExtensionMap
+      reg = new RegExp "\.#{ ext }$"
+      if reg.test path
+        return path + ".#{ to }"
 
-  shareFs: (filePath) ->
+    path
+
+  shareFile: (filePath) ->
     @files.push filePath
     @devMapping[@pathToId filePath] = filePath
 
   shareUrl: (url) ->
     @urls.push url
 
-  minify: (pile) ->
+  minify: (code) ->
     if @production
-      minify pile
+      minify code
     else
-      pile
+      code
 
-  read: (devpath, cb) ->
+  readDev: (devpath, cb) ->
     filePath = @devMapping[devpath]
     fs.readFile filePath, (err, data) =>
       return cb err if err
@@ -73,8 +100,9 @@ class BasePile
           jobs.compiled = compiled
           done null, compiled
     , (err, result) =>
-      @pile = result.join("\n")
-      lastCb()
+      return cb err if err
+      pile = result.join("\n")
+      lastCb null, pile
 
 
 
@@ -83,6 +111,10 @@ class BasePile
     for url in @urls
       tags += @wrapInTag url
       tags += "\n"
+
+    # TODO: move to JSPile
+    if not @production and @_pileObjecs
+      tags += wrapInScriptTagInline @_pileObjecs()
 
     for path in @getUrls()
       tags += @wrapInTag path
@@ -103,13 +135,9 @@ class BasePile
     @pileHash = sum.digest('hex')
 
 
-class ScriptPile extends BasePile
-  urlRoot: "/piles/script/"
+class JSPile extends BasePile
+  urlRoot: "/piles/js/"
 
-  compilers:
-    js: (code, cb) -> cb null, code
-    # TODO: exception to cb
-    coffee: (code, cb) -> cb null, coffeescript.compile code
 
   constructor: ->
     super
@@ -126,37 +154,32 @@ class ScriptPile extends BasePile
 
   _pileObjecs: ->
     pile = ""
-    for global, value of @objects
-        pile += "window['#{ global }'] = #{ ob.stringify };\n"
-    pile
+    for ob in @objects
+      for global, value of ob
+          pile += "window['#{ global }'] = #{ OB.stringify value };\n"
+      pile
 
   wrapInTag: (uri) ->
     "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\"></script>"
 
   pileUp: (cb) ->
-    pile = ""
-    pile += @_pileObjecs()
-    @_pileUpFiles =>
-      @pile = @minify @pile
+    # TODO: pile as cb param
+    @_pileUpFiles (err, code) =>
+      @pile = @minify  @_pileObjecs() + code
       @_computeHash()
-      console.log "piled", @pile
       cb?()
 
-class StylePile extends BasePile
-  urlRoot: "/piles/style/"
+class CSSPile extends BasePile
+  urlRoot: "/piles/css/"
 
-  compilers:
-    css: (code, cb) -> cb null, code
-    styl: (code, cb) ->
-      stylus.render code, cb
 
 
   wrapInTag: (uri) ->
     "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\"/>"
 
   pileUp: ->
-    @_pileUpFiles =>
-      @pile = @minify @pile
+    @_pileUpFiles (err, code) =>
+      @pile = @minify code
       @_computeHash()
 
 
@@ -164,7 +187,7 @@ class StylePile extends BasePile
     if @production
       return [ "#{ @urlRoot }#{ @name }.css" ]
     else
-      ("#{ @urlRoot }dev/#{ path }" for path in @files)
+      ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
 
 defNs = (fn) ->
   (ns, path) ->
@@ -174,7 +197,7 @@ defNs = (fn) ->
     fn.call this, ns, path
 
 
-class AssetManager
+class PileManager
 
   Type: null
 
@@ -188,9 +211,9 @@ class AssetManager
       pile =  @piles[ns] = new @Type ns, @production
     pile
 
-  shareFs: defNs (ns, path) ->
+  shareFile: defNs (ns, path) ->
     pile = @getPile ns
-    pile.shareFs path
+    pile.shareFile path
 
   shareUrl: defNs (ns, url) ->
     pile = @getPile ns
@@ -201,6 +224,7 @@ class AssetManager
       pile.pileUp()
 
   renderTags: (namespaces...) ->
+    # Always render global pile
     namespaces.unshift "_global"
     tags = ""
     for ns in namespaces
@@ -219,18 +243,22 @@ class AssetManager
     app.get @Type::urlRoot + ":filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
       console.log "need to get ", pileName
-      res.send @piles[pileName].pile, 'Content-Type': 'application/javascript'
+      res.send @piles[pileName].pile, 'Content-Type': @contentType
 
     app.get @Type::urlRoot + "dev/:name/:filename", (req, res) =>
       pile = @piles[req.params.name]
-      pile.read req.params.filename, (err, code) =>
+      pile.readDev req.params.filename, (err, code) =>
         res.send code, 'Content-Type': @contentType
 
 
 
-class ScriptManager extends AssetManager
-  Type: ScriptPile
+class JSManager extends PileManager
+  Type: JSPile
   contentType: "application/javascript"
+
+  shareOb: defNs (ns, ob) ->
+    pile = @getPile ns
+    pile.shareOb ob
 
   addDynamicHelper: (app) ->
     app.dynamicHelpers renderScriptTags: (req, res) =>
@@ -251,8 +279,8 @@ class ScriptManager extends AssetManager
       res.exec = responseExec
       next()
 
-class StyleManager extends AssetManager
-  Type: StylePile
+class CSSManager extends PileManager
+  Type: CSSPile
   contentType: "text/css"
 
   addDynamicHelper: (app) ->
@@ -268,8 +296,6 @@ executableFrom = (fn, context) ->
   return "(#{ fn })();\n" unless context
   return "(#{ fn }).call(#{ context });\n"
 
-wrapInScriptTagInline = (code) ->
-  "<script type=\"text/javascript\" >\n#{ code }\n</script>\n"
 
 
 
@@ -277,16 +303,16 @@ wrapInScriptTagInline = (code) ->
 
 production = process.env.NODE_ENV == "production"
 
-exports.style = new StyleManager production
-exports.script = new ScriptManager production
+exports.createJSManager = -> new JSManager production
+exports.createCSSManager = -> new CSSManager production
 
 if require.main is module
-  m = new ScriptManager true
+  m = new JSManager true
 
-  m.shareUrl "http://gosdf"
-  m.shareFs "foo", "/home/epeli/projects/node-pile/lib/codesharing.coffee"
-  m.shareFs "bar", "/home/epeli/projects/node-pile/lib/serialize.coffee"
-  m.shareFs "/home/epeli/projects/node-pile/lib/minify.coffee"
+  m.shareUrl "http://goo"
+  m.shareFile "foo", "/home/epeli/projects/node-pile/lib/codesharing.coffee"
+  m.shareFile "bar", "/home/epeli/projects/node-pile/lib/serialize.coffee"
+  m.shareFile "/home/epeli/projects/node-pile/lib/minify.coffee"
 
   m.pileUp()
   console.log m.renderTags("bar")

@@ -2,6 +2,8 @@
 var createServer = require("express").createServer;
 
 var piles = require("../../index");
+var js = piles.createJSManager();
+var css = piles.createCSSManager();
 
 
 function isEmail(s) {
@@ -10,21 +12,26 @@ function isEmail(s) {
 
 var app = createServer();
 
-piles.script.bind(app);
-piles.style.bind(app);
+js.bind(app);
+css.bind(app);
 
-piles.style.shareFs(__dirname + "/style.css");
-piles.style.shareFs(__dirname + "/style.styl");
 
-piles.script.shareFs(__dirname + "/client/hello.js");
-piles.script.shareFs(__dirname + "/client/hello.coffee");
-piles.script.shareFs("foo", __dirname + "/client/foo.coffee");
-piles.script.shareFs("bar", __dirname + "/client/bar.coffee");
+css.shareFile(__dirname + "/style.css");
+css.shareFile(__dirname + "/style.styl");
+
+
+js.shareOb({FOO: "bar"});
+js.shareUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+
+js.shareFile(__dirname + "/client/hello.js");
+js.shareFile(__dirname + "/client/hello.coffee");
+js.shareFile("foo", __dirname + "/client/foo.coffee");
+js.shareFile("bar", __dirname + "/client/bar.coffee");
 
 app.get("/", function(req, res){
 
   res.exec(function() {
-     console.log("res exec hello");
+     console.log("res exec hello", FOO);
   });
 
   res.render("index.jade");
