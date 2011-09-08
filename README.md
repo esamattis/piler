@@ -15,6 +15,7 @@ Piles is written following principles in mind:
   
 ... in progress ...
 
+See this [example](https://github.com/epeli/node-piles/blob/master/examples/simple/app.js) before we get solid documentation here.
 
 
 # Contact
