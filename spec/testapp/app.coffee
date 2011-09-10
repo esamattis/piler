@@ -12,6 +12,7 @@ app.configure ->
 js.bind app
 css.bind app
 
+
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile __dirname + "/stylesheets/style.styl"
 css.addFile __dirname + "/stylesheets/style.less"
@@ -27,6 +28,13 @@ js.addFile __dirname + "/clientscripts/global.coffee"
 
 js.addFile "mynamespace", __dirname + "/clientscripts/namespace.js"
 
+js.liveUpdate css
+
+js.addExec ->
+  window["js exec"] = true
+
+js.addExec "mynamespace", ->
+  window["namespace js exec"] = true
 
 app.get "/namespace", (req, res) ->
   res.render "namespace.jade",

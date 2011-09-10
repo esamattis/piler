@@ -40,6 +40,9 @@ for type, port of servers then do (type, port) ->
     it "addOb adds global variables", ->
       expect(@browser.window["addOb global"]).toEqual true
 
+    it "js.addExec gets executed", ->
+      expect(@browser.window["js exec"]).toEqual true
+
     it "res.exec gets executed", ->
       expect(@browser.window["response exec"]).toEqual true
 
@@ -60,6 +63,8 @@ for type, port of servers then do (type, port) ->
     it "We have also global js", ->
       expect(@browser.window["js fs"]).toEqual true
 
+    it "namespaced js.addExec gets executed", ->
+      expect(@browser.window["namespace js exec"]).toEqual true
 
   describe "CSS assets in #{ type } server", ->
 

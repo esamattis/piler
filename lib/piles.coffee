@@ -31,12 +31,19 @@ class BasePile
     @devMapping = {}
 
   pathToId: (path) ->
-    path = path.replace /\//g, "-"
+    sum = crypto.createHash('sha1')
+    sum.update path
+
     newExt = @compilers[extension path]?.targetExt
+    filename = _.last path.split("/")
     if newExt
-        path + ".#{ newExt }"
-    else
-      path
+        filename = filename + ".#{ newExt }"
+
+    # Should be unique enough. Matters only if user has assets with same
+    # filename
+    id = sum.digest('hex').substring 5, 0
+
+    id + "-" + filename
 
   addFile: (filePath) ->
     if @files.indexOf(filePath) is -1
@@ -96,16 +103,21 @@ class BasePile
       tags += @wrapInTag url
       tags += "\n"
 
-    # TODO: move to JSPile
-    if not @production and @_pileObjecs
-      tags += wrapInScriptTagInline @_pileObjecs()
+    tags += @extraTags()
 
-    for path in @getUrls()
-      tags += @wrapInTag path
+
+    if @production
+      tags += @wrapInTag @getProductionUrl()
       tags += "\n"
+    else
+      for path in @files
+        tags += @wrapInTag @convertToDevUrl(path), "id=\"#{ @pathToId path }\""
+        tags += "\n"
+
 
     tags
 
+  extraTags: -> ""
 
   getTagKey: ->
     if @production
@@ -118,6 +130,8 @@ class BasePile
     sum.update @rawPile
     @pileHash = sum.digest('hex')
 
+  convertToDevUrl: (path) ->
+    "#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }"
 
 class JSPile extends BasePile
   urlRoot: "/piles/js/"
@@ -126,25 +140,46 @@ class JSPile extends BasePile
   constructor: ->
     super
     @objects = []
+    @execs = []
 
-  getUrls: ->
-    if @production
-      return [ "#{ @urlRoot }min/#{ @name }.js" ]
-    else
-      ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
+
+  getProductionUrl: ->
+    "#{ @urlRoot }min/#{ @name }.js"
 
   addOb: (ob) ->
     @objects.push ob
 
+  addExec: (fn) ->
+    @objects.push _exec: fn
+
+  extraTags: ->
+    tags = ""
+
+    # in production these will be added during pileUp.  Objects don't have a
+    # file so in development we just add them inlice
+    if not @production
+      tags += wrapInScriptTagInline @_pileObjecs()
+      tags += "\n"
+
+    tags
+
   _pileObjecs: ->
     code = ""
+
     for ob in @objects
       for global, value of ob
-          code += "  w['#{ global }'] = #{ OB.stringify value };\n"
-      "(function(w) {\n#{code} }\n)(window);"
+        if global is "_exec"
+          code += executableFrom value
+        else
+          code += "  window['#{ global }'] = #{ OB.stringify value };\n"
 
-  wrapInTag: (uri) ->
-    "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\"></script>"
+    "(function() {\n#{code} }\n)();"
+
+
+
+
+  wrapInTag: (uri, extra="") ->
+    "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } ></script>"
 
   pileUp: (cb) ->
     @_pileUpFiles (err, code) =>
@@ -157,8 +192,8 @@ class CSSPile extends BasePile
 
 
 
-  wrapInTag: (uri) ->
-    "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\"/>"
+  wrapInTag: (uri, extra="") ->
+    "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } />"
 
   pileUp: (cb) ->
     @_pileUpFiles (err, code) =>
@@ -167,11 +202,8 @@ class CSSPile extends BasePile
       cb?()
 
 
-  getUrls: ->
-    if @production
-      return [ "#{ @urlRoot }min/#{ @name }.css" ]
-    else
-      ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
+  getProductionUrl: ->
+    "#{ @urlRoot }min/#{ @name }.css"
 
 defNs = (fn) ->
   (ns, path) ->
@@ -218,6 +250,9 @@ class PileManager
     tags
 
   bind: (app) ->
+
+    @app = app
+
     app.on 'listening', =>
       @pileUp()
     @setDynamicHelper app
@@ -253,14 +288,17 @@ class JSManager extends PileManager
     pile = @getPile ns
     pile.addOb ob
 
+  addExec: defNs (ns, fn) ->
+    pile = @getPile ns
+    pile.addExec fn
+
   setDynamicHelper: (app) ->
-    app.dynamicHelpers renderScriptTags: (req, res) =>
-      return =>
-        bundle = @renderTags.apply this, arguments
-        if res._responseFns
-          for fn in res._responseFns
-            bundle += wrapInScriptTagInline executableFrom fn
-        bundle
+    app.dynamicHelpers renderScriptTags: (req, res) => =>
+      bundle = @renderTags.apply this, arguments
+      if res._responseFns
+        for fn in res._responseFns
+          bundle += wrapInScriptTagInline executableFrom fn
+      bundle
 
   setMiddleware: (app) ->
     responseExec = (fn) ->
@@ -292,7 +330,8 @@ executableFrom = (fn, context) ->
 
 
 
-exports.production = production = process.env.NODE_ENV == "production"
+
+exports.production = production = process.env.NODE_ENV is "production"
 
 exports.CSSPile = CSSPile
 exports.JSPile = JSPile

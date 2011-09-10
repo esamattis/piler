@@ -15,6 +15,7 @@ var app = createServer();
 js.bind(app);
 css.bind(app);
 
+js.liveUpdate css
 
 css.addFile(__dirname + "/style.css");
 css.addFile(__dirname + "/style.styl");
@@ -30,6 +31,7 @@ js.addFile(__dirname + "/client/hello.js");
 js.addFile(__dirname + "/client/hello.coffee");
 js.addFile("foo", __dirname + "/client/foo.coffee");
 js.addFile("bar", __dirname + "/client/bar.coffee");
+
 
 app.get("/", function(req, res){
 
