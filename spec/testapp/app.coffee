@@ -4,8 +4,6 @@ piles = require("../../index")
 js = piles.createJSManager()
 css = piles.createCSSManager()
 
-isEmail = (s) ->
-  not not s.match(/.\w+@\w+\.\w/)
 
 app = express.createServer()
 app.configure ->

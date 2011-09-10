@@ -24,7 +24,7 @@ for type, port of servers
       it "Can share plain js files from fs", ->
         expect(@browser.window["js fs"]).toEqual true
 
-      it "Coffee script files gets compiled transparently", ->
+      it "Coffee script files get compiled transparently", ->
         expect(@browser.window["coffee fs"]).toEqual true
 
       it "addOb adds global variables", ->
