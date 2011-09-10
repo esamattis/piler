@@ -65,7 +65,6 @@ for type, port of servers then do (type, port) ->
 
     beforeEach fetchPage "/"
 
-    # TODO: how to test that css compiled correctly? Or the href attrs even point to something.
     it "We have css links", ->
       $ = @browser.window.jQuery
       expect($("link[rel='stylesheet']").size()).toBeGreaterThan 0
