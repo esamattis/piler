@@ -9,13 +9,12 @@ servers =
 for type, port of servers
   do (type, port) ->
 
-    fetchPage = (path) ->
-      ->
-        jasmine.asyncSpecWait()
-        @browser = new zombie.Browser()
-        @browser.visit "http://localhost:#{ port }#{ path }", (err, browser) ->
-          throw err if err
-          jasmine.asyncSpecDone()
+    fetchPage = (path) -> ->
+      jasmine.asyncSpecWait()
+      @browser = new zombie.Browser()
+      @browser.visit "http://localhost:#{ port }#{ path }", (err, browser) ->
+        throw err if err
+        jasmine.asyncSpecDone()
 
     describe "JS assets in #{ type } server", ->
 
