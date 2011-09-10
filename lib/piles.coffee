@@ -226,7 +226,6 @@ class PileManager
 
     app.get @Type::urlRoot + ":filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
-      console.log "need to get ", pileName
       pile = @piles[pileName]
       if not pile
         res.send "Cannot find pile #{ pileName }"
@@ -291,24 +290,10 @@ executableFrom = (fn, context) ->
 
 
 
-
-
-
 production = process.env.NODE_ENV == "production"
 
 exports.createJSManager = -> new JSManager production
 exports.createCSSManager = -> new CSSManager production
-
-if require.main is module
-  m = new JSManager true
-
-  m.addUrl "http://goo"
-  m.addFile "foo", "/home/epeli/projects/node-pile/lib/codesharing.coffee"
-  m.addFile "bar", "/home/epeli/projects/node-pile/lib/serialize.coffee"
-  m.addFile "/home/epeli/projects/node-pile/lib/minify.coffee"
-
-  m.pileUp()
-  console.log m.renderTags("bar")
 
 
 

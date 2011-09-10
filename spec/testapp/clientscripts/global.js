@@ -1,0 +1,2 @@
+
+window["js fs"] = true;

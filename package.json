@@ -18,7 +18,8 @@
         , "async": ""
     }
     , "devDependencies": {
-          "vows": ""
+          "jasmine-node": ""
+        , "zombie": ""
         , "supervisor": ""
         , "jade": ""
         , "stylus": ""

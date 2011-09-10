@@ -1,0 +1,3 @@
+
+window["coffee fs"] = true
+
