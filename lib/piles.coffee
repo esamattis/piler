@@ -39,11 +39,13 @@ class BasePile
       path
 
   addFile: (filePath) ->
-    @files.push filePath
-    @devMapping[@pathToId filePath] = filePath
+    if @files.indexOf(filePath) is -1
+      @files.push filePath
+      @devMapping[@pathToId filePath] = filePath
 
   addUrl: (url) ->
-    @urls.push url
+    if @urls.indexOf(url) is -1
+      @urls.push url
 
   minify: (code) ->
     if @production
@@ -290,7 +292,12 @@ executableFrom = (fn, context) ->
 
 
 
-production = process.env.NODE_ENV == "production"
+exports.production = production = process.env.NODE_ENV == "production"
+
+exports.CSSPile = CSSPile
+exports.JSPile = JSPile
+exports.JSManager = JSManager
+exports.CSSManager = CSSManager
 
 exports.createJSManager = -> new JSManager production
 exports.createCSSManager = -> new CSSManager production
