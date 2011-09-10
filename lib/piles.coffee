@@ -129,7 +129,7 @@ class JSPile extends BasePile
 
   getUrls: ->
     if @production
-      return [ "#{ @urlRoot }#{ @name }.js" ]
+      return [ "#{ @urlRoot }min/#{ @name }.js" ]
     else
       ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
 
@@ -169,7 +169,7 @@ class CSSPile extends BasePile
 
   getUrls: ->
     if @production
-      return [ "#{ @urlRoot }#{ @name }.css" ]
+      return [ "#{ @urlRoot }min/#{ @name }.css" ]
     else
       ("#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }" for path in @files)
 
@@ -226,7 +226,7 @@ class PileManager
     @setMiddleware app
 
 
-    app.get @Type::urlRoot + ":filename", (req, res) =>
+    app.get @Type::urlRoot + "min/:filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
       pile = @piles[pileName]
       if not pile
