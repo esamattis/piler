@@ -25,6 +25,8 @@
         , "stylus": ""
         , "nib": ""
         , "less": ""
+        , "request": ""
+        , "csslint": ""
     }
 }
 

@@ -1,13 +1,12 @@
 
-{JSPile, CSSPile} = require "../lib/piles"
+{JSPile, CSSPile, JSManager, CSSManager} = require "../lib/piles"
 
 for Pile in [JSPile, CSSPile] then do (Pile) ->
 
-
-  describe "addFile works as expected (#{ Pile::urlRoot })", ->
+  describe "addFile works as expected in #{ Pile.name }", ->
     dummyPath = "/foo/bar"
 
-    it "Pile addFile cannot make duplicates", ->
+    it "Pile addFile adds up to one file", ->
       js = new Pile
       js.addFile dummyPath
       expect(js.files.length).toBe 1
@@ -19,10 +18,10 @@ for Pile in [JSPile, CSSPile] then do (Pile) ->
       expect(js.files.length).toBe 1
 
 
-  describe "addUrl works as expected (#{ Pile::urlRoot })", ->
+  describe "addUrl works as expected in #{ Pile.name }", ->
     dummyUrl = "http://example.com/test.js"
 
-    it "Pile addUrl cannot make duplicates", ->
+    it "Pile addUrl adds up to one url", ->
       js = new Pile
       js.addUrl dummyUrl
       expect(js.urls.length).toBe 1

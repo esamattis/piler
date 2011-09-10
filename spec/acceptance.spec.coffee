@@ -1,5 +1,16 @@
+util = require "util"
 
+async = require "async"
+request = require "request"
 zombie = require "zombie"
+
+{CSSLint} = require "csslint"
+
+rules = CSSLint.getRules().filter (rule) -> rule.id is "errors"
+CSSLint.clearRules()
+CSSLint.addRule r for r in rules
+
+validateCSS = CSSLint.verify
 
 servers =
   development: 7000
@@ -11,7 +22,8 @@ for type, port of servers then do (type, port) ->
   fetchPage = (path) -> ->
     jasmine.asyncSpecWait()
     @browser = new zombie.Browser()
-    @browser.visit "http://localhost:#{ port }#{ path }", (err, browser) ->
+    @httpRoot = "http://localhost:#{ port }"
+    @browser.visit @httpRoot + path, (err, browser) ->
       throw err if err
       jasmine.asyncSpecDone()
 
@@ -57,5 +69,31 @@ for type, port of servers then do (type, port) ->
     it "We have css links", ->
       $ = @browser.window.jQuery
       expect($("link[rel='stylesheet']").size()).toBeGreaterThan 0
+
+    it "We have valid CSS", ->
+      $ = @browser.window.jQuery
+
+      cssUrls = $("link[rel='stylesheet']").map -> this.href
+
+      jasmine.asyncSpecWait()
+
+      async.reduce cssUrls, "", (memo, path, cb) =>
+        request @httpRoot + path, (err, res, body) ->
+          return cb err if err
+          cb null, memo + body
+      , (err, css) ->
+        throw err if err
+
+        # Just use csslint to validate that we have sane css here until we come
+        # up with something better. This will at least confirm that
+        # preprocessors work.
+        result = validateCSS css
+        expect(result.messages.length).toBe 0, "#{ util.inspect result.messages }"
+        jasmine.asyncSpecDone()
+
+
+
+
+
 
 

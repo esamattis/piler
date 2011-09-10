@@ -220,7 +220,7 @@ class PileManager
   bind: (app) ->
     app.on 'listening', =>
       @pileUp()
-    @setDynamicHelpoer app
+    @setDynamicHelper app
 
 
     @setMiddleware app
@@ -253,7 +253,7 @@ class JSManager extends PileManager
     pile = @getPile ns
     pile.addOb ob
 
-  setDynamicHelpoer: (app) ->
+  setDynamicHelper: (app) ->
     app.dynamicHelpers renderScriptTags: (req, res) =>
       return =>
         bundle = @renderTags.apply this, arguments
@@ -277,7 +277,7 @@ class CSSManager extends PileManager
   Type: CSSPile
   contentType: "text/css"
 
-  setDynamicHelpoer: (app) ->
+  setDynamicHelper: (app) ->
     app.dynamicHelpers renderStyleTags: (req, res) =>
       return => @renderTags.apply this, arguments
 
