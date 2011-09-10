@@ -30,7 +30,7 @@ for type, port of servers
       it "addOb adds global variables", ->
         expect(@browser.window["addOb global"]).toEqual true
 
-      it "res.exec get executed", ->
+      it "res.exec gets executed", ->
         expect(@browser.window["response exec"]).toEqual true
 
       it "addUrl can load assets from remote servers", ->
