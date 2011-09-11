@@ -16,21 +16,36 @@ incUrlSeq = (url) ->
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
+  console.log "CSS updater is active. Waiting for connection..."
+
   piles = io.connect('/piles')
+
+  piles.on "connect", ->
+    console.log "CSS updater has connected"
+
+  piles.on "disconnect", ->
+    console.log "CSS updater has disconnected! Refresh to reconnect"
+
   piles.on "update", (fileId) ->
     elem = document.getElementById fileId
-    elem.href = PILES.incUrlSeq elem.href
+    if elem
+      console.log "updating", fileId, elem
+      elem.href = PILES.incUrlSeq elem.href
+    console.log "id", fileId, "not found"
 
 class LiveUpdateMixin
 
-  installSocketIo: ->
+  installSocketIo: (userio) ->
 
     @addUrl "/socket.io/socket.io.js"
     @addOb PILES:
       incUrlSeq: incUrlSeq
     @addExec clientUpdater
 
-    io = socketio.listen @app
+    if not userio
+      io = socketio.listen @app
+    else
+      io = userio
 
     # Why does not work?
     io.configure ->
@@ -39,7 +54,7 @@ class LiveUpdateMixin
     @io = io.of "/piles"
 
 
-  liveUpdate: (cssmanager) ->
+  liveUpdate: (cssmanager, userio) ->
     if @production
       console.log "Not activating live update in production"
       return
@@ -48,8 +63,9 @@ class LiveUpdateMixin
       throw new Error 'JSManager must be bind to a http server (Express app)
         before it can live update CSS'
 
-    @installSocketIo()
+    @installSocketIo userio
 
+    console.log "Activating CSS updater"
 
     for k, pile of cssmanager.piles
       for file in pile.files then do (file, pile) =>
