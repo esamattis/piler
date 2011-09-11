@@ -330,6 +330,8 @@ executableFrom = (fn, context) ->
 
 
 
+LiveUpdateMixin = require "./livecss"
+_.extend JSManager::, LiveUpdateMixin::
 
 exports.production = production = process.env.NODE_ENV is "production"
 

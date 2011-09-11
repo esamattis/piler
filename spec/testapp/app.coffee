@@ -28,7 +28,6 @@ js.addFile __dirname + "/clientscripts/global.coffee"
 
 js.addFile "mynamespace", __dirname + "/clientscripts/namespace.js"
 
-js.liveUpdate css
 
 js.addExec ->
   window["js exec"] = true
