@@ -31,7 +31,8 @@ clientUpdater = ->
     if elem
       console.log "updating", fileId, elem
       elem.href = PILES.incUrlSeq elem.href
-    console.log "id", fileId, "not found"
+    else
+      console.log "id", fileId, "not found"
 
 class LiveUpdateMixin
 
