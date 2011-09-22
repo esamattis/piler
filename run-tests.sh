@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ "${TRAVIS}" ]; then
+    sudo apt-get install libcairo2 libcairo2-dev
+fi
+
+
 (cd spec/testapp && coffee app.coffee) &
 (cd spec/testapp && NODE_ENV=production coffee app.coffee) &
 
