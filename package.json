@@ -10,6 +10,9 @@
         { "type": "git"
         , "url": "git://github.com/epeli/node-piles.git"
     }
+    , "scripts": {
+        "test": "./run-tests.sh"
+    }
     , "main": "./lib/index"
     , "dependencies": {
         "coffee-script": ""
