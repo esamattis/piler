@@ -135,7 +135,7 @@ In Node.js you can use it by just requiring it as any other module
 
 and you can share it the client using *addFile*:
 
-    js.addFile(\_\_dirname + "./share.js");
+    js.addFile(__dirname + "./share.js");
 
 Now you can use it in both as you would expect
 
