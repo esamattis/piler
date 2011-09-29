@@ -75,7 +75,9 @@ can add that to your admin pages by using giving it as parameter for
 
     !{renderScriptTags("admin")}
 
-This will render script-tags for the global pile and the admin-pile.
+This will render script-tags for the global pile and the admin-pile. 
+*renderScriptTags* and *renderStyleTags* can take variable amount of arguments. 
+Use *renderScriptTags("pile1", "pile2", ....)* to render multiple piles.
 
 Piling works just the same with css.
 
