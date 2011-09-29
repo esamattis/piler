@@ -19,7 +19,7 @@ Piles is written following principles in mind:
      script url the the current hash sum of the asset.
   1. Take advantage of special features of Node.js. Share server-side code
      easily with the browser.
-  1. Awesome development mode. Build in live CSS reloading.
+  1. Awesome development mode. Build in support live CSS reloading.
 
 \* By best I mean concatenating and minifying assets to a single download and
 caching that for good until it changes.
