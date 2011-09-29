@@ -121,25 +121,25 @@ to share modules between the server and the client.
 
 share.js
 
-   (function(exports){
+    (function(exports){
 
       exports.test = function(){
            return 'This is a function from shared module';
-       };
+      };
 
-   }(typeof exports === 'undefined' ? this.share = {} : exports));
+    }(typeof exports === 'undefined' ? this.share = {} : exports));
 
 In Node.js you can use it by just requiring it as any other module
 
-   var share = require("./share.js");
+    var share = require("./share.js");
 
 and you can share it the client using *addFile*:
 
-   js.addFile(\_\_dirname + "./share.js");
+    js.addFile(\_\_dirname + "./share.js");
 
-Now you can use it in both just fine
+Now you can use it in both as you would expect
 
-   share.test();
+    share.test();
 
 You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
