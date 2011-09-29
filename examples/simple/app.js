@@ -20,6 +20,10 @@ css.addFile(__dirname + "/style.css");
 css.addFile(__dirname + "/style.styl");
 css.addFile(__dirname + "/style.less");
 
+js.addOb({MY: {
+   isEmail: isEmail
+   }
+});
 
 js.addOb({FOO: "bar"});
 js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
@@ -31,12 +35,15 @@ js.addFile(__dirname + "/client/hello.coffee");
 js.addFile("foo", __dirname + "/client/foo.coffee");
 js.addFile("bar", __dirname + "/client/bar.coffee");
 
-js.liveUpdate(css);
+
+app.configure("development", function() {
+   js.liveUpdate(css);
+});
 
 app.get("/", function(req, res){
 
   res.exec(function() {
-     console.log("res exec hello", FOO);
+     console.log("Run client code from the response", FOO);
   });
 
   res.render("index.jade");

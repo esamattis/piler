@@ -1,8 +1,9 @@
 {
     "name" : "piles"
-    , "version": "0.1.1"
+    , "version": "0.1.2"
     , "author": "Esa-Matti Suuronen"
     , "homepage": "https://github.com/epeli/node-piles"
+    , "description": "Awesome Asset Manager for Node.js and Express"
     , "bugs": {
             "web": "https://github.com/epeli/node-piles/issues/"
     }

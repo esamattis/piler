@@ -3,17 +3,14 @@ coffeescript = require "coffee-script"
 try
   stylus = require "stylus"
 catch e
-  console.log "No stylus", e
 
 try
   nib = require "nib"
 catch e
-  console.log "No nib", e
 
 try
   less = require "less"
 catch e
-  console.log "No less", e
 
 compilers =
   # Dummy compilers
