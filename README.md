@@ -21,7 +21,7 @@ Piles is written following principles in mind:
      easily with the browser.
   1. Awesome development mode. Build in live CSS reloading.
 
-By best I mean concatenating and minifying assets to a single download and
+\* By best I mean concatenating and minifying assets to a single download and
 caching that for good until it changes.
 
 Simple Express example
@@ -77,8 +77,8 @@ can add that to your admin pages by using giving it as parameter for
 
     !{renderScriptTags("admin")}
 
-This will render script-tags for the global pile and the admin-pile. 
-*renderScriptTags* and *renderStyleTags* can take variable amount of arguments. 
+This will render script-tags for the global pile and the admin-pile.
+*renderScriptTags* and *renderStyleTags* can take variable amount of arguments.
 Use *renderScriptTags("pile1", "pile2", ....)* to render multiple piles.
 
 Piling works just the same with css.
@@ -113,6 +113,35 @@ JavaScript object. It will be serialized and sent to the browser. Few caveats:
   1. Functions will be serialized using Function.prototype.toString. So closures
      won't transferred to the client!
 
+
+### Pattern for sharing full modules
+
+This is nothing specific to Piles, but this is a nice pattern which can be used
+to share modules between the server and the client.
+
+share.js
+
+   (function(exports){
+
+      exports.test = function(){
+           return 'This is a function from shared module';
+       };
+
+   }(typeof exports === 'undefined' ? this.share = {} : exports));
+
+In Node.js you can use it by just requiring it as any other module
+
+   var share = require("./share.js");
+
+and you can share it the client using *addFile*:
+
+   js.addFile(\_\_dirname + "./share.js");
+
+Now you can use it in both just fine
+
+   share.test();
+
+You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
 ## Awesome development mode!
 

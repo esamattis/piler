@@ -6,6 +6,9 @@ var js = piles.createJSManager();
 var css = piles.createCSSManager();
 
 
+var share = require("./share");
+console.log(share.test());
+
 function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
 }
@@ -34,6 +37,7 @@ js.addFile(__dirname + "/client/hello.js");
 js.addFile(__dirname + "/client/hello.coffee");
 js.addFile("foo", __dirname + "/client/foo.coffee");
 js.addFile("bar", __dirname + "/client/bar.coffee");
+js.addFile(__dirname + "/share.js");
 
 
 app.configure("development", function() {
@@ -44,6 +48,7 @@ app.get("/", function(req, res){
 
   res.exec(function() {
      console.log("Run client code from the response", FOO);
+     console.log(share.test());
   });
 
   res.render("index.jade");
