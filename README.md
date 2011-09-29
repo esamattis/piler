@@ -8,7 +8,7 @@ render script- and style-tags for you.
 
 Piles is written following principles in mind:
 
-  1. Creating best possible production setup for assets should be as easy as
+  1. Creating best\* possible production setup for assets should be as easy as
      including script/link to a page.
   1. Support any JS- or CSS-files. No need to create special structure for
      your assets. Just include your jQueries or whatever.
@@ -19,8 +19,10 @@ Piles is written following principles in mind:
      script url the the current hash sum of the asset.
   1. Take advantage of special features of Node.js. Share server-side code
      easily with the browser.
-  1. Awesome development mode. More on this later.
+  1. Awesome development mode. Build in live CSS reloading.
 
+By best I mean concatenating and minifying assets to a single download and
+caching that for good until it changes.
 
 Simple Express example
 
