@@ -1,9 +1,10 @@
-# node-pile - Awesome Asset Manager for Node.js and Express
+# Awesome asset manager for Node.js and Express: node-pile 
 
-Pile allows you to manage all JavaScript and CSS assets from one place. Pile
-is a named file that contains selected pieces of concatenated and minified
-JavaScript or CSS. Node-pile will automatically render script- and style-tags for
-you.
+Pile allows you to manage all JavaScript and CSS assets from one place. Pile is
+a named file that contains selected pieces of concatenated and minified
+JavaScript or CSS. *node-pile* will automatically render script- and style-tags
+for you. Currently *node-pile* works only with [Express], but other frameworks
+are planned as well.
 
 
 Pile is written following principles in mind:
@@ -243,7 +244,5 @@ Questions and suggestions are very welcome
 [nib]: https://github.com/visionmedia/nib
 [NPM]: http://npmjs.org/
 [CoffeeScript]: http://jashkenas.github.com/coffee-script/
-
-
 
 

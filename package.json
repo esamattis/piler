@@ -3,7 +3,7 @@
     , "version": "0.2.0"
     , "author": "Esa-Matti Suuronen"
     , "homepage": "https://github.com/epeli/node-pile"
-    , "description": "Awesome Asset Manager for Node.js and Express"
+    , "description": "Awesome asset manager for Node.js and Express"
     , "bugs": {
             "web": "https://github.com/epeli/node-pile/issues/"
     }
