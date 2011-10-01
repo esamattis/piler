@@ -18,13 +18,30 @@ extension = (filename) ->
 wrapInScriptTagInline = (code) ->
   "<script type=\"text/javascript\" >\n#{ code }\n</script>\n"
 
-class BasePile
+getCompiler = (filePath) ->
+  compiler = compilers[extension filePath]
+  if not compiler
+    throw new Error "Could not find compiler for #{ filePath }"
+  compiler.render
 
-  compilers: compilers
+#http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/
+asCodeOb = do ->
+  getId = ->
+    sum = crypto.createHash('sha1')
+    if @type is "file"
+      sum.update @filePath
+    else
+      sum.update OB.stringify @
 
-  production: false
+    hash = sum.digest('hex').substring 10, 0
 
-  pilers:
+    if @type is "file"
+      filename = _.last @filePath.split("/")
+      filename = filename.replace ".", "_"
+      hash = filename + "_" + hash
+
+    return hash
+  pilers =
     raw: (ob, cb) -> cb null, ob.raw
     object: (ob, cb) ->
       code = ""
@@ -36,10 +53,19 @@ class BasePile
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        @getCompiler(ob.filePath) data.toString(), (err, code) ->
+        getCompiler(ob.filePath) data.toString(), (err, code) ->
           cb err, code
 
+  return ->
+    @getId = getId
+    @getCode = (cb) ->
+      pilers[@type] @, cb
+    return @
 
+
+class BasePile
+
+  production: false
 
   constructor: (@name, @production) ->
     @code = []
@@ -49,44 +75,22 @@ class BasePile
 
   addFile: (filePath) ->
     if filePath not in @getFilePaths()
-      id = @pathToId filePath
-      @code.push
+      @code.push asCodeOb.call
         type: "file"
         filePath: filePath
-        uid: id
 
-      @devMapping[id] = filePath
 
   addRaw: (raw) ->
-    @code.push
+    @code.push asCodeOb.call
       type: "raw"
       raw: raw
-      uid: @getUID()
 
   getFilePaths: ->
     (ob.filePath for ob in @code when ob.type is "file")
 
   addUrl: (url) ->
-    if @urls.indexOf(url) is -1
+    if url not in @urls
       @urls.push url
-
-
-
-
-  readDev: (uid, cb) ->
-    filePath = @devMapping[uid]
-    return cb new Error "No such dev file #{ uid }" unless filePath
-
-    fs.readFile filePath, (err, data) =>
-      return cb err if err
-      @getCompiler(filePath) data.toString(), (err, code) ->
-        cb err, code
-
-  getCompiler: (filePath) ->
-    compiler = @compilers[extension filePath]
-    if not compiler
-      throw new Error "Could not find compiler for #{ filePath }"
-    compiler.render
 
 
 
@@ -102,14 +106,18 @@ class BasePile
       tags += "\n"
     else
       for ob in @code
-        tags += @wrapInTag "/pile/#{ @name }.dev-#{ ob.type }-#{ ob.uid }.#{ @ext }", "id=\"pile-#{ ob.uid }\""
+        tags += @wrapInTag "/pile/#{ @name }.dev-#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""
         tags += "\n"
 
     tags
 
-  # TODO: Could be better :S
-  sequence = 0
-  getUID: -> "seq#{ sequence++ }"
+
+  findCodeObById: (id) ->
+    (codeOb for codeOb in @code when codeOb.getId() is id)[0]
+
+  findCodeObByFilePath: (path) ->
+    (codeOb for codeOb in @code when codeOb.filePath is id)[0]
+
 
   getProductionUrl: ->
     "#{ @urlRoot }#{ @name }.min.#{ @ext }"
@@ -130,11 +138,10 @@ class BasePile
 
   pileUp: (cb) ->
 
-    async.map @code, (ob, cb) =>
-      piler = @pilers[ob.type]
-      piler.call @, ob, (err, code) =>
+    async.map @code, (codeOb, cb) =>
+      codeOb.getCode (err, code) =>
         return cb? err if err
-        cb null, @commentLine("#{ ob.type }: #{ ob.uid }") + "\n#{ code }"
+        cb null, @commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
 
     , (err, result) =>
       return cb? err if err
@@ -142,17 +149,7 @@ class BasePile
       @_computeHash()
       cb? null, @rawPile
 
-  pathToId: (path) ->
-    sum = crypto.createHash('sha1')
-    sum.update path
 
-    newExt = @compilers[extension path]?.targetExt
-    filename = _.last path.split("/")
-    if newExt
-        filename = filename + ".#{ newExt }"
-
-    # Should be unique enough.
-     sum.digest('hex').substring 10, 0
 
 
 class JSPile extends BasePile
@@ -176,17 +173,15 @@ class JSPile extends BasePile
 
 
   addOb: (ob) ->
-    @code.push
+    @code.push asCodeOb.call
       type: "object"
       object: ob
-      uid: @getUID()
 
 
   addExec: (fn) ->
-    @code.push
+    @code.push asCodeOb.call
       type: "exec"
       object: fn
-      uid: @getUID()
 
 
   wrapInTag: (uri, extra="") ->
@@ -301,29 +296,13 @@ class PileManager
         return
 
       if asset.dev
-        codeOb = (codeOb for codeOb in pile.code when codeOb.uid is asset.dev.uid)[0]
-
-        piler = pile.pilers[codeOb.type]
-        piler.call pile, codeOb, (err, code) ->
+        codeOb = pile.findCodeObById asset.dev.uid
+        codeOb.getCode (err, code) ->
           throw err if err
           res.end code
           return
 
 
-
-    app.get @Type::urlRoot + "min/:filename", (req, res) =>
-      pileName = req.params.filename.split(".")[0]
-
-
-    app.get @Type::urlRoot + "dev/:name/:filename", (req, res) =>
-      pile = @piles[req.params.name]
-      pile.readDev req.params.filename, (err, code) =>
-        if err
-          res.send "error reading: #{ err }", 404
-        else
-          res.send code, 'Content-Type': @contentType
-
-    app.get @Type::urlRoot + "dev/_object-:name-:uuid.:ext", (req, res) =>
 
 
 class JSManager extends PileManager
