@@ -1,12 +1,12 @@
-# Piles - Awesome Asset Manager for Node.js and Express
+# node-pile - Awesome Asset Manager for Node.js and Express
 
-Piles allows you to manage all JavaScript and CSS assets from one place. It
-gives you a concept of piles. Pile is a named file that contains selected
-pieces of concatenated and minified JavaScript or CSS. Piles will automatically
-render script- and style-tags for you.
+Pile allows you to manage all JavaScript and CSS assets from one place. Pile
+is a named file that contains selected pieces of concatenated and minified
+JavaScript or CSS. Node-pile will automatically render script- and style-tags for
+you.
 
 
-Piles is written following principles in mind:
+Pile is written following principles in mind:
 
   1. Creating best\* possible production setup for assets should be as easy as
      including script/link to a page.
@@ -27,11 +27,11 @@ caching that for good until it changes.
 Simple Express example
 
     var createServer = require("express").createServer;
-    var piles = require("piles");
+    var pile = require("pile");
 
     var app = createServer();
-    var js = piles.createJSManager();
-    var css = piles.createCSSManager();
+    var js = pile.createJSManager();
+    var css = pile.createCSSManager();
 
     app.configure(function() {
         js.bind(app);
@@ -57,11 +57,11 @@ index.jade:
         !{renderStyleTags()}
         !{renderScriptTags()}
       body
-        h1 Hello Piles!
+        h1 Hello Pile!
         #container !{body}
 
 
-## Piles (namespaces)
+## Namespaces
 
 The example above uses just a one pile. The global pile.
 
@@ -79,14 +79,14 @@ can add that to your admin pages by using giving it as parameter for
 
 This will render script-tags for the global pile and the admin-pile.
 *renderScriptTags* and *renderStyleTags* can take variable amount of arguments.
-Use *renderScriptTags("pile1", "pile2", ....)* to render multiple piles.
+Use *renderScriptTags("pile1", "pile2", ....)* to render multiple namespaces
 
 Piling works just the same with css.
 
 
 ## Sharing code with the server
 
-Ok, that's pretty much what every asset manager does, but with Piles you can
+Ok, that's pretty much what every asset manager does, but with Pile you can
 share code directly from your server code.
 
 Let's say that you want to share a email-validating function with a server and
@@ -116,7 +116,7 @@ JavaScript object. It will be serialized and sent to the browser. Few caveats:
 
 ### Pattern for sharing full modules
 
-This is nothing specific to Piles, but this is a nice pattern which can be used
+This is nothing specific to Pile, but this is a nice pattern which can be used
 to share modules between the server and the client.
 
 share.js
@@ -161,20 +161,20 @@ For example renderScriptTags("admin") will render
 
 to
 
-    <script type="text/javascript" src="/piles/js/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
-    <script type="text/javascript" src="/piles/js/dev/admin/3718d-editor.js?v=1317298508714" ></script>
-    <script type="text/javascript" src="/piles/js/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
+    <script type="text/javascript" src="/pile/js/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
+    <script type="text/javascript" src="/pile/js/dev/admin/3718d-editor.js?v=1317298508714" ></script>
+    <script type="text/javascript" src="/pile/js/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
 
 in development mode, but in production it will render to
 
-    <script type="text/javascript"  src="/piles/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
-    <script type="text/javascript"  src="/piles/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
+    <script type="text/javascript"  src="/pile/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
+    <script type="text/javascript"  src="/pile/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
 
 So debugging should be as easy as directly using script-tags.
 
 ### Live CSS-editing
 
-Because Piles handles the script-tag rendering it can also automatically add
+Because Pile handles the script-tag rendering it can also automatically add
 some development tools when in production.
 
 Using Express you can automatically add Live CSS editing:
@@ -196,7 +196,7 @@ parameter to liveUpdate:
 
 ## Examples
 
-https://github.com/epeli/node-piles/blob/master/examples/simple/app.js
+https://github.com/epeli/node-pile/blob/master/examples/simple/app.js
 
 
 ## Caveats
@@ -207,22 +207,22 @@ whatever middlewares  you use before calling these.
 ## Supported preprocessors
 
 For JavaScript the only supported one is [CoffeeScript][] and the compiler is
-included in Piles.
+included in Pile.
 
-CSS-compilers are not included in Piles. Just install what you need using
+CSS-compilers are not included in Pile. Just install what you need using
 [NPM][].
 
   * [Stylus][] with [nib][] (npm install stylus nib)
   * [LESS][] (npm install less)
 
-Adding support for new compilers should be [easy](https://github.com/epeli/node-piles/blob/master/lib/compilers.coffee).
+Adding support for new compilers should be [easy](https://github.com/epeli/node-pile/blob/master/lib/compilers.coffee).
 Feel free to contribute!
 
 ## Installing
 
 From [NPM][]
 
-    npm install piles
+    npm install pile
 
 
 ## Contact

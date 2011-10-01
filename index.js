@@ -1,2 +1,2 @@
 require("coffee-script");
-module.exports = require( __dirname + "/lib/piles");
+module.exports = require( __dirname + "/lib/pile");

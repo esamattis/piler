@@ -1,8 +1,8 @@
 express = require "express"
-piles = require("../../index")
+pile = require("../../index")
 
-js = piles.createJSManager()
-css = piles.createCSSManager()
+js = pile.createJSManager()
+css = pile.createCSSManager()
 
 
 app = express.createServer()

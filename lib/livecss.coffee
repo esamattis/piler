@@ -18,19 +18,19 @@ incUrlSeq = (url) ->
 clientUpdater = ->
   console.log "CSS updater is active. Waiting for connection..."
 
-  piles = io.connect('/piles')
+  pile = io.connect('/pile')
 
-  piles.on "connect", ->
+  pile.on "connect", ->
     console.log "CSS updater has connected"
 
-  piles.on "disconnect", ->
+  pile.on "disconnect", ->
     console.log "CSS updater has disconnected! Refresh to reconnect"
 
-  piles.on "update", (fileId) ->
+  pile.on "update", (fileId) ->
     elem = document.getElementById fileId
     if elem
       console.log "updating", fileId, elem
-      elem.href = PILES.incUrlSeq elem.href
+      elem.href = PILE.incUrlSeq elem.href
     else
       console.log "id", fileId, "not found"
 
@@ -39,7 +39,7 @@ class LiveUpdateMixin
   installSocketIo: (userio) ->
 
     @addUrl "/socket.io/socket.io.js"
-    @addOb PILES:
+    @addOb PILE:
       incUrlSeq: incUrlSeq
     @addExec clientUpdater
 
@@ -52,7 +52,7 @@ class LiveUpdateMixin
     io.configure ->
       io.set 'log level', 0
 
-    @io = io.of "/piles"
+    @io = io.of "/pile"
 
 
   liveUpdate: (cssmanager, userio) ->

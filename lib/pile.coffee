@@ -21,7 +21,7 @@ class BasePile
 
   compilers: compilers
 
-  urlRoot: "/piles"
+  urlRoot: "/pile"
   production: false
 
   constructor: (@name, @production) ->
@@ -134,7 +134,7 @@ class BasePile
     "#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }"
 
 class JSPile extends BasePile
-  urlRoot: "/piles/js/"
+  urlRoot: "/pile/js/"
 
 
   constructor: ->
@@ -188,7 +188,7 @@ class JSPile extends BasePile
       cb?()
 
 class CSSPile extends BasePile
-  urlRoot: "/piles/css/"
+  urlRoot: "/pile/css/"
 
 
 
