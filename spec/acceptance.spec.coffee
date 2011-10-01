@@ -34,6 +34,12 @@ for type, port of servers then do (type, port) ->
     it "Can share plain js files from fs", ->
       expect(@browser.window["js fs"]).toEqual true
 
+    it "can share raw js strings", ->
+      expect(@browser.window["raw js"]).toEqual true
+
+    it "has no namespaced raw js here", ->
+      expect(@browser.window["raw namespace js"]).toBeUndefined()
+
     it "Coffee script files get compiled transparently", ->
       expect(@browser.window["coffee fs"]).toEqual true
 
@@ -65,6 +71,9 @@ for type, port of servers then do (type, port) ->
 
     it "namespaced js.addExec gets executed", ->
       expect(@browser.window["namespace js exec"]).toEqual true
+
+    it "can share raw js strings in namespaces", ->
+      expect(@browser.window["raw namespace js"]).toEqual true
 
   describe "CSS assets in #{ type } server", ->
 

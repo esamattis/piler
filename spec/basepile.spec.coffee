@@ -9,13 +9,13 @@ for Pile in [JSPile, CSSPile] then do (Pile) ->
     it "Pile addFile adds up to one file", ->
       js = new Pile
       js.addFile dummyPath
-      expect(js.files.length).toBe 1
+      expect(js.code.length).toBe 1
 
     it "Pile addFile cannot make duplicates", ->
       js = new Pile
       js.addFile dummyPath
       js.addFile dummyPath
-      expect(js.files.length).toBe 1
+      expect(js.code.length).toBe 1
 
 
   describe "addUrl works as expected in #{ Pile.name }", ->
