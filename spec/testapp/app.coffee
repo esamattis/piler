@@ -16,6 +16,7 @@ css.bind app
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile __dirname + "/stylesheets/style.styl"
 css.addFile __dirname + "/stylesheets/style.less"
+css.addRaw "#raw { display: none }"
 
 
 js.addOb "addOb global": true
@@ -25,6 +26,9 @@ js.addUrl "/remote.js"
 js.addFile __dirname + "/clientscripts/jquery.js"
 js.addFile __dirname + "/clientscripts/global.js"
 js.addFile __dirname + "/clientscripts/global.coffee"
+
+js.addRaw "window['raw js'] = true;"
+js.addRaw "mynamespace", "window['raw namespace js'] = true;"
 
 js.addFile "mynamespace", __dirname + "/clientscripts/namespace.js"
 

@@ -8,6 +8,7 @@ async = require "async"
 {minify, beautify} = require "./minify"
 OB = require "./serialize"
 compilers = require "./compilers"
+assetUrlParse = require "./asseturlparse"
 
 
 extension = (filename) ->
@@ -21,48 +22,60 @@ class BasePile
 
   compilers: compilers
 
-  urlRoot: "/pile"
   production: false
 
+  pilers:
+    raw: (ob, cb) -> cb null, ob.raw
+    object: (ob, cb) ->
+      code = ""
+      for k, v of ob.object
+        code += "window['#{ k }'] = #{ OB.stringify v };\n"
+      cb null, code
+    exec: (ob, cb) ->
+      cb null, executableFrom ob.object
+    file: (ob, cb) ->
+      fs.readFile ob.filePath, (err, data) =>
+        return cb? err if err
+        @getCompiler(ob.filePath) data.toString(), (err, code) ->
+          cb err, code
+
+
+
   constructor: (@name, @production) ->
-    @files = []
+    @code = []
     @rawPile = null
     @urls = []
     @devMapping = {}
 
-  pathToId: (path) ->
-    sum = crypto.createHash('sha1')
-    sum.update path
-
-    newExt = @compilers[extension path]?.targetExt
-    filename = _.last path.split("/")
-    if newExt
-        filename = filename + ".#{ newExt }"
-
-    # Should be unique enough. Matters only if user has assets with same
-    # filename
-    id = sum.digest('hex').substring 5, 0
-
-    id + "-" + filename
-
   addFile: (filePath) ->
-    if @files.indexOf(filePath) is -1
-      @files.push filePath
-      @devMapping[@pathToId filePath] = filePath
+    if filePath not in @getFilePaths()
+      id = @pathToId filePath
+      @code.push
+        type: "file"
+        filePath: filePath
+        uid: id
+
+      @devMapping[id] = filePath
+
+  addRaw: (raw) ->
+    @code.push
+      type: "raw"
+      raw: raw
+      uid: @getUID()
+
+  getFilePaths: ->
+    (ob.filePath for ob in @code when ob.type is "file")
 
   addUrl: (url) ->
     if @urls.indexOf(url) is -1
       @urls.push url
 
-  minify: (code) ->
-    if @production
-      minify code
-    else
-      code
 
-  readDev: (devpath, cb) ->
-    filePath = @devMapping[devpath]
-    return cb new Error "No such dev file #{ devpath }" unless filePath
+
+
+  readDev: (uid, cb) ->
+    filePath = @devMapping[uid]
+    return cb new Error "No such dev file #{ uid }" unless filePath
 
     fs.readFile filePath, (err, data) =>
       return cb err if err
@@ -75,26 +88,6 @@ class BasePile
       throw new Error "Could not find compiler for #{ filePath }"
     compiler.render
 
-  _pileUpFiles: (lastCb) ->
-    # ugly as hell
-    jobs = []
-    for filePath in @files
-      jobs.push
-        compiler: @getCompiler filePath
-        filePath: filePath
-        result: null
-
-    async.map jobs, (job, done) =>
-      fs.readFile job.filePath, (err, data) =>
-        throw err if err
-        job.compiler data.toString(), (err, compiled) =>
-          jobs.compiled = compiled
-          done null, compiled
-    , (err, result) =>
-      return cb err if err
-      pile = result.join("\n")
-      lastCb null, pile
-
 
 
   renderTags: ->
@@ -103,21 +96,23 @@ class BasePile
       tags += @wrapInTag url
       tags += "\n"
 
-    tags += @extraTags()
-
 
     if @production
       tags += @wrapInTag @getProductionUrl()
       tags += "\n"
     else
-      for path in @files
-        tags += @wrapInTag @convertToDevUrl(path), "id=\"#{ @pathToId path }\""
+      for ob in @code
+        tags += @wrapInTag "/pile/#{ @name }.dev-#{ ob.type }-#{ ob.uid }.#{ @ext }", "id=\"pile-#{ ob.uid }\""
         tags += "\n"
-
 
     tags
 
-  extraTags: -> ""
+  # TODO: Could be better :S
+  sequence = 0
+  getUID: -> "seq#{ sequence++ }"
+
+  getProductionUrl: ->
+    "#{ @urlRoot }#{ @name }.min.#{ @ext }"
 
   getTagKey: ->
     if @production
@@ -133,9 +128,45 @@ class BasePile
   convertToDevUrl: (path) ->
     "#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }"
 
+  pileUp: (cb) ->
+
+    async.map @code, (ob, cb) =>
+      piler = @pilers[ob.type]
+      piler.call @, ob, (err, code) =>
+        return cb? err if err
+        cb null, @commentLine("#{ ob.type }: #{ ob.uid }") + "\n#{ code }"
+
+    , (err, result) =>
+      return cb? err if err
+      @rawPile = @minify result.join("\n\n").trim()
+      @_computeHash()
+      cb? null, @rawPile
+
+  pathToId: (path) ->
+    sum = crypto.createHash('sha1')
+    sum.update path
+
+    newExt = @compilers[extension path]?.targetExt
+    filename = _.last path.split("/")
+    if newExt
+        filename = filename + ".#{ newExt }"
+
+    # Should be unique enough.
+     sum.digest('hex').substring 10, 0
+
+
 class JSPile extends BasePile
   urlRoot: "/pile/js/"
+  ext: "js"
 
+  commentLine: (line) ->
+    return "// #{ line.trim() }"
+
+  minify: (code) ->
+    if @production
+      minify code
+    else
+      code
 
   constructor: ->
     super
@@ -143,67 +174,41 @@ class JSPile extends BasePile
     @execs = []
 
 
-  getProductionUrl: ->
-    "#{ @urlRoot }min/#{ @name }.js"
 
   addOb: (ob) ->
-    @objects.push ob
+    @code.push
+      type: "object"
+      object: ob
+      uid: @getUID()
+
 
   addExec: (fn) ->
-    @objects.push _exec: fn
-
-  extraTags: ->
-    tags = ""
-
-    # in production these will be added during pileUp.  Objects don't have a
-    # file so in development we just add them inlice
-    if not @production
-      tags += wrapInScriptTagInline @_pileObjecs()
-      tags += "\n"
-
-    tags
-
-  _pileObjecs: ->
-    code = ""
-
-    for ob in @objects
-      for global, value of ob
-        if global is "_exec"
-          code += executableFrom value
-        else
-          code += "  window['#{ global }'] = #{ OB.stringify value };\n"
-
-    "(function() {\n#{code} }\n)();"
-
-
+    @code.push
+      type: "exec"
+      object: fn
+      uid: @getUID()
 
 
   wrapInTag: (uri, extra="") ->
     "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } ></script>"
 
-  pileUp: (cb) ->
-    @_pileUpFiles (err, code) =>
-      @rawPile = @minify  @_pileObjecs() + code
-      @_computeHash()
-      cb?()
+
+
+
 
 class CSSPile extends BasePile
   urlRoot: "/pile/css/"
+  ext: "css"
 
-
+  commentLine: (line) ->
+    return "/* #{ line.trim() } */"
 
   wrapInTag: (uri, extra="") ->
     "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } />"
 
-  pileUp: (cb) ->
-    @_pileUpFiles (err, code) =>
-      @rawPile = code
-      @_computeHash()
-      cb?()
+  # TODO: Which lib to use?
+  minify: (code) -> code
 
-
-  getProductionUrl: ->
-    "#{ @urlRoot }min/#{ @name }.css"
 
 defNs = (fn) ->
   (ns, path) ->
@@ -230,6 +235,10 @@ class PileManager
   addFile: defNs (ns, path) ->
     pile = @getPile ns
     pile.addFile path
+
+  addRaw: defNs (ns, raw) ->
+    pile = @getPile ns
+    pile.addRaw raw
 
   addUrl: defNs (ns, url) ->
     pile = @getPile ns
@@ -260,14 +269,50 @@ class PileManager
 
     @setMiddleware app
 
+    pileUrl = /^\/pile\//
+
+    # /pile/my.min.js
+    # /pile/my.dev.js
+    #
+    #
+    # /pile/js/dev/my-object-23432.js
+    # /pile/js/dev/my-exec-23432.js
+    #
+    app.use (req, res, next) =>
+      if not pileUrl.test req.url
+        return next()
+
+      res.setHeader "Content-type", @contentType
+      asset = assetUrlParse req.url
+
+
+      pile = @piles[asset.name]
+
+      # Wrong asset type. Lets skip to next middleware.
+      if asset.ext isnt pile.ext
+        return next()
+
+      if not pile
+        res.send "Cannot find pile #{ pileName }"
+        return
+
+      if asset.min
+        res.end pile.rawPile
+        return
+
+      if asset.dev
+        codeOb = (codeOb for codeOb in pile.code when codeOb.uid is asset.dev.uid)[0]
+
+        piler = pile.pilers[codeOb.type]
+        piler.call pile, codeOb, (err, code) ->
+          throw err if err
+          res.end code
+          return
+
+
 
     app.get @Type::urlRoot + "min/:filename", (req, res) =>
       pileName = req.params.filename.split(".")[0]
-      pile = @piles[pileName]
-      if not pile
-        res.send "Cannot find pile #{ pileName }"
-      else
-        res.send pile.rawPile, 'Content-Type': @contentType
 
 
     app.get @Type::urlRoot + "dev/:name/:filename", (req, res) =>
@@ -278,6 +323,7 @@ class PileManager
         else
           res.send code, 'Content-Type': @contentType
 
+    app.get @Type::urlRoot + "dev/_object-:name-:uuid.:ext", (req, res) =>
 
 
 class JSManager extends PileManager

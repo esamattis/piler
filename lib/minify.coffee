@@ -13,9 +13,9 @@ if uglify?
   pro = uglify.uglify
 
   exports.minify = (code) ->
-    ast = jsp.parse(code)
-    mangled = pro.ast_mangle(ast)
-    ast = pro.ast_squeeze mangled
+    ast = jsp.parse code
+    ast = pro.ast_mangle ast
+    ast = pro.ast_squeeze ast
     pro.gen_code ast
 
   exports.beautify = (code) ->
