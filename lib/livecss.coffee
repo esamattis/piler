@@ -27,7 +27,7 @@ clientUpdater = ->
     console.log "CSS updater has disconnected! Refresh to reconnect"
 
   pile.on "update", (fileId) ->
-    elem = document.getElementById fileId
+    elem = document.getElementById "pile-" + fileId
     if elem
       console.log "updating", fileId, elem
       elem.href = PILE.incUrlSeq elem.href
@@ -69,10 +69,11 @@ class LiveUpdateMixin
     console.log "Activating CSS updater"
 
     for k, pile of cssmanager.piles
-      for file in pile.files then do (file, pile) =>
-        fs.watchFile file, =>
-          console.log "updated", pile.pathToId file
-          @io.emit "update", pile.pathToId file
+      for codeOb in pile.code then do (codeOb) =>
+        return unless codeOb.type is "file"
+        fs.watchFile codeOb.filePath, =>
+          console.log "updated", codeOb.filePath
+          @io.emit "update", codeOb.getId()
 
 # For testing
 LiveUpdateMixin.incUrlSeq = incUrlSeq
