@@ -1,6 +1,7 @@
 fs = require "fs"
 path = require "path"
 crypto = require 'crypto'
+path = require "path"
 
 _ = require "underscore"
 async = require "async"
@@ -43,7 +44,8 @@ asCodeOb = do ->
 
     if @type is "file"
       filename = _.last @filePath.split("/")
-      filename = filename.replace ".", "_"
+      filename = filename.replace /\./g, "_"
+      filename = filename.replace /\-/g, "_"
       hash = filename + "_" + hash
 
     return hash
@@ -79,8 +81,11 @@ class BasePile
     @rawPile = null
     @urls = []
     @devMapping = {}
+    @piledUp = false
 
   addFile: (filePath) ->
+    filePath = path.normalize filePath
+    @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
       @code.push asCodeOb.call
         type: "file"
@@ -88,6 +93,7 @@ class BasePile
 
 
   addRaw: (raw) ->
+    @warnPiledUp "addRaw"
     @code.push asCodeOb.call
       type: "raw"
       raw: raw
@@ -140,8 +146,12 @@ class BasePile
     sum.update @rawPile
     @pileHash = sum.digest('hex')
 
+  warnPiledUp: (fnname) ->
+    if @piledUp
+      console.log "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
 
   pileUp: (cb) ->
+    @piledUp = true
 
     async.map @code, (codeOb, cb) =>
       codeOb.getCode (err, code) =>
@@ -177,12 +187,14 @@ class JSPile extends BasePile
 
 
   addOb: (ob) ->
+    @warnPiledUp "addOb"
     @code.push asCodeOb.call
       type: "object"
       object: ob
 
 
   addExec: (fn) ->
+    @warnPiledUp "addExec"
     @code.push asCodeOb.call
       type: "exec"
       object: fn
@@ -286,13 +298,14 @@ class PileManager
 
       pile = @piles[asset.name]
 
+      if not pile
+        res.send "Cannot find pile #{ asset.name }"
+        return
+
       # Wrong asset type. Lets skip to next middleware.
       if asset.ext isnt pile.ext
         return next()
 
-      if not pile
-        res.send "Cannot find pile #{ pileName }"
-        return
 
       if asset.min
         res.end pile.rawPile
@@ -344,8 +357,8 @@ class CSSManager extends PileManager
   contentType: "text/css"
 
   setDynamicHelper: (app) ->
-    app.dynamicHelpers renderStyleTags: (req, res) =>
-      return => @renderTags.apply this, arguments
+    app.dynamicHelpers renderStyleTags: (req, res) => =>
+      @renderTags.apply this, arguments
 
 
   setMiddleware: (app) ->
