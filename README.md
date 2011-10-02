@@ -87,7 +87,7 @@ index.jade:
         !{renderStyleTags()}
         !{renderScriptTags()}
       body
-        h1 Hello *node-pile*!
+        h1 Hello node-pile!
         #container !{body}
 
 
@@ -202,7 +202,7 @@ in development mode, but in production it will render to
 
 So debugging should be as easy as directly using script-tags.
 
-### Live CSS-editing
+### Live CSS editing
 
 Because *node-pile* handles the script-tag rendering it can also automatically add
 some development tools when in production.
