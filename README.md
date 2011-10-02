@@ -9,7 +9,7 @@ Node.js a JavaScript asset isn't just a pile of bits that is sent to the
 browser. It's code. It's code that can be also used in the server and I think
 that it's the job of asset managers to help with it. So in *node-pile* you can
 take code directly from your Javascript objects, not just from JavaScript
-files.
+files. Copying things from Rails is just not enought.
 
 Server-side code:
 
