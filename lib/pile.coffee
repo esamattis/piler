@@ -119,7 +119,7 @@ class BasePile
       tags += "\n"
     else
       for ob in @code
-        tags += @wrapInTag "/pile/#{ @name }.dev-#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""
+        tags += @wrapInTag "#{ @urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""
         tags += "\n"
 
     tags
@@ -133,7 +133,7 @@ class BasePile
 
 
   getProductionUrl: ->
-    "#{ @urlRoot }#{ @name }.min.#{ @ext }"
+    "#{ @urlRoot }min/#{ @name }.#{ @ext }"
 
   getTagKey: ->
     if @production
@@ -292,13 +292,6 @@ class PileManager
 
     pileUrl = /^\/pile\//
 
-    # /pile/my.min.js
-    # /pile/my.dev.js
-    #
-    #
-    # /pile/js/dev/my-object-23432.js
-    # /pile/js/dev/my-exec-23432.js
-    #
     app.use (req, res, next) =>
       if not pileUrl.test req.url
         return next()

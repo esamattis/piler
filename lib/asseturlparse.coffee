@@ -6,16 +6,17 @@ module.exports = (url) ->
 
   # remove qs
   url = _.first url.split "?"
-  filename = _.last url.split "/"
+  [__..., mode, filename] = url.split "/"
 
-  [__..., name, mode, ext] = filename.split "."
 
-  if _.startsWith mode, "dev-"
-    [__, type, uid] = mode.split "-"
+  if mode is "dev"
+    [__..., name, devopt, ext] = filename.split "."
+    [type, uid] = devopt.split "-"
     ob.dev =
        uid: uid
        type: type
   else
+    [__..., name, ext] = filename.split "."
     ob.min = true
 
   ob.name = name
