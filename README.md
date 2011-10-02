@@ -68,6 +68,11 @@ Full example
         js.addFile(__dirname + "/client/hello.js");
     });
 
+
+    app.configure("development", function() {
+        js.liveUpdate(css);
+    });
+
     js.addOb({ VERSION: "1.0.0" });
 
     js.exec(function() {
@@ -77,6 +82,8 @@ Full example
     app.get("/", function(req, res){
         res.render("index.jade", { layout: false });
     });
+    
+    app.listen(8080);
 
 
 index.jade:
