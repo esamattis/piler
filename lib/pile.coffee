@@ -76,7 +76,10 @@ class BasePile
 
   production: false
 
-  constructor: (@name, @production) ->
+  constructor: (@name, @production, urlRoot) ->
+    if urlRoot?
+      @urlRoot = urlRoot
+
     @code = []
     @rawPile = null
     @urls = []
@@ -104,7 +107,6 @@ class BasePile
   addUrl: (url) ->
     if url not in @urls
       @urls.push url
-
 
 
   renderTags: ->
@@ -234,13 +236,17 @@ class PileManager
 
   constructor: (@settings) ->
     @production = @settings.production
+    @settings.urlRoot ?= "/pile/"
+
+
+
     @piles =
-      _global: new @Type "_global", @production
+      _global: new @Type "_global", @production, @settings.urlRoot
 
   getPile: (ns) ->
     pile = @piles[ns]
     if not pile
-      pile =  @piles[ns] = new @Type ns, @production
+      pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot
     pile
 
   addFile: defNs (ns, path) ->
@@ -290,10 +296,10 @@ class PileManager
 
     @setMiddleware app
 
-    pileUrl = /^\/pile\//
 
     app.use (req, res, next) =>
-      if not pileUrl.test req.url
+
+      if not _.startsWith req.url, @settings.urlRoot
         return next()
 
       res.setHeader "Content-type", @contentType

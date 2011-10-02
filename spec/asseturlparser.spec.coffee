@@ -62,3 +62,31 @@ describe "parses css urls too", ->
       expect(urlOb.name).toBe "my"
 
 
+describe "longer custom url root works too", ->
+  urlOb = assetUrlParse "/node-pile/pile/min/_global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
+
+  it "is min", ->
+    expect(urlOb.min).toBeDefined()
+
+  it "is not development", ->
+    expect(urlOb.dev).toBeUndefined()
+
+  it "it is the global pile", ->
+    expect(urlOb.name).toBe "_global"
+
+
+describe "longer custom url root works too and in development", ->
+  urlOb = assetUrlParse "/node-pile/pile/dev/my.file-321.css?v=43234"
+
+  it "is min", ->
+    expect(urlOb.min).toBeUndefined()
+
+  it "is not development", ->
+    expect(urlOb.dev).toBeDefined()
+
+  it "it is the global pile", ->
+    expect(urlOb.name).toBe "my"
+
+  it "has id 321", ->
+    expect(urlOb.dev.uid).toBe "321"
+
