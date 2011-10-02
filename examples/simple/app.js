@@ -2,8 +2,8 @@
 var createServer = require("express").createServer;
 
 var pile = require("../../index");
-var js = pile.createJSManager();
-var css = pile.createCSSManager();
+var js = pile.createJSManager({ outputDirectory: __dirname + "/out" });
+var css = pile.createCSSManager({ outputDirectory: __dirname + "/out" });
 
 
 var share = require("./share");

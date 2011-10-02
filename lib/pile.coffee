@@ -232,7 +232,8 @@ class PileManager
 
   Type: null
 
-  constructor: (@production) ->
+  constructor: (@settings) ->
+    @production = @settings.production
     @piles =
       _global: new @Type "_global", @production
 
@@ -255,8 +256,17 @@ class PileManager
     pile.addUrl url
 
   pileUp: ->
-    for name, pile of @piles
-      pile.pileUp()
+    for name, pile of @piles then do (pile) =>
+      pile.pileUp (err, code) =>
+        throw err if err
+        if @settings.outputDirectory?
+
+          outputPath = path.join @settings.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
+
+          fs.writeFile outputPath, code, (err) ->
+            throw err if err
+            console.log "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
+
 
   renderTags: (namespaces...) ->
     # Always render global pile
@@ -274,6 +284,7 @@ class PileManager
 
     app.on 'listening', =>
       @pileUp()
+
     @setDynamicHelper app
 
 
@@ -381,8 +392,13 @@ exports.JSPile = JSPile
 exports.JSManager = JSManager
 exports.CSSManager = CSSManager
 
-exports.createJSManager = -> new JSManager production
-exports.createCSSManager = -> new CSSManager production
+exports.createJSManager = (settings={}) ->
+  settings.production = production
+  new JSManager settings
+
+exports.createCSSManager = (settings={}) ->
+  settings.production = production
+  new CSSManager settings
 
 
 
