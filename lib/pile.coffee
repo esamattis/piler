@@ -28,9 +28,15 @@ getCompiler = (filePath) ->
 asCodeOb = do ->
   getId = ->
     sum = crypto.createHash('sha1')
+
+
     if @type is "file"
+      # If code is on filesystem the url to the file should only change when
+      # the path to it changes.
       sum.update @filePath
     else
+      # If there is no file for code code. We need to generate id from the code
+      # itself.
       sum.update OB.stringify @
 
     hash = sum.digest('hex').substring 10, 0
@@ -64,6 +70,7 @@ asCodeOb = do ->
 
 
 class BasePile
+  urlRoot: "/pile/"
 
   production: false
 
@@ -133,14 +140,12 @@ class BasePile
     sum.update @rawPile
     @pileHash = sum.digest('hex')
 
-  convertToDevUrl: (path) ->
-    "#{ @urlRoot }dev/#{ @name }/#{ @pathToId path }"
 
   pileUp: (cb) ->
 
     async.map @code, (codeOb, cb) =>
       codeOb.getCode (err, code) =>
-        return cb? err if err
+        return cb? err if err #                                           TODO: minifying here does not work!?
         cb null, @commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
 
     , (err, result) =>
@@ -153,7 +158,6 @@ class BasePile
 
 
 class JSPile extends BasePile
-  urlRoot: "/pile/js/"
   ext: "js"
 
   commentLine: (line) ->
@@ -192,7 +196,6 @@ class JSPile extends BasePile
 
 
 class CSSPile extends BasePile
-  urlRoot: "/pile/css/"
   ext: "css"
 
   commentLine: (line) ->
