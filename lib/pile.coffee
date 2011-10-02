@@ -226,7 +226,7 @@ defNs = (fn) ->
   (ns, path) ->
     if arguments.length is 1
       path = ns
-      ns = "_global"
+      ns = "global"
     fn.call this, ns, path
 
 
@@ -241,7 +241,7 @@ class PileManager
 
 
     @piles =
-      _global: new @Type "_global", @production, @settings.urlRoot
+      global: new @Type "global", @production, @settings.urlRoot
 
   getPile: (ns) ->
     pile = @piles[ns]
@@ -276,7 +276,7 @@ class PileManager
 
   renderTags: (namespaces...) ->
     # Always render global pile
-    namespaces.unshift "_global"
+    namespaces.unshift "global"
     tags = ""
     for ns in namespaces
       pile = @piles[ns]

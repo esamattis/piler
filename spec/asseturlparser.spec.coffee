@@ -15,13 +15,13 @@ describe "parses url production url", ->
       expect(urlOb.ext).toBe "js"
 
 describe "can find global", ->
-  urlOb = assetUrlParse "/pile/min/_global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
+  urlOb = assetUrlParse "/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
 
-  it "has the default _global global", ->
+  it "has the default global", ->
 
     expect(urlOb.min).toBeDefined()
     expect(urlOb.dev).toBeUndefined()
-    expect(urlOb.name).toBe "_global"
+    expect(urlOb.name).toBe "global"
 
   it "has extension js", ->
     expect(urlOb.ext).toBe "js"
@@ -63,7 +63,7 @@ describe "parses css urls too", ->
 
 
 describe "longer custom url root works too", ->
-  urlOb = assetUrlParse "/node-pile/pile/min/_global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
+  urlOb = assetUrlParse "/node-pile/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
 
   it "is min", ->
     expect(urlOb.min).toBeDefined()
@@ -72,7 +72,7 @@ describe "longer custom url root works too", ->
     expect(urlOb.dev).toBeUndefined()
 
   it "it is the global pile", ->
-    expect(urlOb.name).toBe "_global"
+    expect(urlOb.name).toBe "global"
 
 
 describe "longer custom url root works too and in development", ->
