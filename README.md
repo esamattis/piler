@@ -204,8 +204,8 @@ So debugging should be as easy as directly using script-tags.
 
 ### Live CSS editing
 
-Because *node-pile* handles the script-tag rendering it can also automatically add
-some development tools when in production.
+Because *node-pile* handles the script-tag rendering it is possible to add
+some development tools when in development mode.
 
 Using Express you can automatically add Live CSS editing:
 
