@@ -5,7 +5,7 @@ directly from code. It will concatenate and minify them in production and it
 takes care of rendering the tags as every other proper asset manager.
 
 So why create a yet another asset manager? Because Node.js is special. In
-Node.js a JavaScript asset isn't just a pile of bits that is sent to the
+Node.js a JavaScript asset isn't just a pile of bits that are sent to the
 browser. It's code. It's code that can be also used in the server and I think
 that it's the job of asset managers to help with it. So in *node-pile* you can
 take code directly from your Javascript objects, not just from JavaScript
@@ -309,8 +309,9 @@ From [npm][]
 
 Questions and suggestions are very welcome
 
-- Esa-Matti Suuronen
+- [Esa-Matti Suuronen](http://esa-matti.suuronen.org/)
 - esa-matti [aet] suuronen dot org
+- [EsaMatti](https://twitter.com/#!/EsaMatti) @ Twitter
 - Epeli @ freenode/IRCnet
 
 
