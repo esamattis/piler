@@ -267,7 +267,7 @@ These are similar to ones in JS pile.
 
 #### addRaw( [namespace], raw CSS string )
 
-### Response middleware
+### Response object
 
 *node-pile* also adds few extra methods to your response objects.
 
@@ -279,7 +279,7 @@ Execute this function only on this response.
 
 Similar to js.addOb, but only for this response.
 
-NOT IMPLEMENTED YET!
+THIS ONE IS NOT IMPLEMENTED YET
 
 
 ## Supported preprocessors
