@@ -18,6 +18,7 @@
     , "dependencies": {
         "coffee-script": ""
         , "underscore": ""
+        , "underscore.string": ""
         , "uglify-js": ""
         , "async": ""
     }
@@ -31,6 +32,7 @@
         , "less": ""
         , "request": ""
         , "csslint": ""
+        , "socket.io": ""
     }
 }
 
