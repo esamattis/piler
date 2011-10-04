@@ -221,9 +221,9 @@ Using Express you can automatically add Live CSS editing:
     });
 
 This is similar to [Live.js][], but it does not use polling. It will add
-socket.io add will push the CSS-updates to your browser as you edit them.
+socket.io which will push the CSS-updates to your browser as you edit them.
 
-If you app already uses Socket.io you need to add the io-object as second
+If your app already uses Socket.io you need to add the io-object as second
 parameter to liveUpdate:
 
 
