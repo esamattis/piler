@@ -288,7 +288,7 @@ class PileManager
 
     @app = app
 
-    app.on 'listening', =>
+    app.on "listening", =>
       @pileUp()
 
     @setDynamicHelper app
