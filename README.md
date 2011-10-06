@@ -207,9 +207,14 @@ in development mode, but in production it will render to
     <script type="text/javascript"  src="/pile/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
     <script type="text/javascript"  src="/pile/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
 
-So debugging should be as easy as directly using script-tags.
+So debugging should be as easy as directly using script-tags. 
+Line numbers will match your real files in the filesystem.
+No need to debug huge Javascript bundle!
 
 ### Live CSS editing
+
+This one is really cool! You don't want to edit CSS at all without this
+after you try it!
 
 Because *node-pile* handles the script-tag rendering it is possible to add
 some development tools when in development mode.
@@ -221,9 +226,9 @@ Using Express you can automatically add Live CSS editing:
     });
 
 This is similar to [Live.js][], but it does not use polling. It will add
-socket.io add will push the CSS-updates to your browser as you edit them.
+socket.io which will push the CSS-updates to your browser as you edit them.
 
-If you app already uses Socket.io you need to add the io-object as second
+If your app already uses Socket.io you need to add the io-object as second
 parameter to liveUpdate:
 
 
