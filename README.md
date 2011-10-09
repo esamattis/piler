@@ -172,7 +172,7 @@ function isEmail(s) {
 You can share it with *addOb* -method:
 
 ```javascript
-js.addOb({MY: {
+clientjs.addOb({MY: {
    isEmail: isEmail
    }
 });
@@ -244,7 +244,7 @@ Using Express you can add Live CSS editing in development mode:
 
 ```javascript
 app.configure("development", function() {
-   clientjs.liveUpdate(css);
+   clientjs.liveUpdate(clientcss);
 });
 ```
 
@@ -257,7 +257,7 @@ parameter to liveUpdate:
 
 ```javascript
 var io = require('socket.io').listen(app);
-clientjs.liveUpdate(css, io);
+clientjs.liveUpdate(clientcss, io);
 ```
 
 ### Script-tag rendering
