@@ -5,7 +5,7 @@ For the stable see the <a href="http://epeli.github.com/node-piler">homepage</a>
 
 # Piler
 
-*Note: node-pile was just renamed to *Piler*. Links in this Github page will
+*Note: node-pile was just renamed to Piler. Links on this Github page will
 broken until the next release.*
 
 Feature hilights
