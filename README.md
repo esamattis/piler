@@ -3,9 +3,11 @@ This is the documentation for unstable master branch.
 For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
 </div>
 
-# Awesome Asset Manager for Node.js and Express: node-pile 
+# Pile
 
-*node-pile* allows you to manage all your JavaScript and CSS assets cleanly
+## Awesome Asset Manager for Node.js
+
+*Pile* allows you to manage all your JavaScript and CSS assets cleanly and
 directly from code. It will concatenate and minify them in production and it
 takes care of rendering the tags as every other proper asset manager.
 
@@ -53,7 +55,8 @@ are planned as well.
     compiled files.
   * Use heavy caching. Browser caches are killed automatically using the hash
     sum of the assets.
-  * Awesome development mode. Build-in support for live CSS reloading.
+  * Awesome development mode. Build-in support for pushing CSS changes to
+    browsr using socket.io
 
 
 Full example
@@ -215,6 +218,34 @@ Development and production modes works as in Express. By default the
 development mode is active. To activate production mode set NODE\_ENV
 environment variable to *production*.
 
+### Live CSS editing
+
+This is really cool! You don't want to edit CSS at all without this after you
+try it!
+
+Because *node-pile* handles the script-tag rendering it is possible to add
+some development tools when in development mode.
+
+Using Express you can automatically add Live CSS editing in development mode:
+
+```javascript
+app.configure("development", function() {
+   js.liveUpdate(css);
+});
+```
+
+This is similar to [Live.js][], but it does not use polling. It will add
+socket.io which will push the CSS-changes to your browser as you edit them.
+
+If your app already uses Socket.io you need to add the io-object as second
+parameter to liveUpdate:
+
+
+```javascript
+var io = require('socket.io').listen(app);
+js.liveUpdate(css, io);
+```
+
 ### Script-tag rendering
 
 In development mode every js- and css-file will be rendered as a separate tag.
@@ -230,49 +261,22 @@ js.addFile("admin", __dirname + "/editor.extension.js");
 to
 
 ```html
-<script type="text/javascript" src="/pile/js/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
-<script type="text/javascript" src="/pile/js/dev/admin/3718d-editor.js?v=1317298508714" ></script>
-<script type="text/javascript" src="/pile/js/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
+<script type="text/javascript" src="/pile/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
+<script type="text/javascript" src="/pile/dev/admin/3718d-editor.js?v=1317298508714" ></script>
+<script type="text/javascript" src="/pile/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
 ```
 
 in development mode, but in production it will render to
 
 ```html
-<script type="text/javascript"  src="/pile/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
-<script type="text/javascript"  src="/pile/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
+<script type="text/javascript"  src="/pile/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
+<script type="text/javascript"  src="/pile/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
 ```
 
-So debugging should be as easy as directly using script-tags. 
-Line numbers will match your real files in the filesystem.
-No need to debug huge Javascript bundle!
+So debugging should be as easy as directly using script-tags.  Line numbers
+will match your real files in the filesystem.  No need to debug huge Javascript
+bundle!
 
-### Live CSS editing
-
-This one is really cool! You don't want to edit CSS at all without this
-after you try it!
-
-Because *node-pile* handles the script-tag rendering it is possible to add
-some development tools when in development mode.
-
-Using Express you can automatically add Live CSS editing:
-
-```javascript
-app.configure("development", function() {
-   js.liveUpdate(css);
-});
-```
-
-This is similar to [Live.js][], but it does not use polling. It will add
-socket.io which will push the CSS-updates to your browser as you edit them.
-
-If your app already uses Socket.io you need to add the io-object as second
-parameter to liveUpdate:
-
-
-```javascript
-var io = require('socket.io').listen(app);
-js.liveUpdate(css, io);
-```
 
 
 ## Examples
@@ -283,7 +287,7 @@ https://github.com/epeli/node-pile/blob/master/examples/simple/app.js
 ## API summary
 
 Code will be rendered in the order you call these functions with the exception
-of *addUrl* which will be rendered before any other.
+of *addUrl* which will be rendered as first.
 
 ### JavaScript pile
 
