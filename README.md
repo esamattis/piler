@@ -1,11 +1,12 @@
 <div class="version">
 This is the documentation for unstable master branch. 
-For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
+For the stable see the <a href="http://epeli.github.com/node-piler">homepage</a>.
 </div>
 
 # Piler
 
-Note: node-pile was just renamed to *Piler*
+*Note: node-pile was just renamed to *Piler*. Links in this Github page will
+broken until the next release.*
 
 Feature hilights
 
@@ -295,7 +296,7 @@ bundle!
 ## Examples
 
 See
-[this](https://github.com/epeli/node-pile/blob/master/examples/simple/app.js)
+[this](https://github.com/epeli/node-piler/blob/master/examples/simple/app.js)
 directory in the repo.
 
 
@@ -369,7 +370,7 @@ CSS-compilers are not included in *Piler*. Just install what you need using
   * [LESS][] (npm install less)
 
 Adding support for new compilers should be
-[easy](https://github.com/epeli/node-pile/blob/master/lib/compilers.coffee).
+[easy](https://github.com/epeli/node-piler/blob/master/lib/compilers.coffee).
 
 Feel free to contribute!
 
@@ -377,12 +378,12 @@ Feel free to contribute!
 
 From [npm][]
 
-    npm install pile
+    npm install piler
 
 ## Source code
 
 Source code is licenced under [The MIT
-License](https://github.com/epeli/node-pile/blob/master/LICENSE) it is hosted
+License](https://github.com/epeli/node-piler/blob/master/LICENSE) it is hosted
 on [Github](https://github.com/epeli/node-piler).
 
 ## Changelog
