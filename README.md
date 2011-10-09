@@ -355,12 +355,12 @@ THIS ONE IS NOT IMPLEMENTED YET
 
 ## Supported preprocessors
 
-## JavaScript
+### JavaScript
 
 For JavaScript the only supported one is [CoffeeScript][] and the compiler is
 included in *Piler*.
 
-## CSS
+### CSS
 
 CSS-compilers are not included in *Piler*. Just install what you need using
 [npm][].
