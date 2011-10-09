@@ -383,7 +383,7 @@ From [npm][]
 
 Source code is licenced under [The MIT
 License](https://github.com/epeli/node-pile/blob/master/LICENSE) it is hosted
-in [Github](https://github.com/epeli/node-piler).
+on [Github](https://github.com/epeli/node-piler).
 
 ## Changelog
 
