@@ -1,12 +1,12 @@
 <div class="version">
 This is the documentation for unstable master branch. 
-For the stable see the <a href="http://epeli.github.com/node-piler">homepage</a>.
+For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
 </div>
 
 # Piler
 
 *Note: node-pile was just renamed to Piler. Links on this Github page will
-broken until the next release.*
+broken until the next release. For current docs see the [homepage](http://epeli.github.com/node-pile).*
 
 Feature hilights
 
