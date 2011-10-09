@@ -97,10 +97,9 @@ app.listen(8080);
 ```
 
 
-
 index.jade:
 
-```
+```jade
 !!! 5
 html
   head
