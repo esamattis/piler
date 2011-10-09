@@ -1,4 +1,9 @@
-# Awesome asset manager for Node.js and Express: node-pile 
+<div class="version">
+This is the documentation for unstable master branch. 
+For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
+</div>
+
+# Awesome Asset Manager for Node.js and Express: node-pile 
 
 *node-pile* allows you to manage all your JavaScript and CSS assets cleanly
 directly from code. It will concatenate and minify them in production and it
