@@ -1,15 +1,15 @@
 {
-    "name" : "pile"
-    , "version": "0.2.1"
+    "name" : "piler"
+    , "version": "0.3.0"
     , "author": "Esa-Matti Suuronen"
-    , "homepage": "https://github.com/epeli/node-pile"
-    , "description": "Awesome asset manager for Node.js and Express"
+    , "homepage": "https://github.com/epeli/node-piler"
+    , "description": "Awesome Asset Manager for Node.js"
     , "bugs": {
-            "web": "https://github.com/epeli/node-pile/issues/"
+            "web": "https://github.com/epeli/node-piler/issues/"
     }
     , "repository":
         { "type": "git"
-        , "url": "git://github.com/epeli/node-pile.git"
+        , "url": "git://github.com/epeli/node-piler.git"
     }
     , "scripts": {
         "test": "./run-tests.sh"
@@ -25,6 +25,7 @@
     , "devDependencies": {
           "jasmine-node": ""
         , "zombie": ""
+        , "express": ""
         , "supervisor": ""
         , "jade": ""
         , "stylus": ""

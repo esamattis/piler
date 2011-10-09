@@ -1,5 +1,5 @@
 
-{JSPile, CSSPile, JSManager, CSSManager} = require "../lib/pile"
+{JSPile, CSSPile, JSManager, CSSManager} = require "../lib/piler"
 
 for Pile in [JSPile, CSSPile] then do (Pile) ->
 

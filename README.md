@@ -3,20 +3,28 @@ This is the documentation for unstable master branch.
 For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
 </div>
 
-# Pile
+# Piler
+
+Feature hilights
+
+  * Minify and concatenate JS and CSS
+  * Tag rendering
+  * Namespaces
+  * Push CSS changes to the browser in development mode using Socket.IO
+  * Easy code sharing with server
 
 ## Awesome Asset Manager for Node.js
 
-*Pile* allows you to manage all your JavaScript and CSS assets cleanly and
+*Piler* allows you to manage all your JavaScript and CSS assets cleanly and
 directly from code. It will concatenate and minify them in production and it
-takes care of rendering the tags as every other proper asset manager.
+takes care of rendering the tags.
 
 So why create a yet another asset manager? Because Node.js is special. In
 Node.js a JavaScript asset isn't just a pile of bits that are sent to the
 browser. It's code. It's code that can be also used in the server and I think
-that it's the job of asset managers to help with it. So in *node-pile* you can
-take code directly from your Javascript objects, not just from JavaScript
-files. Copying things from Rails is just not enough.
+that it's the job of asset managers to help with it. So in *Piler* you can take
+code directly from your Javascript objects, not just from JavaScript files.
+Copying things from Rails is just not enough.
 
 Server-side code:
 
@@ -28,7 +36,7 @@ js.addOb({BROWSER_GLOBAL: {
 }});
 ```
 
-You can also tell *node-pile* to directly execute some function in the browser:
+You can also tell *Piler* to directly execute some function in the browser:
 
 ```javascript
 js.addExec(function() {
@@ -38,11 +46,11 @@ js.addExec(function() {
 ```
 
 
-Currently *node-pile* works only with [Express], but other frameworks
-are planned as well.
+Currently *Piler* works only with [Express], but other frameworks are planned
+as well.
 
 
-*node-pile* is written following principles in mind:
+*Piler* is written following principles in mind:
 
   * Creating best possible production setup for assets should be as easy as
     including script/link to a page.
@@ -56,7 +64,7 @@ are planned as well.
   * Use heavy caching. Browser caches are killed automatically using the hash
     sum of the assets.
   * Awesome development mode. Build-in support for pushing CSS changes to
-    browsr using socket.io
+    browsr using Sockect.IO.
 
 
 Full example
@@ -109,7 +117,7 @@ html
     !{renderStyleTags()}
     !{renderScriptTags()}
   body
-    h1 Hello node-pile!
+    h1 Hello Piler
     #container !{body}
 ```
 
@@ -143,8 +151,8 @@ Piling works just the same with css.
 
 ## Sharing code with the server
 
-Ok, that's pretty much what every asset manager does, but with *node-pile* you
-can share code directly from your server code.
+Ok, that's pretty much what every asset manager does, but with *Piler* you can
+share code directly from your server code.
 
 Let's say that you want to share a email-validating function with a server and
 the client
@@ -177,8 +185,8 @@ JavaScript object. It will be serialized and sent to the browser. Few caveats:
 
 ### Pattern for sharing full modules
 
-This is nothing specific to *node-pile*, but this is a nice pattern which can
-be used to share modules between the server and the client.
+This is nothing specific to *Piler*, but this is a nice pattern which can be
+used to share modules between the server and the client.
 
 share.js
 
@@ -223,10 +231,10 @@ environment variable to *production*.
 This is really cool! You don't want to edit CSS at all without this after you
 try it!
 
-Because *node-pile* handles the script-tag rendering it is possible to add
-some development tools when in development mode.
+Because *Piler* handles the script-tag rendering it can add some development
+tools when in development mode.
 
-Using Express you can automatically add Live CSS editing in development mode:
+Using Express you can add Live CSS editing in development mode:
 
 ```javascript
 app.configure("development", function() {
@@ -235,9 +243,9 @@ app.configure("development", function() {
 ```
 
 This is similar to [Live.js][], but it does not use polling. It will add
-socket.io which will push the CSS-changes to your browser as you edit them.
+Socket.IO which will push the CSS-changes to your browser as you edit them.
 
-If your app already uses Socket.io you need to add the io-object as second
+If your app already uses Socket.IO you need to add the *io*-object as second
 parameter to liveUpdate:
 
 
@@ -248,7 +256,7 @@ js.liveUpdate(css, io);
 
 ### Script-tag rendering
 
-In development mode every js- and css-file will be rendered as a separate tag.
+In development mode every JS- and CSS-file will be rendered as a separate tag.
 
 For example renderScriptTags("admin") will render
 
@@ -274,14 +282,17 @@ in development mode, but in production it will render to
 ```
 
 So debugging should be as easy as directly using script-tags.  Line numbers
-will match your real files in the filesystem.  No need to debug huge Javascript
+will match your real files in the filesystem. No need to debug huge Javascript
 bundle!
 
 
 
 ## Examples
 
-https://github.com/epeli/node-pile/blob/master/examples/simple/app.js
+See
+[this](https://github.com/epeli/node-pile/blob/master/examples/simple/app.js)
+directory in the repo.
+
 
 
 ## API summary
@@ -324,13 +335,13 @@ These are similar to ones in JS pile.
 
 ### Response object
 
-*node-pile* also adds few extra methods to your response objects.
+*Piler* also adds few extra methods to your response objects.
 
 #### res.exec( Javascript function )
 
 Execute this function only on this response.
 
-#### res.share( any Javascript object )
+#### res.ob( any Javascript object )
 
 Similar to js.addOb, but only for this response.
 
@@ -339,10 +350,14 @@ THIS ONE IS NOT IMPLEMENTED YET
 
 ## Supported preprocessors
 
-For JavaScript the only supported one is [CoffeeScript][] and the compiler is
-included in *node-pile*.
+## JavaScript
 
-CSS-compilers are not included in *node-pile*. Just install what you need using
+For JavaScript the only supported one is [CoffeeScript][] and the compiler is
+included in *Piler*.
+
+## CSS
+
+CSS-compilers are not included in *Piler*. Just install what you need using
 [npm][].
 
   * [Stylus][] with [nib][] (npm install stylus nib)
@@ -359,6 +374,20 @@ From [npm][]
 
     npm install pile
 
+## Source code
+
+Source code is licenced under [The MIT
+License](https://github.com/epeli/node-pile/blob/master/LICENSE) it is hosted
+in [Github](https://github.com/epeli/node-piler).
+
+## Changelog
+
+v0.3.0 - (unreleased)
+
+  * Rename to Piler
+  * Remove add prefix from method names (TODO)
+  * Really minify CSS (TODO)
+  * Implemented res.ob
 
 ## Contact
 
