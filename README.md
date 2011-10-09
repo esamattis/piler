@@ -20,7 +20,8 @@ Feature hilights
 
 *Piler* allows you to manage all your JavaScript and CSS assets cleanly and
 directly from code. It will concatenate and minify them in production and it
-takes care of rendering the tags.
+takes care of rendering the tags. The idea is to make your pages load as
+quickly as possible.
 
 So why create a yet another asset manager? Because Node.js is special. In
 Node.js a JavaScript asset isn't just a pile of bits that are sent to the
