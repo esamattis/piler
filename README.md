@@ -5,12 +5,15 @@ For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
 
 # Piler
 
+Note: node-pile was just renamed to *Piler*
+
 Feature hilights
 
   * Minify and concatenate JS and CSS
   * Tag rendering
   * Namespaces
-  * Push CSS changes to the browser in development mode using Socket.IO
+  * Transparent preprocessors
+  * Push CSS changes to the browser using Socket.IO
   * Easy code sharing with server
 
 ## Awesome Asset Manager for Node.js
@@ -24,12 +27,13 @@ Node.js a JavaScript asset isn't just a pile of bits that are sent to the
 browser. It's code. It's code that can be also used in the server and I think
 that it's the job of asset managers to help with it. So in *Piler* you can take
 code directly from your Javascript objects, not just from JavaScript files.
-Copying things from Rails is just not enough.
+Copying things from Rails is just not enough. This is just a one reason why
+Piler was created.
 
 Server-side code:
 
 ```javascript
-js.addOb({BROWSER_GLOBAL: {
+clientjs.addOb({BROWSER_GLOBAL: {
     aFunction: function() {
         console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
     }
@@ -39,7 +43,7 @@ js.addOb({BROWSER_GLOBAL: {
 You can also tell *Piler* to directly execute some function in the browser:
 
 ```javascript
-js.addExec(function() {
+clientjs.addExec(function() {
     BROWSER_GLOBAL.aFunction();
     alert("Hello" + window.navigator.appVersion);
 });
@@ -74,29 +78,29 @@ var createServer = require("express").createServer;
 var pile = require("pile");
 
 var app = createServer();
-var js = pile.createJSManager();
-var css = pile.createCSSManager();
+var clientjs = pile.createJSManager();
+var clientcss = pile.createCSSManager();
 
 
 
 app.configure(function() {
-    js.bind(app);
-    css.bind(app);
+    clientjs.bind(app);
+    clientcss.bind(app);
 
-    css.addFile(__dirname + "/style.css");
+    clientcss.addFile(__dirname + "/style.css");
 
-    js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
-    js.addFile(__dirname + "/client/hello.js");
+    clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+    clientjs.addFile(__dirname + "/client/hello.js");
 });
 
 
 app.configure("development", function() {
-    js.liveUpdate(css);
+    clientjs.liveUpdate(css);
 });
 
-js.addOb({ VERSION: "1.0.0" });
+clientjs.addOb({ VERSION: "1.0.0" });
 
-js.exec(function() {
+clientjs.exec(function() {
     alert("Hello browser" + window.navigator.appVersion);
 });
 
@@ -130,8 +134,8 @@ If you for example want to add big editor files only for administration pages
 you can create a pile for it:
 
 ```javascript
-js.addFile("admin", __dirname + "/editor.js");
-js.addFile("admin", __dirname + "/editor.extension.js");
+clientjs.addFile("admin", __dirname + "/editor.js");
+clientjs.addFile("admin", __dirname + "/editor.extension.js");
 ```
 
 This will add file editor.js and editor.extension.js to a admin pile. Now you
@@ -209,7 +213,7 @@ var share = require("./share.js");
 and you can share it the client using *addFile*:
 
 ```javascript
-js.addFile(__dirname + "./share.js");
+clientjs.addFile(__dirname + "./share.js");
 ```
 
 Now you can use it in both as you would expect
@@ -238,7 +242,7 @@ Using Express you can add Live CSS editing in development mode:
 
 ```javascript
 app.configure("development", function() {
-   js.liveUpdate(css);
+   clientjs.liveUpdate(css);
 });
 ```
 
@@ -251,7 +255,7 @@ parameter to liveUpdate:
 
 ```javascript
 var io = require('socket.io').listen(app);
-js.liveUpdate(css, io);
+clientjs.liveUpdate(css, io);
 ```
 
 ### Script-tag rendering
@@ -261,9 +265,9 @@ In development mode every JS- and CSS-file will be rendered as a separate tag.
 For example renderScriptTags("admin") will render
 
 ```javascript
-js.addFile(__dirname + "/helpers.js");
-js.addFile("admin", __dirname + "/editor.js");
-js.addFile("admin", __dirname + "/editor.extension.js");
+clientjs.addFile(__dirname + "/helpers.js");
+clientjs.addFile("admin", __dirname + "/editor.js");
+clientjs.addFile("admin", __dirname + "/editor.extension.js");
 ```
 
 to
@@ -343,7 +347,7 @@ Execute this function only on this response.
 
 #### res.ob( any Javascript object )
 
-Similar to js.addOb, but only for this response.
+Similar to clientjs.addOb, but only for this response.
 
 THIS ONE IS NOT IMPLEMENTED YET
 
