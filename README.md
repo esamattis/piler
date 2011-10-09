@@ -18,18 +18,22 @@ files. Copying things from Rails is just not enough.
 
 Server-side code:
 
-    js.addOb({BROWSER_GLOBAL: {
-        aFunction: function() {
-            console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
-        }
-    }});
+```javascript
+js.addOb({BROWSER_GLOBAL: {
+    aFunction: function() {
+        console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
+    }
+}});
+```
 
 You can also tell *node-pile* to directly execute some function in the browser:
 
-    js.addExec(function() {
-        BROWSER_GLOBAL.aFunction();
-        alert("Hello" + window.navigator.appVersion);
-    });
+```javascript
+js.addExec(function() {
+    BROWSER_GLOBAL.aFunction();
+    alert("Hello" + window.navigator.appVersion);
+});
+```
 
 
 Currently *node-pile* works only with [Express], but other frameworks
@@ -54,53 +58,58 @@ are planned as well.
 
 Full example
 
-    var createServer = require("express").createServer;
-    var pile = require("pile");
+```javascript
+var createServer = require("express").createServer;
+var pile = require("pile");
 
-    var app = createServer();
-    var js = pile.createJSManager();
-    var css = pile.createCSSManager();
-
-
-
-    app.configure(function() {
-        js.bind(app);
-        css.bind(app);
-
-        css.addFile(__dirname + "/style.css");
-
-        js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
-        js.addFile(__dirname + "/client/hello.js");
-    });
+var app = createServer();
+var js = pile.createJSManager();
+var css = pile.createCSSManager();
 
 
-    app.configure("development", function() {
-        js.liveUpdate(css);
-    });
 
-    js.addOb({ VERSION: "1.0.0" });
+app.configure(function() {
+    js.bind(app);
+    css.bind(app);
 
-    js.exec(function() {
-        alert("Hello browser" + window.navigator.appVersion);
-    });
+    css.addFile(__dirname + "/style.css");
 
-    app.get("/", function(req, res){
-        res.render("index.jade", { layout: false });
-    });
-    
-    app.listen(8080);
+    js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+    js.addFile(__dirname + "/client/hello.js");
+});
+
+
+app.configure("development", function() {
+    js.liveUpdate(css);
+});
+
+js.addOb({ VERSION: "1.0.0" });
+
+js.exec(function() {
+    alert("Hello browser" + window.navigator.appVersion);
+});
+
+app.get("/", function(req, res){
+    res.render("index.jade", { layout: false });
+});
+
+app.listen(8080);
+```
+
 
 
 index.jade:
 
-    !!! 5
-    html
-      head
-        !{renderStyleTags()}
-        !{renderScriptTags()}
-      body
-        h1 Hello node-pile!
-        #container !{body}
+```
+!!! 5
+html
+  head
+    !{renderStyleTags()}
+    !{renderScriptTags()}
+  body
+    h1 Hello node-pile!
+    #container !{body}
+```
 
 
 ## Namespaces
@@ -110,14 +119,18 @@ The example above uses just a one pile. The global pile.
 If you for example want to add big editor files only for administration pages
 you can create a pile for it:
 
-    js.addFile("admin", __dirname + "/editor.js");
-    js.addFile("admin", __dirname + "/editor.extension.js");
+```javascript
+js.addFile("admin", __dirname + "/editor.js");
+js.addFile("admin", __dirname + "/editor.extension.js");
+```
 
 This will add file editor.js and editor.extension.js to a admin pile. Now you
 can add that to your admin pages by using giving it as parameter for
 *renderScriptTags*.
 
-    !{renderScriptTags("admin")}
+```javascript
+!{renderScriptTags("admin")}
+```
 
 This will render script-tags for the global pile and the admin-pile.
 *renderScriptTags* and *renderStyleTags* can take variable amount of arguments.
@@ -134,16 +147,20 @@ can share code directly from your server code.
 Let's say that you want to share a email-validating function with a server and
 the client
 
-    function isEmail(s) {
-      return !! s.match(/.\w+@\w+\.\w/);
-    }
+```javascript
+function isEmail(s) {
+  return !! s.match(/.\w+@\w+\.\w/);
+}
+```
 
 You can share it with *addOb* -method:
 
-    js.addOb({MY: {
-       isEmail: isEmail
-       }
-    });
+```javascript
+js.addOb({MY: {
+   isEmail: isEmail
+   }
+});
+```
 
 Now on the client you can find the isEmail-function from MY.isEmail.
 
@@ -163,25 +180,33 @@ be used to share modules between the server and the client.
 
 share.js
 
-    (function(exports){
+```javascript
+(function(exports){
 
-      exports.test = function(){
-           return 'This is a function from shared module';
-      };
+  exports.test = function(){
+       return 'This is a function from shared module';
+  };
 
-    }(typeof exports === 'undefined' ? this.share = {} : exports));
+}(typeof exports === 'undefined' ? this.share = {} : exports));
+```
 
 In Node.js you can use it by just requiring it as any other module
 
-    var share = require("./share.js");
+```javascript
+var share = require("./share.js");
+```
 
 and you can share it the client using *addFile*:
 
-    js.addFile(__dirname + "./share.js");
+```javascript
+js.addFile(__dirname + "./share.js");
+```
 
 Now you can use it in both as you would expect
 
-    share.test();
+```javascript
+share.test();
+```
 
 You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
@@ -197,20 +222,26 @@ In development mode every js- and css-file will be rendered as a separate tag.
 
 For example renderScriptTags("admin") will render
 
-    js.addFile(__dirname + "/helpers.js");
-    js.addFile("admin", __dirname + "/editor.js");
-    js.addFile("admin", __dirname + "/editor.extension.js");
+```javascript
+js.addFile(__dirname + "/helpers.js");
+js.addFile("admin", __dirname + "/editor.js");
+js.addFile("admin", __dirname + "/editor.extension.js");
+```
 
 to
 
-    <script type="text/javascript" src="/pile/js/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
-    <script type="text/javascript" src="/pile/js/dev/admin/3718d-editor.js?v=1317298508714" ></script>
-    <script type="text/javascript" src="/pile/js/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
+```html
+<script type="text/javascript" src="/pile/js/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
+<script type="text/javascript" src="/pile/js/dev/admin/3718d-editor.js?v=1317298508714" ></script>
+<script type="text/javascript" src="/pile/js/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
+```
 
 in development mode, but in production it will render to
 
-    <script type="text/javascript"  src="/pile/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
-    <script type="text/javascript"  src="/pile/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
+```html
+<script type="text/javascript"  src="/pile/js/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
+<script type="text/javascript"  src="/pile/js/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
+```
 
 So debugging should be as easy as directly using script-tags. 
 Line numbers will match your real files in the filesystem.
@@ -226,9 +257,11 @@ some development tools when in development mode.
 
 Using Express you can automatically add Live CSS editing:
 
-    app.configure("development", function() {
-       js.liveUpdate(css);
-    });
+```javascript
+app.configure("development", function() {
+   js.liveUpdate(css);
+});
+```
 
 This is similar to [Live.js][], but it does not use polling. It will add
 socket.io which will push the CSS-updates to your browser as you edit them.
@@ -237,8 +270,10 @@ If your app already uses Socket.io you need to add the io-object as second
 parameter to liveUpdate:
 
 
-    var io = require('socket.io').listen(app);
-    js.liveUpdate(css, io);
+```javascript
+var io = require('socket.io').listen(app);
+js.liveUpdate(css, io);
+```
 
 
 ## Examples
