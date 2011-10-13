@@ -2,14 +2,14 @@
     "name" : "piler"
     , "version": "0.3.0"
     , "author": "Esa-Matti Suuronen"
-    , "homepage": "https://github.com/epeli/node-piler"
+    , "homepage": "http://epeli.github.com/piler/"
     , "description": "Awesome Asset Manager for Node.js"
     , "bugs": {
-            "web": "https://github.com/epeli/node-piler/issues/"
+            "web": "https://github.com/epeli/piler/issues/"
     }
     , "repository":
         { "type": "git"
-        , "url": "git://github.com/epeli/node-piler.git"
+        , "url": "git://github.com/epeli/piler.git"
     }
     , "scripts": {
         "test": "./run-tests.sh"
