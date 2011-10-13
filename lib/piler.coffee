@@ -13,8 +13,8 @@ assetUrlParse = require "./asseturlparse"
 
 toGlobals = (globals) ->
   code = ""
-  for k, v of globals
-    code += "window['#{ k }'] = #{ OB.stringify v };\n"
+  for nsString, v of globals
+    code += "__SET(#{ JSON.stringify nsString }, #{ OB.stringify v });\n"
   code
 
 
@@ -337,6 +337,26 @@ class PileManager
 class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
+
+  constructor: ->
+    super
+    @piles.global.addExec ->
+      window._NS = (nsString) ->
+        parent = window
+        for ns in nsString.split "."
+          # Create new namespace if it is missing
+          parent = parent[ns] ?= {}
+        parent # return the asked namespace
+
+      window.__SET = (ns, ob) ->
+        parts = ns.split "."
+        if parts.length is 1
+          window[parts[0]] = ob
+        else
+          nsOb = _NS(parts.slice(0, -1).join("."))
+          target = parts.slice(-1)[0]
+          nsOb[target] = ob
+
 
 
   addOb: defNs (ns, ob) ->

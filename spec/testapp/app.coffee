@@ -39,6 +39,10 @@ js.addExec ->
 js.addExec "mynamespace", ->
   window["namespace js exec"] = true
 
+
+js.addOb "namespaceob.first": true
+js.addOb "namespaceob.second": true
+
 app.get "/namespace", (req, res) ->
   res.render "namespace.jade",
    layout: false
@@ -46,8 +50,14 @@ app.get "/namespace", (req, res) ->
 
 
 app.get "/", (req, res) ->
-  res.exec ->
+  res.addExec ->
    window["response exec"] = true
+
+  res.addOb
+    "response ob": true
+
+  res.addOb
+    "res.namespace.works.too": true
 
   res.render "index.jade"
 

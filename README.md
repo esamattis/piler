@@ -1,16 +1,13 @@
 <div class="version">
 This is the documentation for unstable master branch. 
-For the stable see the <a href="http://epeli.github.com/node-pile">homepage</a>.
+For the stable release see the <a href="http://epeli.github.com/node-pile">homepage</a>.
 </div>
 
 # Piler
 
-*Note: node-pile was just renamed to Piler. Links on this Github page will
-broken until the next release. For current docs see the [homepage](http://epeli.github.com/node-pile).*
-
 Feature hilights
 
-  * Minify and concatenate JS and CSS
+  * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering
   * Namespaces
   * Transparent preprocessors
@@ -308,16 +305,30 @@ of *addUrl* which will be rendered as first.
 
 ### JavaScript pile
 
-#### addFile( [namespace], path to a asset file)
+#### addFile( [namespace], path to a asset file )
 
-#### addUrl( [namespace], url to a asset file)
+File on filesystem.
+
+#### addUrl( [namespace], url to a asset file )
 
 Useful for CDNs and for dynamic assets in other libraries such as socket.io.
 
-#### addOb( [namespace], any Javascript object )
+#### addOb( [namespace string], any Javascript object )
 
-Keys of the object will be added as globals. So take care when choosing those.
-Also remember that parent scope of functions will be lost.
+Keys of the object will be added to the global window object. So take care when
+choosing those.  Also remember that parent scope of functions will be lost.
+
+You can alsow give a nested namespace for it
+
+    clientjs.addOb({"foo.bar": "my thing"});
+
+Now on the client "my thing" string will be found from window.foo.bar.
+
+The object will be serialized at the second it is passed to this method so you
+won't be able modify it between server restarts. This is usefull for sharing
+utility functions etc.
+
+Use *res.addOb* to share more dynamically objects.
 
 #### addExec( [namespace], Javascript function )
 
@@ -326,6 +337,8 @@ scope is also lost here.
 
 #### addRaw( [namespace], raw Javascript string )
 
+Any valid Javascript string.
+
 
 
 ### CSS pile
@@ -333,25 +346,32 @@ scope is also lost here.
 These are similar to ones in JS pile.
 
 
-#### addFile( [namespace], path to a asset file)
+#### addFile( [namespace], path to a asset file )
 
-#### addUrl( [namespace], url to a asset file)
+CSS asset on your filesystem.
+
+#### addUrl( [namespace], url to a asset file )
+
+CSS asset behind a url. Can be remote too. This will be directly linked to you
+page. Use addFile if you want it be minified.
 
 #### addRaw( [namespace], raw CSS string )
 
+Any valid CSS string.
+
 ### Response object
 
-*Piler* also adds few extra methods to your response objects.
+*Piler* also adds few extra methods to your response objects. The big
+difference to *clientjs.addExec* and *clientjs.addOb* is that with these are
+that you can render different values every time.
 
-#### res.exec( Javascript function )
+#### res.addExec( Javascript function )
 
 Execute this function only on this response.
 
-#### res.ob( any Javascript object )
+#### res.addOb( any Javascript object )
 
 Similar to clientjs.addOb, but only for this response.
-
-THIS ONE IS NOT IMPLEMENTED YET
 
 
 ## Supported preprocessors
@@ -388,12 +408,13 @@ on [Github](https://github.com/epeli/node-piler).
 
 ## Changelog
 
-v0.3.0 - (unreleased)
+v0.3.0 - 2011-10-13
 
   * Rename to Piler
-  * Remove add prefix from method names (TODO)
-  * Really minify CSS (TODO)
-  * Implemented res.ob
+  * Really minify CSS
+  * Implemented res.addOb
+  * addOb can now take nested namespace string and it won't override existing
+    namespaces.
 
 ## Contact
 

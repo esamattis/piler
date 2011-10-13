@@ -46,11 +46,21 @@ for type, port of servers then do (type, port) ->
     it "addOb adds global variables", ->
       expect(@browser.window["addOb global"]).toEqual true
 
+    it "addOb does not override namespace objects", ->
+      expect(@browser.window.namespaceob.second).toEqual true, "second addOb missing"
+      expect(@browser.window.namespaceob.first).toEqual true, "first addOb missing"
+
+    it "should work on res too", ->
+      expect(@browser.window.res.namespace.works.too).toEqual true
+
     it "js.addExec gets executed", ->
       expect(@browser.window["js exec"]).toEqual true
 
-    it "res.exec gets executed", ->
+    it "res.addExec gets executed", ->
       expect(@browser.window["response exec"]).toEqual true
+
+    it "res.addOb gets added", ->
+      expect(@browser.window["response ob"]).toEqual true
 
     it "addUrl can load assets from remote servers", ->
       expect(@browser.window["remote script"]).toEqual true
