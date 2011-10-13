@@ -1,6 +1,6 @@
 <div class="version">
 This is the documentation for unstable master branch. 
-For the stable release see the <a href="http://epeli.github.com/node-pile">homepage</a>.
+For the stable release see the <a href="http://epeli.github.com/piler">homepage</a>.
 </div>
 
 # Piler
@@ -27,7 +27,7 @@ browser. It's code. It's code that can be also used in the server and I think
 that it's the job of asset managers to help with it. So in *Piler* you can take
 code directly from your Javascript objects, not just from JavaScript files.
 Copying things from Rails is just not enough. This is just a one reason why
-Piler was created.
+*Piler* was created.
 
 Server-side code:
 
@@ -74,11 +74,11 @@ Full example
 
 ```javascript
 var createServer = require("express").createServer;
-var pile = require("pile");
+var piler = require("piler");
 
 var app = createServer();
-var clientjs = pile.createJSManager();
-var clientcss = pile.createCSSManager();
+var clientjs = piler.createJSManager();
+var clientcss = piler.createCSSManager();
 
 
 
