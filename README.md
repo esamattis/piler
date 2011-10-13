@@ -303,6 +303,29 @@ directory in the repo.
 Code will be rendered in the order you call these functions with the exception
 of *addUrl* which will be rendered as first.
 
+### createJSManager and createCSSManager
+
+Can take an optional configuration object as an argument with following keys.
+
+    var jsclient = piler.createJSManager({
+        outputDirectory: __dirname + "/mydir",
+        urlRoot: "/my/root"
+    });
+
+#### urlRoot
+
+Url root to which Piler's paths are appended. For example urlRoot "/my/root"
+will result in following script tag:
+
+    <script type="text/javascript" src="/my/root/min/code.js?v=f4ec8d2b2be16a4ae8743039c53a1a2c31e50570" ></script>
+
+#### outputDirectory
+
+If specified *Piler* will write the minified assets to this folder. Useful if
+you want to share you assets from Apache etc. instead of directly serving from
+Piler's Connect middleware.
+
+
 ### JavaScript pile
 
 #### addFile( [namespace], path to a asset file )
@@ -374,6 +397,9 @@ Execute this function only on this response.
 Similar to clientjs.addOb, but only for this response.
 
 
+
+
+
 ## Supported preprocessors
 
 ### JavaScript
@@ -413,6 +439,7 @@ v0.3.0 - 2011-10-13
   * Rename to Piler
   * Really minify CSS
   * Implemented res.addOb
+  * Implement outputDirectory and urlRoot options.
   * addOb can now take nested namespace string and it won't override existing
     namespaces.
 
