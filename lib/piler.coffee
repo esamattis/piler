@@ -75,7 +75,7 @@ asCodeOb = do ->
 
 
 class BasePile
-  urlRoot: "/pile/"
+  urlRoot: "/piler/"
 
   production: false
 
