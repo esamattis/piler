@@ -11,6 +11,12 @@ OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
 
+toGlobals = (globals) ->
+  code = ""
+  for k, v of globals
+    code += "window['#{ k }'] = #{ OB.stringify v };\n"
+  code
+
 
 extension = (filename) ->
   parts = filename.split "."
@@ -52,10 +58,7 @@ asCodeOb = do ->
   pilers =
     raw: (ob, cb) -> cb null, ob.raw
     object: (ob, cb) ->
-      code = ""
-      for k, v of ob.object
-        code += "window['#{ k }'] = #{ OB.stringify v };\n"
-      cb null, code
+      cb null, toGlobals ob.object
     exec: (ob, cb) ->
       cb null, executableFrom ob.object
     file: (ob, cb) ->
@@ -184,7 +187,6 @@ class JSPile extends BasePile
   constructor: ->
     super
     @objects = []
-    @execs = []
 
 
 
@@ -240,8 +242,6 @@ class PileManager
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
-
-
 
     @piles =
       global: new @Type "global", @production, @settings.urlRoot
@@ -338,6 +338,7 @@ class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
 
+
   addOb: defNs (ns, ob) ->
     pile = @getPile ns
     pile.addOb ob
@@ -349,20 +350,35 @@ class JSManager extends PileManager
   setDynamicHelper: (app) ->
     app.dynamicHelpers renderScriptTags: (req, res) => =>
       bundle = @renderTags.apply this, arguments
+      inline = ""
+
+      if res._responseObs
+        for ob in res._responseObs
+          inline += toGlobals ob
+
       if res._responseFns
         for fn in res._responseFns
-          bundle += wrapInScriptTagInline executableFrom fn
-      bundle
+          inline += executableFrom fn
+
+      bundle + wrapInScriptTagInline inline
 
   setMiddleware: (app) ->
     responseExec = (fn) ->
       # "this" is the response object
       this._responseFns.push fn
 
+    responseOb = (ob) ->
+      this._responseObs.push ob
+
     # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
       res._responseFns ?= []
-      res.exec = responseExec
+      res._responseObs ?= []
+
+      # TODO: deprecate res.exec
+      res.exec = res.addExec = responseExec
+      res.addOb = responseOb
+
       next()
 
 class CSSManager extends PileManager
