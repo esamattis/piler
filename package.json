@@ -21,6 +21,7 @@
         , "underscore.string": ""
         , "uglify-js": ""
         , "async": ""
+        , "csso": ""
     }
     , "devDependencies": {
           "jasmine-node": ""

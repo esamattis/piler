@@ -6,7 +6,7 @@ path = require "path"
 _ = require "underscore"
 async = require "async"
 
-{minify, beautify} = require "./minify"
+{jsMinify, cssMinify} = require "./minify"
 OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
@@ -177,7 +177,7 @@ class JSPile extends BasePile
 
   minify: (code) ->
     if @production
-      minify code
+      jsMinify code
     else
       code
 
@@ -218,8 +218,11 @@ class CSSPile extends BasePile
   wrapInTag: (uri, extra="") ->
     "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } />"
 
-  # TODO: Which lib to use?
-  minify: (code) -> code
+  minify: (code) ->
+    if @production
+      cssMinify code
+    else
+      code
 
 
 defNs = (fn) ->
