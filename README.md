@@ -348,8 +348,8 @@ You can alsow give a nested namespace for it
 Now on the client "my thing" string will be found from window.foo.bar.
 
 The object will be serialized at the second it is passed to this method so you
-won't be able modify it between server restarts. This is usefull for sharing
-utility functions etc.
+won't be able modify it other than between server restarts. This is usefull for
+sharing utility functions etc.
 
 Use *res.addOb* to share more dynamically objects.
 
