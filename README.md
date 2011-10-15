@@ -429,8 +429,8 @@ From [npm][]
 ## Source code
 
 Source code is licenced under [The MIT
-License](https://github.com/epeli/node-piler/blob/master/LICENSE) it is hosted
-on [Github](https://github.com/epeli/node-piler).
+License](https://github.com/epeli/node-piler/blob/master/LICENSE) and it is hosted
+on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
