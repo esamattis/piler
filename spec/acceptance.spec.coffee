@@ -93,7 +93,7 @@ for type, port of servers then do (type, port) ->
       $ = @browser.window.jQuery
       expect($("link[rel='stylesheet']").size()).toBeGreaterThan 0
 
-    it "We have valid CSS", ->
+    it "has valid CSS", ->
       $ = @browser.window.jQuery
 
       cssUrls = $("link[rel='stylesheet']").map -> this.href
@@ -102,10 +102,12 @@ for type, port of servers then do (type, port) ->
 
       async.reduce cssUrls, "", (memo, path, cb) =>
         request @httpRoot + path, (err, res, body) ->
+          # console.log res.statusCode, path
+          expect(res.statusCode).toBe 200, "#{ path } is missing"
           return cb err if err
           cb null, memo + body
       , (err, css) ->
-        throw err if err
+        expect(err).toBeFalsy()
 
         # Just use csslint to validate that we have sane css here until we come
         # up with something better. This will at least confirm that
