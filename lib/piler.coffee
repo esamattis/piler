@@ -67,6 +67,14 @@ asCodeOb = do ->
         getCompiler(ob.filePath) data.toString(), (err, code) ->
           cb err, code
 
+    module: (ob, cb) ->
+      this.file ob, (err, code) ->
+        return cb? err if err
+        cb null, """require.register("#{ path.basename ob.filePath }", function(module, exports, require) {
+        #{ code }
+        }"""
+
+
   return ->
     @getId = getId
     @getCode = (cb) ->
@@ -188,6 +196,15 @@ class JSPile extends BasePile
     super
     @objects = []
 
+
+  # CommonJS module
+  addModule: (filePath) ->
+    filePath = path.normalize filePath
+    @warnPiledUp "addFile"
+    if filePath not in @getFilePaths()
+      @code.push asCodeOb.call
+        type: "module"
+        filePath: filePath
 
 
   addOb: (ob) ->
@@ -362,6 +379,9 @@ class JSManager extends PileManager
           nsOb[target] = ob
 
 
+  addModule: defNs (ns, path) ->
+    pile = @getPile ns
+    pile.addModule path
 
   addOb: defNs (ns, ob) ->
     pile = @getPile ns
