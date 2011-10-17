@@ -1,9 +1,9 @@
 !!! 5
 html(lang="en")
   head
-    !{renderStyleTags()}
+    !{renderStyleTags("namespaced")}
     style #tests * { color: red }
   body
     h1 node-piles test page
     #container !{body}
-    !{renderScriptTags("namespaced")}
+    !{renderScriptTags()}
