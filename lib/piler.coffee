@@ -314,6 +314,9 @@ class PileManager
       res.setHeader "Content-type", @contentType
       asset = assetUrlParse req.url
 
+      # Wrong asset type. Lets skip to next middleware.
+      if asset.ext isnt @Type::ext
+        return next()
 
       pile = @piles[asset.name]
 
@@ -321,21 +324,16 @@ class PileManager
         res.send "Cannot find pile #{ asset.name }", 404
         return
 
-      # Wrong asset type. Lets skip to next middleware.
-      if asset.ext isnt pile.ext
-        return next()
-
-
+      # TODO: set cache headers to forever
       if asset.min
         res.end pile.rawPile
         return
 
-      if asset.dev
-        codeOb = pile.findCodeObById asset.dev.uid
-        codeOb.getCode (err, code) ->
-          throw err if err
-          res.end code
-          return
+      codeOb = pile.findCodeObById asset.dev.uid
+      codeOb.getCode (err, code) ->
+        throw err if err
+        res.end code
+        return
 
 
 
