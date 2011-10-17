@@ -48,7 +48,7 @@ asCodeOb = do ->
 
     hash = sum.digest('hex').substring 10, 0
 
-    if @type is "file"
+    if @type  in ["file", "module"]
       filename = _.last @filePath.split("/")
       filename = filename.replace /\./g, "_"
       filename = filename.replace /\-/g, "_"
@@ -70,9 +70,9 @@ asCodeOb = do ->
     module: (ob, cb) ->
       this.file ob, (err, code) ->
         return cb? err if err
-        cb null, """require.register("#{ path.basename ob.filePath }", function(module, exports, require) {
+        cb null, """require.register("#{ path.basename(ob.filePath).split(".")[0] }", function(module, exports, require) {
         #{ code }
-        }"""
+        });"""
 
 
   return ->
