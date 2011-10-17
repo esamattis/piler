@@ -278,8 +278,14 @@ class PileManager
 
 
   renderTags: (namespaces...) ->
-    # Always render global pile
-    namespaces.unshift "global"
+    if typeof _.last(namespaces) is "object"
+      opts = namespaces.pop()
+    else
+      opts = {}
+
+    if not opts.disableGlobal
+      namespaces.unshift "global"
+
     tags = ""
     for ns in namespaces
       pile = @piles[ns]
@@ -312,7 +318,7 @@ class PileManager
       pile = @piles[asset.name]
 
       if not pile
-        res.send "Cannot find pile #{ asset.name }"
+        res.send "Cannot find pile #{ asset.name }", 404
         return
 
       # Wrong asset type. Lets skip to next middleware.
