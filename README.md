@@ -434,6 +434,10 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.3.1 - 2011-11-17
+
+  * Fix CSS namespaces
+
 v0.3.0 - 2011-10-13
 
   * Rename to Piler
