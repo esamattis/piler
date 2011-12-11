@@ -434,6 +434,10 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.3.2 - 2011-12-11
+
+  * Workaround compiler bug in CoffeeScript
+
 v0.3.1 - 2011-11-17
 
   * Fix CSS namespaces
