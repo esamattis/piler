@@ -30,7 +30,7 @@ js.addFile __dirname + "/clientscripts/global.coffee"
 
 js.addRaw "window['raw js'] = true;"
 js.addRaw "mynamespace", "window['raw namespace js'] = true;"
-js.addModule __dirname + "/sharedmodule.coffee"
+# js.addModule __dirname + "/sharedmodule.coffee"
 
 js.addFile "mynamespace", __dirname + "/clientscripts/namespace.js"
 
