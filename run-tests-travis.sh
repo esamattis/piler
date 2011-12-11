@@ -6,5 +6,3 @@
 sleep 1
 
 node_modules/.bin/jasmine-node --coffee spec/
-
-kill 0
