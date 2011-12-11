@@ -1,5 +1,3 @@
-before_script: "sh ./setup-travis.sh"
-script: "npm test"
-notifications:
-  recipients:
-    - esa-matti@suuronen.org
+language: node_js
+node_js:
+  - 0.6
