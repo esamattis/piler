@@ -5,7 +5,7 @@
     , "homepage": "http://epeli.github.com/piler/"
     , "description": "Awesome Asset Manager for Node.js"
     , "bugs": {
-            "web": "https://github.com/epeli/piler/issues/"
+            "url": "https://github.com/epeli/piler/issues/"
     }
     , "repository":
         { "type": "git"
