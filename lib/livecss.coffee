@@ -70,12 +70,16 @@ class LiveUpdateMixin
       console.log "Activating CSS updater"
 
       for k, pile of cssmanager.piles
-        for codeOb in pile.code then do (codeOb) =>
-          return unless codeOb.type is "file"
-          console.log "watching #{ codeOb.filePath } for changes"
-          fs.watchFile codeOb.filePath, =>
-            console.log "updated", codeOb.filePath
-            @io.emit "update", codeOb.getId()
+        for codeOb in pile.code
+          @_watch pile, codeOb
+
+
+  _watch: (pile, codeOb) ->
+    return unless codeOb.type is "file"
+    console.log "watching #{ codeOb.filePath } for changes"
+    fs.watchFile codeOb.filePath, =>
+      console.log "updated", codeOb.filePath
+      @io.emit "update", codeOb.getId()
 
 # For testing
 LiveUpdateMixin.incUrlSeq = incUrlSeq
