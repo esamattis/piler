@@ -1,4 +1,5 @@
 coffeescript = require "coffee-script"
+csso = require "csso"
 
 try
   stylus = require "stylus"
@@ -52,7 +53,12 @@ if stylus?
 if less?
   compilers.less =
     render: (filename, code, cb) ->
-      less.render code, cb
+      less.render code, (err, css) ->
+        cb(err) if err
+        if production
+          cb null, csso.justDoIt code
+        else
+          cb null, css
     targetExt: "css"
 
 
