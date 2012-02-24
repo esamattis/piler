@@ -238,10 +238,7 @@ class CSSPile extends BasePile
     "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } />"
 
   minify: (code) ->
-    if @production
-      cssMinify code
-    else
-      code
+    code.replace /\/\*(.+)\*\/\n?/gi, ''
 
 
 defNs = (fn) ->

@@ -12,6 +12,8 @@ try
   less = require "less"
 catch e
 
+production = process.env.NODE_ENV is "production"
+
 compilers =
   # Dummy compilers
   css:
@@ -34,6 +36,7 @@ if stylus?
     render: (code, cb) ->
       stylus(code)
       .set('filename', filename)
+      .set('compress', if production then true else false)
       .render cb
 
   if nib?
@@ -41,6 +44,7 @@ if stylus?
     compilers.styl.render = (filename, code, cb) ->
       stylus(code)
       .set('filename', filename)
+      .set('compress', if production then true else false)
       .use(do nib)
       .render cb
 
