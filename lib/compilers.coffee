@@ -15,36 +15,39 @@ catch e
 compilers =
   # Dummy compilers
   css:
-    render: (code, cb) -> cb null, code
+    render: (filename, code, cb) -> cb null, code
   js:
-    render: (code, cb) -> cb null, code
+    render: (filename, code, cb) -> cb null, code
 
   # We always have coffee-script compiler ;)
   coffee:
-    render: (code, cb) ->
+    render: (filename, code, cb) ->
       try
         cb null, coffeescript.compile code
       catch e
         cb e, null
     targetExt: "js"
 
-
 if stylus?
   compilers.styl =
-    render: stylus.render
     targetExt: "css"
+    render: (code, cb) ->
+      stylus(code)
+      .set('filename', filename)
+      .render cb
 
   if nib?
     Renderer = require "stylus/lib/renderer"
-    compilers.styl.render = (code, cb) ->
-      renderer = new Renderer code
-      renderer.use nib()
-      renderer.render cb
+    compilers.styl.render = (filename, code, cb) ->
+      stylus(code)
+      .set('filename', filename)
+      .use(do nib)
+      .render cb
 
 
 if less?
   compilers.less =
-    render: (code, cb) ->
+    render: (filename, code, cb) ->
       less.render code, cb
     targetExt: "css"
 
