@@ -16,6 +16,7 @@ css.bind app
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile "namespaced", __dirname + "/stylesheets/namespaced.css"
 css.addFile __dirname + "/stylesheets/style.styl"
+css.addFile __dirname + "/stylesheets/import.styl"
 css.addFile __dirname + "/stylesheets/style.less"
 css.addRaw "#raw { display: none }"
 
