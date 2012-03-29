@@ -67,7 +67,7 @@ as well.
   * Use heavy caching. Browser caches are killed automatically using the hash
     sum of the assets.
   * Awesome development mode. Build-in support for pushing CSS changes to
-    browsr using Sockect.IO.
+    browsr using Socket.IO.
 
 
 Full example
