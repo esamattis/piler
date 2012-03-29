@@ -434,6 +434,12 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.3.4 - 2012-03-29
+
+  * Fix Stylus @imports
+
+v0.3.3 - noop
+
 v0.3.2 - 2011-12-11
 
   * Workaround compiler bug in CoffeeScript
