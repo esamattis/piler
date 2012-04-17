@@ -49,7 +49,7 @@ asCodeOb = do ->
     hash = sum.digest('hex').substring 10, 0
 
     if @type  in ["file", "module"]
-      filename = _.last @filePath.split("/")
+      filename = path.basename @filePath
       filename = filename.replace /\./g, "_"
       filename = filename.replace /\-/g, "_"
       hash = filename + "_" + hash
