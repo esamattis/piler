@@ -293,7 +293,7 @@ bundle!
 ## Examples
 
 See
-[this](https://github.com/epeli/node-piler/blob/master/examples/simple/app.js)
+[this](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
 directory in the repo.
 
 
@@ -416,7 +416,7 @@ CSS-compilers are not included in *Piler*. Just install what you need using
   * [LESS][] (npm install less)
 
 Adding support for new compilers should be
-[easy](https://github.com/epeli/node-piler/blob/master/lib/compilers.coffee).
+[easy](https://github.com/epeli/piler/blob/master/lib/compilers.coffee).
 
 Feel free to contribute!
 
@@ -429,7 +429,7 @@ From [npm][]
 ## Source code
 
 Source code is licenced under [The MIT
-License](https://github.com/epeli/node-piler/blob/master/LICENSE) and it is hosted
+License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
 on [Github](https://github.com/epeli/piler).
 
 ## Changelog

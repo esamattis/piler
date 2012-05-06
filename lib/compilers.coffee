@@ -1,4 +1,5 @@
 coffeescript = require "coffee-script"
+path = require "path"
 
 try
   stylus = require "stylus"
@@ -48,8 +49,9 @@ if stylus?
 if less?
   compilers.less =
     render: (filename, code, cb) ->
-      less.render code, cb
+      less.render code,
+        paths: [path.dirname filename]
+        cb
     targetExt: "css"
-
 
 module.exports = compilers
