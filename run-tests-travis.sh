@@ -6,3 +6,8 @@
 sleep 1
 
 node_modules/.bin/jasmine-node --coffee spec/
+
+echo "Also review the visual tests"
+echo "    cd spec/testapp/"
+echo "    coffee app.coffee"
+echo "and open http://localhost:7000/"
