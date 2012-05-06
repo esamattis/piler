@@ -434,6 +434,10 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.3.5 - 2012-xx-x
+
+  * Fix LESS @imports
+
 v0.3.4 - 2012-03-29
 
   * Fix Stylus @imports
