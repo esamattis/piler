@@ -96,6 +96,7 @@ class BasePile
     @urls = []
     @devMapping = {}
     @piledUp = false
+    @lastModifiedDate = new Date()
 
   addFile: (filePath) ->
     filePath = path.normalize filePath
@@ -341,7 +342,20 @@ class PileManager
         res.send "Cannot find pile #{ asset.name }", 404
         return
 
-      # TODO: set cache headers to forever
+      if @production
+        ifNoneMatch = req.header "If-None-Match"
+        ifModifiedSince = req.header "If-Modified-Since"
+        # Etags are quoted strings "dfjkdajkfajkdjkajfkdjakjfkd"
+        if ifNoneMatch is "\"#{ pile.pileHash }\"" or ifModifiedSince is pile.lastModifiedDate.toUTCString()
+          res.send 304
+          return
+
+        oneYear = 31557600000;
+        res.header "Cache-Control", "public, max-age=#{ oneYear }"
+        res.header "ETag", "\"#{ pile.pileHash }\""
+        res.header "Last-Modified", pile.lastModifiedDate.toUTCString();
+        # TODO add expires?
+
       if asset.min
         res.end pile.rawPile
         return
