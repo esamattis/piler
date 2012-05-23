@@ -96,7 +96,8 @@ class BasePile
     @urls = []
     @devMapping = {}
     @piledUp = false
-    @lastModifiedDate = new Date()
+    @lastModifiedDate = new Date
+    @lastModifiedDate.setMilliseconds 0 #We don't care about millisecond precision
 
   addFile: (filePath) ->
     filePath = path.normalize filePath
@@ -344,9 +345,9 @@ class PileManager
 
       if @production
         ifNoneMatch = req.header "If-None-Match"
-        ifModifiedSince = req.header "If-Modified-Since"
+        ifModifiedSince = new Date(req.header "If-Modified-Since")
         # Etags are quoted strings "dfjkdajkfajkdjkajfkdjakjfkd"
-        if ifNoneMatch is "\"#{ pile.pileHash }\"" or ifModifiedSince is pile.lastModifiedDate.toUTCString()
+        if ifNoneMatch is "\"#{ pile.pileHash }\"" or ifModifiedSince >= pile.lastModifiedDate
           res.send 304
           return
 
