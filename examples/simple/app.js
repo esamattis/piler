@@ -54,4 +54,6 @@ app.get("/", function(req, res){
   res.render("index.jade");
 });
 
-app.listen(8001);
+app.listen(8001, function(){
+ console.log("listening on 8001");
+});
