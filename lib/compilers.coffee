@@ -32,7 +32,7 @@ compilers =
 if stylus?
   compilers.styl =
     targetExt: "css"
-    render: (code, cb) ->
+    render: (filename, code, cb) ->
       stylus(code)
       .set('filename', filename)
       .render cb
