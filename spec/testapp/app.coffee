@@ -49,20 +49,17 @@ js.addOb "namespaceob.second": true
 app.get "/namespace", (req, res) ->
   res.render "namespace.jade",
    layout: false
+   js: js.renderTags "mynamespace"
+   css: css.renderTags "mynamespace"
 
 
 
 app.get "/", (req, res) ->
-  res.addExec ->
-   window["response exec"] = true
 
-  res.addOb
-    "response ob": true
+  res.render "index.jade",
+    js: js.renderTags()
+    css: css.renderTags()
 
-  res.addOb
-    "res.namespace.works.too": true
-
-  res.render "index.jade"
 
 port = if process.env.NODE_ENV is "production" then 7001 else 7000
 
