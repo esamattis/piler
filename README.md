@@ -1,7 +1,3 @@
-<div class="version">
-This is the documentation for unstable master branch. 
-For the stable release see the <a href="http://epeli.github.com/piler">homepage</a>.
-</div>
 
 # Piler
 
@@ -104,7 +100,11 @@ clientjs.exec(function() {
 });
 
 app.get("/", function(req, res){
-    res.render("index.jade", { layout: false });
+    res.render("index.jade", {
+        layout: false,
+        js: js.renderTags(),
+        css: css.renderTags()
+    });
 });
 
 app.listen(8080);
@@ -117,11 +117,10 @@ index.jade:
 !!! 5
 html
   head
-    !{renderStyleTags()}
-    !{renderScriptTags()}
+    !{css}
+    !{js}
   body
     h1 Hello Piler
-    #container !{body}
 ```
 
 
@@ -139,15 +138,15 @@ clientjs.addFile("admin", __dirname + "/editor.extension.js");
 
 This will add file editor.js and editor.extension.js to a admin pile. Now you
 can add that to your admin pages by using giving it as parameter for
-*renderScriptTags*.
+*renderTags*.
 
 ```javascript
-!{renderScriptTags("admin")}
+js.renderTags("admin");
 ```
 
 This will render script-tags for the global pile and the admin-pile.
-*renderScriptTags* and *renderStyleTags* can take variable amount of arguments.
-Use *renderScriptTags("pile1", "pile2", ....)* to render multiple namespaces
+*js.renderTags* and *css.renderTags* can take variable amount of arguments.
+Use *js.renderTags("pile1", "pile2", ....)* to render multiple namespaces
 
 Piling works just the same with css.
 
@@ -261,7 +260,7 @@ clientjs.liveUpdate(clientcss, io);
 
 In development mode every JS- and CSS-file will be rendered as a separate tag.
 
-For example renderScriptTags("admin") will render
+For example js.renderTags("admin") will render
 
 ```javascript
 clientjs.addFile(__dirname + "/helpers.js");
