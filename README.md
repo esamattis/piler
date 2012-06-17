@@ -90,12 +90,12 @@ app.configure(function() {
 
 
 app.configure("development", function() {
-    clientjs.liveUpdate(css);
+    clientjs.liveUpdate(clientcss);
 });
 
 clientjs.addOb({ VERSION: "1.0.0" });
 
-clientjs.exec(function() {
+clientjs.addExec(function() {
     alert("Hello browser" + window.navigator.appVersion);
 });
 
