@@ -434,9 +434,11 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
-v0.3.5 - 2012-xx-x
+v0.3.5 - 2012-06-17
 
   * Fix LESS @imports
+  * Fix Stylus without nib
+  * Use path module for Windows compatibility
 
 v0.3.4 - 2012-03-29
 

@@ -1,6 +1,6 @@
 {
     "name" : "piler"
-    , "version": "0.3.4"
+    , "version": "0.3.5"
     , "author": "Esa-Matti Suuronen"
     , "homepage": "http://epeli.github.com/piler/"
     , "description": "Awesome Asset Manager for Node.js"
