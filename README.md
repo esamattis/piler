@@ -433,6 +433,13 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.4.0 - 2012-06-17
+
+  * Remove Dynamic Helpers.
+
+Dynamic Helpers where an Express 2.0 only API. This makes Piler more framework
+agnostic and it will work with Express 3.0.
+
 v0.3.6 - 2012-06-17
 
   * Bind all production dependency versions
