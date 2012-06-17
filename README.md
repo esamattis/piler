@@ -381,20 +381,6 @@ page. Use addFile if you want it be minified.
 
 Any valid CSS string.
 
-### Response object
-
-*Piler* also adds few extra methods to your response objects. The big
-difference to *clientjs.addExec* and *clientjs.addOb* is that with these are
-that you can render different values every time.
-
-#### res.addExec( Javascript function )
-
-Execute this function only on this response.
-
-#### res.addOb( any Javascript object )
-
-Similar to clientjs.addOb, but only for this response.
-
 
 
 
@@ -438,7 +424,10 @@ v0.4.0 - 2012-06-17
   * Remove Dynamic Helpers.
 
 Dynamic Helpers where an Express 2.0 only API. This makes Piler more framework
-agnostic and it will work with Express 3.0.
+agnostic and it will work with Express 3.0. This also removes support for
+response object functions. We'll add those back if there is a need for them
+(open up a issue if you miss them!)  and we'll find good framework agnostic way
+to implement them.
 
 v0.3.6 - 2012-06-17
 
