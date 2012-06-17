@@ -77,7 +77,7 @@ class LiveUpdateMixin
   _watch: (pile, codeOb) ->
     return unless codeOb.type is "file"
     console.log "watching #{ codeOb.filePath } for changes"
-    fs.watchFile codeOb.filePath, =>
+    fs.watch codeOb.filePath, =>
       console.log "updated", codeOb.filePath
       @io.emit "update", codeOb.getId()
 
