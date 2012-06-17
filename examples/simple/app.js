@@ -15,9 +15,13 @@ function isEmail(s) {
 
 var app = createServer();
 
+
 js.bind(app);
 css.bind(app);
 
+app.configure("development", function() {
+   js.liveUpdate(css);
+});
 
 css.addFile(__dirname + "/style.css");
 css.addFile(__dirname + "/style.styl");
@@ -40,9 +44,6 @@ js.addFile("bar", __dirname + "/client/bar.coffee");
 js.addFile(__dirname + "/share.js");
 
 
-app.configure("development", function() {
-   js.liveUpdate(css);
-});
 
 app.get("/", function(req, res){
 
@@ -51,7 +52,11 @@ app.get("/", function(req, res){
      console.log(share.test());
   });
 
-  res.render("index.jade");
+  res.render("index.jade", {
+    layout: false,
+    js: js.renderTags("foo"),
+    css: css.renderTags(),
+  });
 });
 
 app.listen(8001, function(){
