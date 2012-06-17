@@ -434,6 +434,10 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.3.6 - 2012-06-17
+
+  * Bind all production dependency versions
+
 v0.3.5 - 2012-06-17
 
   * Fix LESS @imports
