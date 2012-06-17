@@ -317,8 +317,6 @@ class PileManager
     app.on "listening", =>
       @pileUp()
 
-    @setDynamicHelper app
-
 
     @setMiddleware app
 
@@ -391,20 +389,6 @@ class JSManager extends PileManager
     pile = @getPile ns
     pile.addExec fn
 
-  setDynamicHelper: (app) ->
-    app.dynamicHelpers renderScriptTags: (req, res) => =>
-      bundle = @renderTags.apply this, arguments
-      inline = ""
-
-      if res._responseObs
-        for ob in res._responseObs
-          inline += toGlobals ob
-
-      if res._responseFns
-        for fn in res._responseFns
-          inline += executableFrom fn
-
-      bundle + wrapInScriptTagInline inline
 
   setMiddleware: (app) ->
     responseExec = (fn) ->
@@ -429,9 +413,6 @@ class CSSManager extends PileManager
   Type: CSSPile
   contentType: "text/css"
 
-  setDynamicHelper: (app) ->
-    app.dynamicHelpers renderStyleTags: (req, res) => =>
-      @renderTags.apply this, arguments
 
 
   setMiddleware: (app) ->
