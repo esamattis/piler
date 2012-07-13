@@ -1,12 +1,12 @@
 _  = require 'underscore'
 _.mixin require 'underscore.string'
 
-module.exports = (url) ->
+module.exports = p = (url) ->
   ob = {}
 
   # remove qs
   url = _.first url.split "?"
-  [__..., mode, filename] = url.split "/"
+  [__..., mode, cachekey, filename] = url.split "/"
 
 
   if mode is "dev"
@@ -25,3 +25,5 @@ module.exports = (url) ->
   return ob
 
 
+if require.main is module
+  console.info p "/pile/dev/my.exec-123.js"

@@ -2,7 +2,7 @@
 assetUrlParse = require "../lib/asseturlparse"
 
 describe "parses url production url", ->
-  for url in [  "/pile/min/my.js?v=43234", "/pile/min/my.js"]
+  for url in [  "/pile/min/cachekey/my.js?v=43234", "/pile/min/my.js"]
     urlOb = assetUrlParse url
 
     it "is minified", ->
@@ -15,7 +15,7 @@ describe "parses url production url", ->
       expect(urlOb.ext).toBe "js"
 
 describe "can find global", ->
-  urlOb = assetUrlParse "/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
+  urlOb = assetUrlParse "/pile/min/cachekey/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
 
   it "has the default global", ->
 
@@ -29,7 +29,7 @@ describe "can find global", ->
 
 
 describe "parses url development url", ->
-  for url in [  "/pile/dev/my.exec-123.js?v=43234", "/pile/dev/my.exec-123.js"]
+  for url in [  "/pile/dev/cachekey/my.exec-123.js?v=43234", "/pile/dev/cachekey/my.exec-123.js"]
     urlOb = assetUrlParse url
 
     it "name is my", ->
@@ -49,7 +49,7 @@ describe "parses url development url", ->
 
 
 describe "parses css urls too", ->
-  for url in [  "/pile/dev/my.file-321.css?v=43234", "/pile/dev/my.file-321.css"]
+  for url in [  "/pile/dev/cachekey/my.file-321.css?v=43234", "/pile/dev/cachekey/my.file-321.css"]
     urlOb = assetUrlParse url
 
     it "is css", ->
@@ -63,7 +63,7 @@ describe "parses css urls too", ->
 
 
 describe "longer custom url root works too", ->
-  urlOb = assetUrlParse "/node-pile/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
+  urlOb = assetUrlParse "/node-pile/pile/min/cachekey/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59"
 
   it "is min", ->
     expect(urlOb.min).toBeDefined()
@@ -76,7 +76,7 @@ describe "longer custom url root works too", ->
 
 
 describe "longer custom url root works too and in development", ->
-  urlOb = assetUrlParse "/node-pile/pile/dev/my.file-321.css?v=43234"
+  urlOb = assetUrlParse "/node-pile/pile/dev/cachekey/my.file-321.css?v=43234"
 
   it "is min", ->
     expect(urlOb.min).toBeUndefined()

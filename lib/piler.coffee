@@ -120,22 +120,18 @@ class BasePile
       @urls.push url
 
 
-  renderTags: ->
-    tags = ""
-    for url in @urls
-      tags += @wrapInTag url
-      tags += "\n"
+  getSources: ->
+    devCacheKey = Date.now()
 
+    # Start with plain urls
+    sources = ([u] for u in @urls)
 
     if @production
-      tags += @wrapInTag @getProductionUrl()
-      tags += "\n"
+      sources.push ["#{ @urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
     else
       for ob in @code
-        tags += @wrapInTag "#{ @urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""
-        tags += "\n"
-
-    tags
+        sources.push ["#{ @urlRoot }dev/#{ devCacheKey }/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""]
+    return sources
 
 
   findCodeObById: (id) ->
@@ -145,14 +141,6 @@ class BasePile
     (codeOb for codeOb in @code when codeOb.filePath is id)[0]
 
 
-  getProductionUrl: ->
-    "#{ @urlRoot }min/#{ @name }.#{ @ext }"
-
-  getTagKey: ->
-    if @production
-      @pileHash
-    else
-      new Date().getTime()
 
   _computeHash: ->
     sum = crypto.createHash('sha1')
@@ -168,7 +156,7 @@ class BasePile
 
     async.map @code, (codeOb, cb) =>
       codeOb.getCode (err, code) =>
-        return cb? err if err #                                           TODO: minifying here does not work!?
+        return cb? err if err
         cb null, @commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
 
     , (err, result) =>
@@ -221,8 +209,6 @@ class JSPile extends BasePile
       object: fn
 
 
-  wrapInTag: (uri, extra="") ->
-    "<script type=\"text/javascript\"  src=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } ></script>"
 
 
 
@@ -233,9 +219,6 @@ class CSSPile extends BasePile
 
   commentLine: (line) ->
     return "/* #{ line.trim() } */"
-
-  wrapInTag: (uri, extra="") ->
-    "<link rel=\"stylesheet\" href=\"#{ uri }?v=#{ @getTagKey() }\" #{ extra } />"
 
   minify: (code) ->
     if @production
@@ -269,6 +252,7 @@ class PileManager
       pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot
     pile
 
+
   addFile: defNs (ns, path) ->
     pile = @getPile ns
     pile.addFile path
@@ -293,8 +277,7 @@ class PileManager
             throw err if err
             console.log "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
 
-
-  renderTags: (namespaces...) ->
+  getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
       opts = namespaces.pop()
     else
@@ -303,12 +286,19 @@ class PileManager
     if not opts.disableGlobal
       namespaces.unshift "global"
 
-    tags = ""
+    sources = []
     for ns in namespaces
-      pile = @piles[ns]
-      if pile
-        tags += pile.renderTags()
-    tags
+      if pile = @piles[ns]
+        sources.push pile.getSources()...
+    return sources
+
+  renderTags: (namespaces...) ->
+
+    tags = ""
+    for src in @getSources namespaces...
+      tags += @wrapInTag src[0], src[1]
+      tags += "\n"
+    return tags
 
   bind: (app) ->
 
@@ -376,6 +366,8 @@ class JSManager extends PileManager
           target = parts.slice(-1)[0]
           nsOb[target] = ob
 
+  wrapInTag: (uri, extra="") ->
+    "<script type=\"text/javascript\"  src=\"#{ uri }\" #{ extra } ></script>"
 
   addModule: defNs (ns, path) ->
     pile = @getPile ns
@@ -413,7 +405,8 @@ class CSSManager extends PileManager
   Type: CSSPile
   contentType: "text/css"
 
-
+  wrapInTag: (uri, extra="") ->
+    "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra } />"
 
   setMiddleware: (app) ->
 
