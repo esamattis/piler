@@ -58,7 +58,7 @@ app.get "/", (req, res) ->
 
   res.render "index.jade",
     js: js.renderTags()
-    css: css.renderTags()
+    css: css.renderTags("namespaced")
 
 
 port = if process.env.NODE_ENV is "production" then 7001 else 7000
