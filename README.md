@@ -419,6 +419,11 @@ on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 
+v0.4.1 - 2012-06-12
+
+  * Add getSources
+  * Put cache key to resource url instead of query string
+
 v0.4.0 - 2012-06-17
 
   * Remove Dynamic Helpers.
