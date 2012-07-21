@@ -3,7 +3,7 @@
 
 Install dependencies
 
-    npm install express@2.x.x socket.io stylys less
+    npm install express@2.x.x socket.io stylus less
 
 
 And run it
