@@ -19,6 +19,10 @@ var app = createServer();
 js.bind(app);
 css.bind(app);
 
+app.configure(function() {
+	app.set('views', __dirname + "/views");
+});
+
 app.configure("development", function() {
    js.liveUpdate(css);
 });
