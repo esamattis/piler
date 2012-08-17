@@ -20,7 +20,7 @@ fileExistSync = (filePath) ->
 # Return a compressed version (already cached or not) of `code`, this function is synchronous
 module.exports = (code, fnCompress) ->
   hash = crypto.createHash('sha1').update(code).digest('hex')
-  file = TMPDIR+hash
+  file = TMPDIR+'/'+hash
 
   # if already in cache
   return fs.readFileSync(file, 'utf8') if fileExistSync(file)
