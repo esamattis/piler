@@ -300,11 +300,12 @@ class PileManager
       tags += "\n"
     return tags
 
-  bind: (app) ->
+  bind: (app, server=null) ->
 
     @app = app
 
-    app.on "listening", =>
+    listener = if server then server else app
+    listener.on "listening", =>
       @pileUp()
 
 
