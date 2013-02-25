@@ -303,6 +303,7 @@ class PileManager
   bind: (app, server=null) ->
 
     @app = app
+    @server = server
 
     listener = if server then server else app
     listener.on "listening", =>

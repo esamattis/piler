@@ -66,7 +66,8 @@ class LiveUpdateMixin
 
     @installSocketIo userio
 
-    @app.on "listening", =>
+    listener = if server then server else app
+    listener.on "listening", =>
       console.log "Activating CSS updater"
 
       for k, pile of cssmanager.piles
