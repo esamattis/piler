@@ -109,8 +109,8 @@ app.listen(8080);
 
 **Full example Express 3.x**
 ```javascript
-var express  = require('express'),
-    http     = require('http'),
+var express = require('express'),
+    http = require('http'),
     piler = require("piler"),
     app = require('express');
 
