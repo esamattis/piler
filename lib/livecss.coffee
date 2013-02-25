@@ -8,11 +8,16 @@ catch e
   socketio = null
 
 incUrlSeq = (url) ->
-  seqRegexp = /--([0-9]+)$/
+  seqRegexp = /(--([0-9]+))\..*$/
   match = url.match seqRegexp
-  seq = parseInt match?[1] or 0, 10
-  cleanUrl = url.replace seqRegexp, ""
-  cleanUrl + "--#{ seq+1 }"
+  seq = parseInt match?[2] or 0, 10
+
+  if match
+    cleanUrl = url.replace match[1], ""
+  else
+    cleanUrl = url
+
+  cleanUrl = cleanUrl.substr(0,cleanUrl.lastIndexOf('.'))+"--#{ seq+1 }"+cleanUrl.substr(cleanUrl.lastIndexOf('.'))
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
@@ -66,7 +71,7 @@ class LiveUpdateMixin
 
     @installSocketIo userio
 
-    listener = if server then server else app
+    listener = if @server then @server else @app
     listener.on "listening", =>
       console.log "Activating CSS updater"
 
