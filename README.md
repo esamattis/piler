@@ -1,12 +1,12 @@
 
 # Piler
 
-Feature hilights
+Feature highlights
 
   * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering
   * Namespaces
-  * Transparent preprocessors
+  * Transparent preprocessor
   * Push CSS changes to the browser using Socket.IO
   * Easy code sharing with server
 
@@ -380,7 +380,7 @@ Useful for CDNs and for dynamic assets in other libraries such as socket.io.
 Keys of the object will be added to the global window object. So take care when
 choosing those.  Also remember that parent scope of functions will be lost.
 
-You can alsow give a nested namespace for it
+You can also give a nested namespace for it
 
     clientjs.addOb({"foo.bar": "my thing"});
 
