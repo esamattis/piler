@@ -4,7 +4,7 @@
     , "author": "Esa-Matti Suuronen"
     , "maintainers": "Alexander Pirsig <self@pirsig.net>"
     , "homepage": "http://epeli.github.com/piler/"
-    , "description": "Awesome Asset Manager for Node.js"
+    , "description": "Awesome Asset Manager for Node.js - compat package with ExpressJS 3.x support"
     , "bugs": {
             "url": "https://github.com/epeli/piler/issues/"
     }
