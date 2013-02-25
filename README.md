@@ -66,8 +66,7 @@ as well.
     browsr using Socket.IO.
 
 
-Full example
-
+**Full example Express 2.x**
 ```javascript
 var createServer = require("express").createServer;
 var piler = require("piler");
@@ -75,8 +74,6 @@ var piler = require("piler");
 var app = createServer();
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
-
-
 
 app.configure(function() {
     clientjs.bind(app);
@@ -87,7 +84,6 @@ app.configure(function() {
     clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
     clientjs.addFile(__dirname + "/client/hello.js");
 });
-
 
 app.configure("development", function() {
     clientjs.liveUpdate(clientcss);
@@ -108,6 +104,50 @@ app.get("/", function(req, res){
 });
 
 app.listen(8080);
+```
+
+
+**Full example Express 3.x**
+```javascript
+var express = require('express'),
+    http = require('http'),
+    piler = require("piler"),
+    app = require('express');
+
+var clientjs = piler.createJSManager();
+var clientcss = piler.createCSSManager();
+var srv = require('http').createServer(app);
+
+app.configure(function(){
+
+    clientjs.bind(app,srv);
+    clientcss.bind(app,srv);
+
+    clientcss.addFile(__dirname + "/style.css");
+
+    clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+    clientjs.addFile(__dirname + "/client/hello.js");
+});
+
+app.configure("development", function() {
+    clientjs.liveUpdate(clientcss);
+});
+
+clientjs.addOb({ VERSION: "1.0.0" });
+
+clientjs.addExec(function() {
+    alert("Hello browser" + window.navigator.appVersion);
+});
+
+app.get("/", function(req, res){
+    res.render("index.jade", {
+        layout: false,
+        js: js.renderTags(),
+        css: css.renderTags()
+    });
+});
+
+srv.listen(8080);
 ```
 
 
