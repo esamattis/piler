@@ -1,5 +1,7 @@
-
 # Piler
+
+*Please note:* This is the compatible package of [piler](https://github.com/epeli/piler) that adds support for expressJS 3.x.
+The package works with ExpressJS 2.x as well.
 
 Feature highlights
 
