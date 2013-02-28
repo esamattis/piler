@@ -1,6 +1,6 @@
 {
     "name" : "piler-compat"
-    , "version": "0.4.1"
+    , "version": "0.4.1-1"
     , "author": "Esa-Matti Suuronen"
     , "maintainers": ["Alexander Pirsig <self@pirsig.net>"]
     , "homepage": "http://epeli.github.com/piler/"
