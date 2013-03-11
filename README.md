@@ -266,6 +266,36 @@ share.test();
 
 You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
+## Logging
+Sometimes it is nessesary to control pilers output based on the system environment your running your application in. 
+In default mode Pilers logger will output any information it has by using the "console" javascript object. The following example shows
+how to configure a custom logger  
+
+### Logger interface
+The basic logger facility implements the following methods.
+```javascript
+exports.debug    = console.debug
+exports.notice   = console.log
+exports.info     = console.info
+exports.warn     = console.warn
+exports.warning  = console.warn
+exports.error    = console.error
+exports.critical = console.error
+```
+
+### Inject a custom logger
+The following example injects "winston", a multi-transport async logging library into pilers logging mechanism.
+```javascript
+var piler = require('piler-compat');
+var logger = require('winston');
+// [More logger configuration can take place here]
+
+global.js = js = piler.createJSManager({ outputDirectory: assetTmpDir , "logger": logger});
+global.css = css = piler.createCSSManager({ outputDirectory: assetTmpDir, "logger": logger});
+```
+
+More information about winston can be found [here](https://github.com/flatiron/winston).
+
 ## Awesome development mode!
 
 Development and production modes works as in Express. By default the
