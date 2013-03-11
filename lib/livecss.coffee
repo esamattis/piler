@@ -62,7 +62,7 @@ class LiveUpdateMixin
 
   liveUpdate: (cssmanager, userio) ->
     if @production
-      console.log "Not activating live update in production"
+      @logger.info "Not activating live update in production"
       return
 
     if not @app
@@ -73,7 +73,7 @@ class LiveUpdateMixin
 
     listener = if @server then @server else @app
     listener.on "listening", =>
-      console.log "Activating CSS updater"
+      @logger.info "Activating CSS updater"
 
       for k, pile of cssmanager.piles
         for codeOb in pile.code
@@ -82,9 +82,9 @@ class LiveUpdateMixin
 
   _watch: (pile, codeOb) ->
     return unless codeOb.type is "file"
-    console.log "watching #{ codeOb.filePath } for changes"
+    @logger.info "watching #{ codeOb.filePath } for changes"
     fs.watch codeOb.filePath, =>
-      console.log "updated", codeOb.filePath
+      @logger.info "updated", codeOb.filePath
       @io.emit "update", codeOb.getId()
 
 # For testing
@@ -95,5 +95,5 @@ if socketio?
 else
   module.exports = class LiveUpdateDisabled
     liveUpdate: ->
-      console.log "No socket.io installed. Live update won't work."
+      @logger.error "No socket.io installed. Live update won't work."
 
