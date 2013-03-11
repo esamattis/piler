@@ -3,6 +3,8 @@
 *Please note:* This is the compatible package of [piler](https://github.com/epeli/piler) that adds support for expressJS 3.x.
 The package works with ExpressJS 2.x as well.
 
+[![Build Status](https://secure.travis-ci.org/piscis/piler-compat.png)](http://travis-ci.org/piscis/piler-compat)
+
 Feature highlights
 
   * Minify and concatenate JS and CSS for fast page loads
