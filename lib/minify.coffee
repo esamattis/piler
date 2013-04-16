@@ -3,7 +3,8 @@
 # needed.
 #
 
-csso = require "csso"
+csso  = require "csso"
+cache = require "./cache"
 
 try
   uglify = require("uglify-js")
@@ -14,8 +15,8 @@ catch error
   exports.jsBeautify = (code) -> code
 
 
-exports.cssMinify = (code) -> csso.justDoIt code
-
+exports.cssMinify = (code) ->
+  return cache(code, () -> csso.justDoIt code)
 
 
 if uglify?
@@ -23,10 +24,12 @@ if uglify?
   pro = uglify.uglify
 
   exports.jsMinify = (code) ->
-    ast = jsp.parse code
-    ast = pro.ast_mangle ast
-    ast = pro.ast_squeeze ast
-    pro.gen_code ast
+    return cache(code, () ->
+      ast = jsp.parse code
+      ast = pro.ast_mangle ast
+      ast = pro.ast_squeeze ast
+      pro.gen_code ast
+    )
 
   exports.jsBeautify = (code) ->
     ast = jsp.parse(code)
