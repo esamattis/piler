@@ -73,7 +73,7 @@ as well.
 **Full example Express 2.x**
 ```javascript
 var createServer = require("express").createServer;
-var piler = require("piler");
+var piler = require("piler-compat");
 
 var app = createServer();
 var clientjs = piler.createJSManager();
@@ -115,7 +115,7 @@ app.listen(8080);
 ```javascript
 var express = require('express'),
     http = require('http'),
-    piler = require("piler"),
+    piler = require("piler-compat"),
     app = require('express');
 
 var clientjs = piler.createJSManager();
