@@ -1,9 +1,9 @@
 # Piler
 
-*Please note:* This is the compatible package of [piler](https://github.com/epeli/piler) that adds support for expressJS 3.x.
+*Please note:* This is the compatible package of [piler](https://github.com/epeli/piler) that adds support for ExpressJS 3.x.
 The package works with ExpressJS 2.x as well.
 
-[![Build Status](https://secure.travis-ci.org/piscis/piler-compat.png)](http://travis-ci.org/piscis/piler-compat)
+[![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler)
 
 Feature highlights
 
@@ -73,7 +73,7 @@ as well.
 **Full example Express 2.x**
 ```javascript
 var createServer = require("express").createServer;
-var piler = require("piler-compat");
+var piler = require("piler");
 
 var app = createServer();
 var clientjs = piler.createJSManager();
@@ -115,7 +115,7 @@ app.listen(8080);
 ```javascript
 var express = require('express'),
     http = require('http'),
-    piler = require("piler-compat"),
+    piler = require("piler"),
     app = express();
 
 var clientjs = piler.createJSManager();
@@ -286,7 +286,7 @@ exports.critical = console.error
 ### Inject a custom logger
 The following example injects "winston", a multi-transport async logging library into pilers logging mechanism.
 ```javascript
-var piler = require('piler-compat');
+var piler = require('piler');
 var logger = require('winston');
 // [More logger configuration can take place here]
 
@@ -366,7 +366,7 @@ bundle!
 ## Examples
 
 See
-[this](https://github.com/epeli/piler-compat/blob/master/examples/simple/app.js)
+[this](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
 directory in the repo.
 
 
@@ -475,7 +475,7 @@ CSS-compilers are not included in *Piler*. Just install what you need using
   * [LESS][] (npm install less)
 
 Adding support for new compilers should be
-[easy](https://github.com/epeli/piler-compat/blob/master/lib/compilers.coffee).
+[easy](https://github.com/epeli/pile/blob/master/lib/compilers.coffee).
 
 Feel free to contribute!
 
@@ -483,13 +483,13 @@ Feel free to contribute!
 
 From [npm][]
 
-    npm install piler-compat
+    npm install piler
 
 ## Source code
 
 Source code is licenced under [The MIT
-License](https://github.com/epeli/piler-compat/blob/master/LICENSE) and it is hosted
-on [Github](https://github.com/piscis/piler-compat).
+License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
+on [Github](https://github.com/epeli/piler).
 
 ## Changelog
 

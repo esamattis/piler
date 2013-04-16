@@ -1,16 +1,18 @@
 {
-    "name" : "piler-compat"
-    , "version": "0.4.1-2"
+    "name" : "piler"
+    , "version": "0.4.2"
     , "author": "Esa-Matti Suuronen"
-    , "maintainers": ["Alexander Pirsig <self@pirsig.net>"]
+    , "maintainers": [
+        "Alexander Pirsig <self@pirsig.net>"
+    ]
     , "homepage": "http://epeli.github.com/piler/"
-    , "description": "Awesome Asset Manager for Node.js - compat package with ExpressJS 3.x support"
+    , "description": "Awesome Asset Manager for Node.js"
     , "bugs": {
-            "url": "https://github.com/piscis/piler-compat/issues/"
+            "url": "https://github.com/epeli/piler/issues/"
     }
     , "repository":
         { "type": "git"
-        , "url": "https://github.com/piscis/piler-compat.git"
+        , "url": "https://github.com/epeli/piler.git"
     }
     , "scripts": {
         "test": "./run-tests-travis.sh"
