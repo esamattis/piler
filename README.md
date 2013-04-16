@@ -456,9 +456,6 @@ page. Use addFile if you want it be minified.
 Any valid CSS string.
 
 
-
-
-
 ## Supported preprocessors
 
 ### JavaScript
@@ -492,6 +489,13 @@ License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
 on [Github](https://github.com/epeli/piler).
 
 ## Changelog
+
+v0.4.2 - 2013-04-16
+
+  * Fixes to work with ExpressJS 3.x
+  * Unit test fixes
+  * Make console output configurable
+
 
 v0.4.1 - 2012-06-12
 
@@ -549,8 +553,6 @@ Questions and suggestions are very welcome
 - esa-matti [aet] suuronen dot org
 - [EsaMatti](https://twitter.com/#!/EsaMatti) @ Twitter
 - Epeli @ freenode/IRCnet
-
-
 
 [Express]: http://expressjs.com/
 [Node.js]: http://nodejs.org/
