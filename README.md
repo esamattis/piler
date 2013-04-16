@@ -365,11 +365,14 @@ bundle!
 
 ## Examples
 
-See
+Visit
 [this](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
-directory in the repo.
+directory to see a simple example using ExpressJS 2.x.
 
-
+This
+[example](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
+uses ExpressJS 3.x a custom logger (winston) and a global socket.io instance
+together with Piler.
 
 ## API summary
 
