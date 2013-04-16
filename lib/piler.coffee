@@ -10,6 +10,7 @@ async = require "async"
 OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
+logger = require "./logger"
 
 toGlobals = (globals) ->
   code = ""
@@ -149,7 +150,7 @@ class BasePile
 
   warnPiledUp: (fnname) ->
     if @piledUp
-      console.log "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
+      @logger.warn "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
 
   pileUp: (cb) ->
     @piledUp = true
@@ -242,6 +243,9 @@ class PileManager
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
+    @logger = @settings.logger || logger
+
+
 
     @piles =
       global: new @Type "global", @production, @settings.urlRoot
@@ -266,6 +270,8 @@ class PileManager
     pile.addUrl url
 
   pileUp: ->
+    logger = @logger
+    logger.notice "Start assets generation for '#{ @Type::ext }'"
     for name, pile of @piles then do (pile) =>
       pile.pileUp (err, code) =>
         throw err if err
@@ -275,7 +281,7 @@ class PileManager
 
           fs.writeFile outputPath, code, (err) ->
             throw err if err
-            console.log "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
+            logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
 
   getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
@@ -300,11 +306,13 @@ class PileManager
       tags += "\n"
     return tags
 
-  bind: (app) ->
+  bind: (app, server=null) ->
 
     @app = app
+    @server = server
 
-    app.on "listening", =>
+    listener = if server then server else app
+    listener.on "listening", =>
       @pileUp()
 
 

@@ -103,7 +103,7 @@ for type, port of servers then do (type, port) ->
         # Just use csslint to validate that we have sane css here until we come
         # up with something better. This will at least confirm that
         # preprocessors work.
-        result = validateCSS css
+        result = validateCSS css,rules
         expect(result.messages.length).toBe 0, "#{ util.inspect result.messages }"
         jasmine.asyncSpecDone()
 

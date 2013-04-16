@@ -1,12 +1,16 @@
-
 # Piler
 
-Feature hilights
+*Please note:* This is the compatible package of [piler](https://github.com/epeli/piler) that adds support for expressJS 3.x.
+The package works with ExpressJS 2.x as well.
+
+[![Build Status](https://secure.travis-ci.org/piscis/piler-compat.png)](http://travis-ci.org/piscis/piler-compat)
+
+Feature highlights
 
   * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering
   * Namespaces
-  * Transparent preprocessors
+  * Transparent preprocessor
   * Push CSS changes to the browser using Socket.IO
   * Easy code sharing with server
 
@@ -66,17 +70,14 @@ as well.
     browsr using Socket.IO.
 
 
-Full example
-
+**Full example Express 2.x**
 ```javascript
 var createServer = require("express").createServer;
-var piler = require("piler");
+var piler = require("piler-compat");
 
 var app = createServer();
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
-
-
 
 app.configure(function() {
     clientjs.bind(app);
@@ -87,7 +88,6 @@ app.configure(function() {
     clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
     clientjs.addFile(__dirname + "/client/hello.js");
 });
-
 
 app.configure("development", function() {
     clientjs.liveUpdate(clientcss);
@@ -108,6 +108,50 @@ app.get("/", function(req, res){
 });
 
 app.listen(8080);
+```
+
+
+**Full example Express 3.x**
+```javascript
+var express = require('express'),
+    http = require('http'),
+    piler = require("piler-compat"),
+    app = express();
+
+var clientjs = piler.createJSManager();
+var clientcss = piler.createCSSManager();
+var srv = require('http').createServer(app);
+
+app.configure(function(){
+
+    clientjs.bind(app,srv);
+    clientcss.bind(app,srv);
+
+    clientcss.addFile(__dirname + "/style.css");
+
+    clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+    clientjs.addFile(__dirname + "/client/hello.js");
+});
+
+app.configure("development", function() {
+    clientjs.liveUpdate(clientcss);
+});
+
+clientjs.addOb({ VERSION: "1.0.0" });
+
+clientjs.addExec(function() {
+    alert("Hello browser" + window.navigator.appVersion);
+});
+
+app.get("/", function(req, res){
+    res.render("index.jade", {
+        layout: false,
+        js: js.renderTags(),
+        css: css.renderTags()
+    });
+});
+
+srv.listen(8080);
 ```
 
 
@@ -222,6 +266,36 @@ share.test();
 
 You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
+## Logging
+Sometimes it is nessesary to control pilers output based on the system environment your running your application in. 
+In default mode Pilers logger will output any information it has by using the "console" javascript object. The following example shows
+how to configure a custom logger  
+
+### Logger interface
+The basic logger facility implements the following methods.
+```javascript
+exports.debug    = console.debug
+exports.notice   = console.log
+exports.info     = console.info
+exports.warn     = console.warn
+exports.warning  = console.warn
+exports.error    = console.error
+exports.critical = console.error
+```
+
+### Inject a custom logger
+The following example injects "winston", a multi-transport async logging library into pilers logging mechanism.
+```javascript
+var piler = require('piler-compat');
+var logger = require('winston');
+// [More logger configuration can take place here]
+
+global.js = js = piler.createJSManager({ outputDirectory: assetTmpDir , "logger": logger});
+global.css = css = piler.createCSSManager({ outputDirectory: assetTmpDir, "logger": logger});
+```
+
+More information about winston can be found [here](https://github.com/flatiron/winston).
+
 ## Awesome development mode!
 
 Development and production modes works as in Express. By default the
@@ -292,7 +366,7 @@ bundle!
 ## Examples
 
 See
-[this](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
+[this](https://github.com/epeli/piler-compat/blob/master/examples/simple/app.js)
 directory in the repo.
 
 
@@ -340,7 +414,7 @@ Useful for CDNs and for dynamic assets in other libraries such as socket.io.
 Keys of the object will be added to the global window object. So take care when
 choosing those.  Also remember that parent scope of functions will be lost.
 
-You can alsow give a nested namespace for it
+You can also give a nested namespace for it
 
     clientjs.addOb({"foo.bar": "my thing"});
 
@@ -401,7 +475,7 @@ CSS-compilers are not included in *Piler*. Just install what you need using
   * [LESS][] (npm install less)
 
 Adding support for new compilers should be
-[easy](https://github.com/epeli/piler/blob/master/lib/compilers.coffee).
+[easy](https://github.com/epeli/piler-compat/blob/master/lib/compilers.coffee).
 
 Feel free to contribute!
 
@@ -409,13 +483,13 @@ Feel free to contribute!
 
 From [npm][]
 
-    npm install piler
+    npm install piler-compat
 
 ## Source code
 
 Source code is licenced under [The MIT
-License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
-on [Github](https://github.com/epeli/piler).
+License](https://github.com/epeli/piler-compat/blob/master/LICENSE) and it is hosted
+on [Github](https://github.com/piscis/piler-compat).
 
 ## Changelog
 
