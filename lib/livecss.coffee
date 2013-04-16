@@ -8,11 +8,16 @@ catch e
   socketio = null
 
 incUrlSeq = (url) ->
-  seqRegexp = /--([0-9]+)$/
+  seqRegexp = /(--([0-9]+))\..*$/
   match = url.match seqRegexp
-  seq = parseInt match?[1] or 0, 10
-  cleanUrl = url.replace seqRegexp, ""
-  cleanUrl + "--#{ seq+1 }"
+  seq = parseInt match?[2] or 0, 10
+
+  if match
+    cleanUrl = url.replace match[1], ""
+  else
+    cleanUrl = url
+
+  cleanUrl = cleanUrl.substr(0,cleanUrl.lastIndexOf('.'))+"--#{ seq+1 }"+cleanUrl.substr(cleanUrl.lastIndexOf('.'))
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
@@ -57,7 +62,7 @@ class LiveUpdateMixin
 
   liveUpdate: (cssmanager, userio) ->
     if @production
-      console.log "Not activating live update in production"
+      @logger.info "Not activating live update in production"
       return
 
     if not @app
@@ -66,8 +71,9 @@ class LiveUpdateMixin
 
     @installSocketIo userio
 
-    @app.on "listening", =>
-      console.log "Activating CSS updater"
+    listener = if @server then @server else @app
+    listener.on "listening", =>
+      @logger.info "Activating CSS updater"
 
       for k, pile of cssmanager.piles
         for codeOb in pile.code
@@ -76,9 +82,9 @@ class LiveUpdateMixin
 
   _watch: (pile, codeOb) ->
     return unless codeOb.type is "file"
-    console.log "watching #{ codeOb.filePath } for changes"
+    @logger.info "watching #{ codeOb.filePath } for changes"
     fs.watch codeOb.filePath, =>
-      console.log "updated", codeOb.filePath
+      @logger.info "updated", codeOb.filePath
       @io.emit "update", codeOb.getId()
 
 # For testing
@@ -89,5 +95,5 @@ if socketio?
 else
   module.exports = class LiveUpdateDisabled
     liveUpdate: ->
-      console.log "No socket.io installed. Live update won't work."
+      @logger.error "No socket.io installed. Live update won't work."
 
