@@ -116,7 +116,7 @@ app.listen(8080);
 var express = require('express'),
     http = require('http'),
     piler = require("piler-compat"),
-    app = require('express');
+    app = express();
 
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
