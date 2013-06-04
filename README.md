@@ -99,8 +99,8 @@ clientjs.addExec(function() {
 app.get("/", function(req, res){
     res.render("index.jade", {
         layout: false,
-        js: js.renderTags(),
-        css: css.renderTags()
+        js: clientjs.renderTags(),
+        css: clientcss.renderTags()
     });
 });
 
