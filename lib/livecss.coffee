@@ -60,7 +60,7 @@ class LiveUpdateMixin
     @io = io.of "/pile"
 
 
-  liveUpdate: (cssmanager, userio) ->
+  liveUpdate: (cssmanager, userio, interval) ->
     if @production
       @logger.info "Not activating live update in production"
       return
@@ -77,15 +77,32 @@ class LiveUpdateMixin
 
       for k, pile of cssmanager.piles
         for codeOb in pile.code
-          @_watch pile, codeOb
+          @_watch pile, codeOb, interval
 
 
-  _watch: (pile, codeOb) ->
+  _watch: (pile, codeOb, interval) ->
     return unless codeOb.type is "file"
-    @logger.info "watching #{ codeOb.filePath } for changes"
-    fs.watch codeOb.filePath, =>
-      @logger.info "updated", codeOb.filePath
-      @io.emit "update", codeOb.getId()
+
+    logger = @logger
+    io = @io
+    if interval?
+      @logger.info "watching #{ codeOb.filePath } for changes at interval #{ interval }"
+      last_mtime = null
+      checkChange = ->
+        fs.stat codeOb.filePath, (err, stat) ->
+          if last_mtime is null
+            last_mtime = stat.mtime
+          else if last_mtime < stat.mtime
+            logger.info "updated", codeOb.filePath
+            io.emit "update", codeOb.getId()
+            last_mtime = stat.mtime
+          setTimeout checkChange, interval
+      setTimeout checkChange, interval
+    else
+      @logger.info "watching #{ codeOb.filePath } for changes"
+      fs.watch codeOb.filePath, =>
+        @logger.info "updated", codeOb.filePath
+        @io.emit "update", codeOb.getId()
 
 # For testing
 LiveUpdateMixin.incUrlSeq = incUrlSeq
