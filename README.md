@@ -327,15 +327,6 @@ var io = require('socket.io').listen(app);
 clientjs.liveUpdate(clientcss, io);
 ```
 
-Sometimes fs.watch() dosnt fire when the file is updated, you can use the interval parameter for checking the
-files mtime instead:
-
-```javascript
-var io = require('socket.io').listen(app);
-clientjs.liveUpdate(clientcss, io, 1000);
-```
-
-
 ### Script-tag rendering
 
 In development mode every JS- and CSS-file will be rendered as a separate tag.
