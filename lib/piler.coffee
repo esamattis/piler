@@ -261,6 +261,9 @@ class PileManager
     pile = @getPile ns
     pile.addFile path
 
+  addFiles: (ns, arr) ->
+    addFile(ns, file) for file in arr
+
   addRaw: defNs (ns, raw) ->
     pile = @getPile ns
     pile.addRaw raw
