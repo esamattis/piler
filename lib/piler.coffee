@@ -229,7 +229,7 @@ class TemplatePile extends BasePile
 
   addOb: (ob) ->
     @warnPiledUp "addTmpl"
-    @code.push(id: id, tmpl: tmpl) for id, tmpl of ob
+    @code.push(id: id, tmpl: val) for id, val of ob
 
   getSources: ->
     for ob in @code
@@ -455,7 +455,10 @@ class TemplateManager extends PileManager
   contentType: "text/html"
 
   wrapInTag: (id, tmpl) ->
-    "<script type=\"text/#{@settings.templateType}\" id=\"#{id}\">#{tmpl}</script>"
+    if /[<>]/.test(tmpl)
+      "<script type=\"text/#{@settings.templateType}\" src=\"#{tmpl}\" id=\"#{id}\"></script>"
+    else
+      "<script type=\"text/#{@settings.templateType}\" id=\"#{id}\">#{tmpl}</script>"
 
   setMiddleware: (app) ->
 
