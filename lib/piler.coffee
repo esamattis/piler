@@ -11,6 +11,7 @@ OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
 logger = require "./logger"
+walker = require "./walker"
 
 toGlobals = (globals) ->
   code = ""
@@ -106,6 +107,10 @@ class BasePile
         type: "file"
         filePath: filePath
 
+  addDir: (dir, patterns) ->
+    dir = path.normalize dir
+    @warnPiledUp "addDir"
+    @addFile file for file in walker.walk dir, patterns
 
   addRaw: (raw) ->
     @warnPiledUp "addRaw"
@@ -277,8 +282,16 @@ class PileManager
     pile = @getPile ns
     pile.addFile path
 
-  addFiles: (ns, arr) ->
-    addFile(ns, file) for file in arr
+  addFiles: (ns, files) ->
+    addFile(ns, file) for file in files
+
+  addDir: (ns, dir, patterns) ->
+    if arguments.length is 1 or (arguments.length is 2 and _(arguments[1]).isArray())
+      patterns = dir or []
+      dir = ns
+      ns = "global"
+    pile = @getPile ns
+    pile.addDir dir, patterns
 
   addRaw: defNs (ns, raw) ->
     pile = @getPile ns
