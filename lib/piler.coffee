@@ -6,7 +6,7 @@ path = require "path"
 _ = require "underscore"
 async = require "async"
 
-{jsMinify, cssMinify} = require "./minify"
+{jsMinify, cssMinify, htmlMinify} = require "./minify"
 OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
@@ -210,10 +210,26 @@ class JSPile extends BasePile
       object: fn
 
 
+class TemplatePile extends BasePile
+  ext: 'html'
 
+  commentLine: (line) ->
+    return "<!--#{ line.trim() }-->"
 
+  minify: (code) ->
+    if @production
+      htmlMinify code
+    else
+      code
 
+  addOb: (ob) ->
+    @warnPiledUp "addTmpl"
+    @code.push(id: id, tmpl: tmpl) for id, tmpl of ob
 
+  getSources: ->
+    for ob in @code
+      sources.push [ob.id, ob.tmpl]
+    return sources
 
 class CSSPile extends BasePile
   ext: "css"
@@ -421,6 +437,15 @@ class CSSManager extends PileManager
 
   setMiddleware: (app) ->
 
+class TemplateManager extends PileManager
+  Type: TemplatePile
+  contentType: "text/html"
+
+  wrapInTag: (id, tmpl) ->
+    "<script type=\"text/#{@settings.templateType}\" id=\"#{id}\">#{tmpl}</script>"
+
+  setMiddleware: (app) ->
+
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.
 executableFrom = (fn, context) ->
@@ -436,8 +461,10 @@ exports.production = production = process.env.NODE_ENV is "production"
 
 exports.CSSPile = CSSPile
 exports.JSPile = JSPile
+exports.TemplatePile = TemplatePile
 exports.JSManager = JSManager
 exports.CSSManager = CSSManager
+exports.TemplateManager = TemplateManager
 
 exports.createJSManager = (settings={}) ->
   settings.production = production
@@ -446,6 +473,10 @@ exports.createJSManager = (settings={}) ->
 exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
+
+exports.createTemplateManager = (settings={}) ->
+  settings.production = production
+  new TemplateManager settings
 
 
 

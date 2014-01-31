@@ -4,6 +4,7 @@
 #
 
 csso = require "csso"
+htmlMin = require "html-minifier"
 
 try
   uglify = require("uglify-js")
@@ -15,7 +16,12 @@ catch error
 
 
 exports.cssMinify = (code) -> csso.justDoIt code
-
+exports.htmlMinify = (code) ->
+  htmlMin.minify code,
+    removeComments: true
+    collapseBooleanAttributes: true
+    collapseWhitespace: true
+    removeRedundantAttributes: true
 
 
 if uglify?
