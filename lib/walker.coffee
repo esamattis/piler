@@ -19,6 +19,10 @@ walk = (dir, prefix) ->
 module.exports =
   walk: (dir, patterns) ->
     files = walk dir
-    return if not patterns then files else _.chain(patterns).reduce((memo, pattern) ->
+    files = if not patterns then files else _.chain(patterns).reduce((memo, pattern) ->
       memo.concat files.filter minimatch.filter pattern
     , []).uniq().value()
+    return _(files).reduce (memo, file) ->
+      memo.push("#{dir}/#{file}")
+      memo
+    , []

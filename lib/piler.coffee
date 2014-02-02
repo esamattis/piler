@@ -1,7 +1,6 @@
 fs = require "fs"
 path = require "path"
 crypto = require 'crypto'
-path = require "path"
 
 _ = require "underscore"
 async = require "async"
@@ -39,7 +38,7 @@ asCodeOb = do ->
     sum = crypto.createHash('sha1')
 
 
-    if @type is "file"
+    if @type in ["file", "tmpl"]
       # If code is on filesystem the url to the file should only change when
       # the path to it changes.
       sum.update @filePath
@@ -68,7 +67,9 @@ asCodeOb = do ->
         return cb? err if err
         getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
           cb err, code
-
+    tmpl: (ob, cb) ->
+      getCompiler(ob.filePath) ob.filePath, ob.data, (err, html) ->
+        cb err, html
     module: (ob, cb) ->
       this.file ob, (err, code) ->
         return cb? err if err
@@ -124,7 +125,6 @@ class BasePile
   addUrl: (url) ->
     if url not in @urls
       @urls.push url
-
 
   getSources: ->
     devCacheKey = Date.now()
@@ -227,14 +227,36 @@ class TemplatePile extends BasePile
     else
       code
 
-  addOb: (ob) ->
-    @warnPiledUp "addTmpl"
-    @code.push(id: id, tmpl: val) for id, val of ob
+  addFile: (file) ->
+    @warnPiledUp "addFile"
+    @code.push asCodeOb.call
+      type: "tmpl"
+      filePath: file
+      id: file
 
-  getSources: ->
-    for ob in @code
-      sources.push [ob.id, ob.tmpl]
+  addOb: (ob) ->
+    @warnPiledUp "addOb"
+    for id, file of ob
+      @code.push asCodeOb.call
+        type: "tmpl"
+        id: id
+        filePath: file
+
+  getSources: (data={}) ->
+    devCacheKey = Date.now()
+
+    # Start with plain urls
+    sources = ([u] for u in @urls)
+    
+    if @production
+      for ob in @code
+        sources.push [ ob.id, getCompiler(ob.filePath) ob.filePath, data ]
+    else
+      for ob in @code
+        ob.data = data
+        sources.push ["#{ @urlRoot }dev/#{ devCacheKey }/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"#{ ob.id }\""]
     return sources
+
 
 class CSSPile extends BasePile
   ext: "css"
@@ -381,8 +403,6 @@ class PileManager
         return
 
 
-
-
 class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
@@ -454,13 +474,41 @@ class TemplateManager extends PileManager
   Type: TemplatePile
   contentType: "text/html"
 
-  wrapInTag: (id, tmpl) ->
-    if /[<>]/.test(tmpl)
-      "<script type=\"text/#{@settings.templateType}\" src=\"#{tmpl}\" id=\"#{id}\"></script>"
+  wrapInTag: (uri, extra="") ->
+    if @production
+      "<script type=\"text/#{ @settings.templateType }\" id=\"#{ uri }\">#{ extra }</script>"
     else
-      "<script type=\"text/#{@settings.templateType}\" id=\"#{id}\">#{tmpl}</script>"
+      "<script type=\"text/#{ @settings.templateType }\" src=\"#{ uri }\" #{ extra }></script>"
+
+  getSources: (namespaces...) ->
+    if typeof _.last(namespaces) is "object"
+      opts = namespaces.pop()
+    else
+      opts = {}
+
+    if not opts.disableGlobal
+      namespaces.unshift "global"
+
+    sources = []
+    for ns in namespaces
+      if pile = @piles[ns]
+        sources.push pile.getSources(opts)...
+    return sources
+
+  renderTags: (namespaces...) ->
+
+    tags = ""
+    for src in @getSources namespaces...
+      tags += @wrapInTag src[0], src[1], src[2]
+      tags += "\n"
+    return tags
+
+  addOb: defNs (ns, ob) ->
+    pile = @getPile ns
+    pile.addOb ob
 
   setMiddleware: (app) ->
+
 
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.
@@ -494,7 +542,9 @@ exports.createTemplateManager = (settings={}) ->
   settings.production = production
   new TemplateManager settings
 
-
+exports.registerCompiler = (ext, fn) ->
+    compilers[ext] =
+      render: fn
 
 
 
