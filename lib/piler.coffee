@@ -247,14 +247,8 @@ class TemplatePile extends BasePile
 
     # Start with plain urls
     sources = ([u] for u in @urls)
-    
-    if @production
-      for ob in @code
-        sources.push [ ob.id, getCompiler(ob.filePath) ob.filePath, data ]
-    else
-      for ob in @code
-        ob.data = data
-        sources.push ["#{ @urlRoot }dev/#{ devCacheKey }/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"#{ ob.id }\""]
+    for ob in @code
+      sources.push [ ob.id, getCompiler(ob.filePath) ob.filePath, data ]
     return sources
 
 
@@ -475,10 +469,7 @@ class TemplateManager extends PileManager
   contentType: "text/html"
 
   wrapInTag: (uri, extra="") ->
-    if @production
-      "<script type=\"text/#{ @settings.templateType }\" id=\"#{ uri }\">#{ extra }</script>"
-    else
-      "<script type=\"text/#{ @settings.templateType }\" src=\"#{ uri }\" #{ extra }></script>"
+    "<script type=\"text/#{ @settings.templateType }\" id=\"#{ uri }\">#{ extra }</script>"
 
   getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
