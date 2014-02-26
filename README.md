@@ -1,4 +1,4 @@
-**New maintainers wanted!** Unfortunately I don't have the time to maintain this project anymore. Please contact me if you are interested!
+**New maintainers wanted!** Unfortunately I don't have the time to maintain this project anymore. Please contact me if you are interested! [GH Issue](https://github.com/epeli/piler/issues/49).
 
 ---
 
