@@ -1,3 +1,7 @@
+**New maintainers wanted!** Unfortunately I don't have the time to maintain this project anymore. Please contact me if you are interested!
+
+---
+
 # Piler
 
 [![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler)
