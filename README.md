@@ -31,7 +31,7 @@ Copying things from Rails is just not enough. This is just a one reason why
 
 Server-side code:
 
-```javascript
+```js
 clientjs.addOb({BROWSER_GLOBAL: {
     aFunction: function() {
         console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
@@ -41,41 +41,43 @@ clientjs.addOb({BROWSER_GLOBAL: {
 
 You can also tell *Piler* to directly execute some function in the browser:
 
-```javascript
+```js
 clientjs.addExec(function() {
     BROWSER_GLOBAL.aFunction();
     alert("Hello" + window.navigator.appVersion);
 });
 ```
 
-
-Currently *Piler* works only with [Express], but other frameworks are planned
+Currently *Piler* works only with [Express][], but other frameworks are planned
 as well.
 
 
 *Piler* is written following principles in mind:
 
-  * Creating best possible production setup for assets should be as easy as
-    including script/link to a page.
-  * Namespaces. You don't want to serve huge blob of admin view code for all
-    anonymous users.
-  * Support any JS- or CSS-files. No need to create special structure for your
-    assets. Just include your jQueries or whatever.
-  * Preprocessor languages are first class citizens. Eg. Just change the file
-    extension to .coffee to use CoffeeScript. That's it. No need to worry about
-    compiled files.
-  * Use heavy caching. Browser caches are killed automatically using the hash
-    sum of the assets.
-  * Awesome development mode. Build-in support for pushing CSS changes to
-    browsr using Socket.IO.
+* Creating best possible production setup for assets should be as easy as
+including script/link to a page.
+* Namespaces. You don't want to serve huge blob of admin view code for all
+anonymous users.
+* Support any JS- or CSS-files. No need to create special structure for your
+assets. Just include your jQueries or whatever.
+* Preprocessor languages are first class citizens. Eg. Just change the file
+extension to .coffee to use CoffeeScript. That's it. No need to worry about
+compiled files.
+* Use heavy caching. Browser caches are killed automatically using the hash
+sum of the assets.
+* Awesome development mode. Build-in support for pushing CSS changes to
+browsr using Socket.IO.
 
 
-**Full example Express 2.x**
-```javascript
-var createServer = require("express").createServer;
+**Full example Express 3.x**
+
+```js
+var http = require('http');
+var app = require("express")();
 var piler = require("piler");
 
-var app = createServer();
+http.createServer(app);
+
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
 
@@ -107,35 +109,35 @@ app.get("/", function(req, res){
     });
 });
 
-app.listen(8080);
+http.listen(8080);
 ```
 
 
-**Full example Express 3.x**
-```javascript
-var express = require('express'),
+**Full example Express 4.x**
+
+```js
+var app = require('express')(),
     http = require('http'),
-    piler = require("piler"),
-    app = express();
+    piler = require("piler");
 
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
+
 var srv = require('http').createServer(app);
 
-app.configure(function(){
+app.use(require('body-parser')());
 
-    clientjs.bind(app,srv);
-    clientcss.bind(app,srv);
+clientjs.bind(app,srv);
+clientcss.bind(app,srv);
 
-    clientcss.addFile(__dirname + "/style.css");
+clientcss.addFile(__dirname + "/style.css");
 
-    clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
-    clientjs.addFile(__dirname + "/client/hello.js");
-});
+clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+clientjs.addFile(__dirname + "/client/hello.js");
 
-app.configure("development", function() {
+if (process.env.NODE_ENV === 'development') {
     clientjs.liveUpdate(clientcss);
-});
+}
 
 clientjs.addOb({ VERSION: "1.0.0" });
 
@@ -158,11 +160,11 @@ srv.listen(8080);
 index.jade:
 
 ```jade
-!!! 5
+doctype html
 html
   head
-    !{css}
-    !{js}
+    != css
+    != js
   body
     h1 Hello Piler
 ```
@@ -175,7 +177,7 @@ The example above uses just a one pile. The global pile.
 If you for example want to add big editor files only for administration pages
 you can create a pile for it:
 
-```javascript
+```js
 clientjs.addFile("admin", __dirname + "/editor.js");
 clientjs.addFile("admin", __dirname + "/editor.extension.js");
 ```
@@ -184,16 +186,15 @@ This will add file editor.js and editor.extension.js to a admin pile. Now you
 can add that to your admin pages by using giving it as parameter for
 *renderTags*.
 
-```javascript
+```js
 js.renderTags("admin");
 ```
 
 This will render script-tags for the global pile and the admin-pile.
-*js.renderTags* and *css.renderTags* can take variable amount of arguments.
-Use *js.renderTags("pile1", "pile2", ....)* to render multiple namespaces
+`js.renderTags` and `css.renderTags` can take variable amount of arguments.
+Use `js.renderTags("pile1", "pile2", ....)` to render multiple namespaces
 
 Piling works just the same with css.
-
 
 ## Sharing code with the server
 
@@ -203,7 +204,7 @@ share code directly from your server code.
 Let's say that you want to share a email-validating function with a server and
 the client
 
-```javascript
+```js
 function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
 }
@@ -211,7 +212,7 @@ function isEmail(s) {
 
 You can share it with *addOb* -method:
 
-```javascript
+```js
 clientjs.addOb({MY: {
    isEmail: isEmail
    }
@@ -220,23 +221,21 @@ clientjs.addOb({MY: {
 
 Now on the client you can find the isEmail-function from MY.isEmail.
 
-*addOb* takes an object which will be merged to global window-object on the
+`addOb` takes an object which will be merged to global window-object on the
 client. So be carefull when choosing the keys. The object can be almost any
 JavaScript object. It will be serialized and sent to the browser. Few caveats:
 
-  1. No circural references
-  1. Functions will be serialized using Function.prototype.toString. So closures
-     won't transferred to the client!
-
+1. No circural references
+2. Functions will be serialized using Function.prototype.toString. So closures
+won't transferred to the client!
 
 ### Pattern for sharing full modules
 
 This is nothing specific to *Piler*, but this is a nice pattern which can be
 used to share modules between the server and the client.
 
-share.js
-
-```javascript
+```js
+// share.js
 (function(exports){
 
   exports.test = function(){
@@ -248,19 +247,19 @@ share.js
 
 In Node.js you can use it by just requiring it as any other module
 
-```javascript
+```js
 var share = require("./share.js");
 ```
 
-and you can share it the client using *addFile*:
+and you can share it the client using `addFile`:
 
-```javascript
+```js
 clientjs.addFile(__dirname + "./share.js");
 ```
 
 Now you can use it in both as you would expect
 
-```javascript
+```js
 share.test();
 ```
 
@@ -272,8 +271,10 @@ In default mode Pilers logger will output any information it has by using the "c
 how to configure a custom logger  
 
 ### Logger interface
+
 The basic logger facility implements the following methods.
-```javascript
+
+```js
 exports.debug    = console.debug
 exports.notice   = console.log
 exports.info     = console.info
@@ -284,8 +285,10 @@ exports.critical = console.error
 ```
 
 ### Inject a custom logger
+
 The following example injects "winston", a multi-transport async logging library into pilers logging mechanism.
-```javascript
+
+```js
 var piler = require('piler');
 var logger = require('winston');
 // [More logger configuration can take place here]
@@ -312,10 +315,10 @@ tools when in development mode.
 
 Using Express you can add Live CSS editing in development mode:
 
-```javascript
-app.configure("development", function() {
+```js
+if (process.env.NODE_ENV === 'development') {
    clientjs.liveUpdate(clientcss);
-});
+}
 ```
 
 This is similar to [Live.js][], but it does not use polling. It will add
@@ -325,24 +328,24 @@ If your app already uses Socket.IO you need to add the *io*-object as second
 parameter to liveUpdate:
 
 
-```javascript
+```js
 var io = require('socket.io').listen(app);
 clientjs.liveUpdate(clientcss, io);
 ```
 
 ### Script-tag rendering
 
-In development mode every JS- and CSS-file will be rendered as a separate tag.
+In development mode every JS and CSS file will be rendered as a separate tag.
 
 For example js.renderTags("admin") will render
 
-```javascript
+```js
 clientjs.addFile(__dirname + "/helpers.js");
 clientjs.addFile("admin", __dirname + "/editor.js");
 clientjs.addFile("admin", __dirname + "/editor.extension.js");
 ```
 
-to
+in development mode, to
 
 ```html
 <script type="text/javascript" src="/pile/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
@@ -350,7 +353,7 @@ to
 <script type="text/javascript" src="/pile/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
 ```
 
-in development mode, but in production it will render to
+but in production it will render to
 
 ```html
 <script type="text/javascript"  src="/pile/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
@@ -361,46 +364,44 @@ So debugging should be as easy as directly using script-tags.  Line numbers
 will match your real files in the filesystem. No need to debug huge Javascript
 bundle!
 
-
-
 ## Examples
 
-Visit
-[this](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
-directory to see a simple example using ExpressJS 2.x.
+Visit [this](https://github.com/epeli/piler/blob/master/examples/simple/app.js) directory to see a simple example 
+using ExpressJS 3.x.
 
-This
-[example](https://github.com/epeli/piler/blob/master/examples/simple/app.js)
-uses ExpressJS 3.x a custom logger (winston) and a global socket.io instance
-together with Piler.
+This [example](https://github.com/epeli/piler/blob/master/examples/simple/app.js) uses ExpressJS 4.x a custom 
+logger (winston) and a global socket.io instance together with Piler.
 
 ## API summary
 
 Code will be rendered in the order you call these functions with the exception
-of *addUrl* which will be rendered as first.
+of `addUrl` which will be rendered as first.
 
 ### createJSManager and createCSSManager
 
 Can take an optional configuration object as an argument with following keys.
 
-    var jsclient = piler.createJSManager({
-        outputDirectory: __dirname + "/mydir",
-        urlRoot: "/my/root"
-    });
+```js
+var jsclient = piler.createJSManager({
+    outputDirectory: __dirname + "/mydir",
+    urlRoot: "/my/root"
+});
+``` 
 
 #### urlRoot
 
 Url root to which Piler's paths are appended. For example urlRoot "/my/root"
 will result in following script tag:
 
-    <script type="text/javascript" src="/my/root/min/code.js?v=f4ec8d2b2be16a4ae8743039c53a1a2c31e50570" ></script>
+```html
+<script type="text/javascript" src="/my/root/min/code.js?v=f4ec8d2b2be16a4ae8743039c53a1a2c31e50570" ></script>
+```
 
 #### outputDirectory
 
 If specified *Piler* will write the minified assets to this folder. Useful if
 you want to share you assets from Apache etc. instead of directly serving from
 Piler's Connect middleware.
-
 
 ### JavaScript pile
 
@@ -419,7 +420,9 @@ choosing those.  Also remember that parent scope of functions will be lost.
 
 You can also give a nested namespace for it
 
-    clientjs.addOb({"foo.bar": "my thing"});
+```js
+clientjs.addOb({"foo.bar": "my thing"});
+```
 
 Now on the client "my thing" string will be found from window.foo.bar.
 
@@ -427,7 +430,7 @@ The object will be serialized at the second it is passed to this method so you
 won't be able modify it other than between server restarts. This is usefull for
 sharing utility functions etc.
 
-Use *res.addOb* to share more dynamically objects.
+Use `res.addOb` to share more dynamically objects.
 
 #### addExec( [namespace], Javascript function )
 
@@ -438,12 +441,9 @@ scope is also lost here.
 
 Any valid Javascript string.
 
-
-
 ### CSS pile
 
 These are similar to ones in JS pile.
-
 
 #### addFile( [namespace], path to a asset file )
 
@@ -458,7 +458,6 @@ page. Use addFile if you want it be minified.
 
 Any valid CSS string.
 
-
 ## Supported preprocessors
 
 ### JavaScript
@@ -468,14 +467,12 @@ included in *Piler*.
 
 ### CSS
 
-CSS-compilers are not included in *Piler*. Just install what you need using
-[npm][].
+CSS-compilers are not included in *Piler*. Just install what you need using [npm][].
 
-  * [Stylus][] with [nib][] (npm install stylus nib)
-  * [LESS][] (npm install less)
+* [Stylus][] with [nib][] (npm install stylus nib)
+* [LESS][] (npm install less)
 
-Adding support for new compilers should be
-[easy](https://github.com/epeli/pile/blob/master/lib/compilers.coffee).
+Adding support for new compilers should be [easy](https://github.com/epeli/pile/blob/master/lib/compilers.js).
 
 Feel free to contribute!
 
@@ -483,12 +480,13 @@ Feel free to contribute!
 
 From [npm][]
 
+```
     npm install piler
+```
 
 ## Source code
 
-Source code is licenced under [The MIT
-License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
+Source code is licenced under [The MIT License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
 on [Github](https://github.com/epeli/piler).
 
 ## Changelog
@@ -498,7 +496,6 @@ v0.4.2 - 2013-04-16
   * Fixes to work with ExpressJS 3.x
   * Unit test fixes
   * Make console output configurable
-
 
 v0.4.1 - 2012-06-12
 
