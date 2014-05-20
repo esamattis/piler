@@ -1,17 +1,17 @@
-express = require "express"
+http = require('http')
+serveStatic = require "serve-static"
+app = require("express")()
 pile = require("../../index")
 
 js = pile.createJSManager()
 css = pile.createCSSManager()
 
+http.createServer(app)
 
-app = express.createServer()
-app.configure ->
-   app.use express.static __dirname + '/clientscripts'
+app.use serveStatic __dirname + '/clientscripts'
 
 js.bind app
 css.bind app
-
 
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile "namespaced", __dirname + "/stylesheets/namespaced.css"

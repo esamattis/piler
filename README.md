@@ -1,12 +1,11 @@
-**New maintainers wanted!** Unfortunately I don't have the time to maintain this project anymore. Please contact me if you are interested! [GH Issue](https://github.com/epeli/piler/issues/49).
-
----
-
 # Piler
 
-[![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler)
+[![Build Status](https://secure.travis-ci.org/epeli/piler.svg?branch=0.6.0)](http://travis-ci.org/epeli/piler)
+[![Coverage Status](https://img.shields.io/coveralls/epeli/piler.svg?branch=0.6.0)](https://coveralls.io/r/epeli/piler)
 
-Feature highlights
+[![NPM](https://nodei.co/npm/piler.png?downloads=true&stars=true)](https://nodei.co/npm/piler/)
+
+## Feature highlights
 
   * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering

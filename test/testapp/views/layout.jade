@@ -1,9 +1,9 @@
-!!! 5
+doctype html
 html(lang="en")
   head
-    !{css}
+    != css
     style #tests * { color: red }
   body
     h1 Piler test page
-    #container !{body}
-    !{js}
+    #container != body
+    != js
