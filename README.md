@@ -3,7 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/epeli/piler.svg?branch=0.6.0)](http://travis-ci.org/epeli/piler)
 [![Coverage Status](https://img.shields.io/coveralls/epeli/piler.svg?branch=0.6.0)](https://coveralls.io/r/epeli/piler)
 
-[![NPM](https://nodei.co/npm/piler.png?downloads=true&stars=true)](https://nodei.co/npm/piler/)
+[![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
 
 ## Feature highlights
 
