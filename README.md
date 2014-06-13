@@ -1,7 +1,7 @@
 # Piler
 
 [![Build Status](https://secure.travis-ci.org/epeli/piler.svg?branch=0.6.0)](http://travis-ci.org/epeli/piler)
-[![Coverage Status](https://img.shields.io/coveralls/epeli/piler.svg?branch=0.6.0)](https://coveralls.io/r/epeli/piler)
+[![Coverage Status](https://coveralls.io/repos/epeli/piler/badge.png?branch=0.6.0)](https://coveralls.io/r/epeli/piler?branch=0.6.0)
 [![Dependency Status](https://david-dm.org/epeli/piler.svg?branch=0.6.0)](https://david-dm.org/epeli/piler)
 
 [![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
