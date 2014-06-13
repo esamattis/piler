@@ -12,7 +12,7 @@
   * Tag rendering
   * Namespaces
   * Transparent preprocessor
-  * Push CSS changes to the browser using Socket.IO
+  * Push CSS changes to the browser using Socket.IO 0.9.x (not yet compatible with 1.0, but is planned)
   * Easy code sharing with server
 
 ## Awesome Asset Manager for Node.js
@@ -69,7 +69,6 @@ sum of the assets.
 * Awesome development mode. Build-in support for pushing CSS changes to
 browsr using Socket.IO.
 
-
 **Full example Express 3.x and 4.x**
 
 ```js
@@ -80,18 +79,18 @@ var app = require('express')(),
 var clientjs = piler.createJSManager();
 var clientcss = piler.createCSSManager();
 
-var srv = require('http').createServer(app);
+var srv = http.createServer(app);
 
 clientjs.bind(app,srv); // Make sure to bind to both Express and the server!
 clientcss.bind(app,srv);
 
 clientcss.addFile(__dirname + "/style.css");
 
-clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js");
 clientjs.addFile(__dirname + "/client/hello.js");
 
 if (process.env.NODE_ENV === 'development') {
-    clientjs.liveUpdate(clientcss);
+    clientjs.liveUpdate(clientcss, require('socket.io')());
 }
 
 clientjs.addOb({ VERSION: "1.0.0" });
@@ -167,7 +166,7 @@ Now on the client you can find the isEmail-function from MY.isEmail.
 client. So be carefull when choosing the keys. The object can be almost any
 JavaScript object. It will be serialized and sent to the browser. Few caveats:
 
-1. No circural references
+1. No circular references
 2. Functions will be serialized using Function.prototype.toString. So closures
 won't transferred to the client!
 
@@ -259,7 +258,7 @@ Using Express you can add Live CSS editing in development mode:
 
 ```js
 if (process.env.NODE_ENV === 'development') {
-   clientjs.liveUpdate(clientcss);
+   clientjs.liveUpdate(clientcss, io);
 }
 ```
 
@@ -271,7 +270,10 @@ parameter to liveUpdate:
 
 
 ```js
-var io = require('socket.io').listen(app);
+var app = require('express')();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
 clientjs.liveUpdate(clientcss, io);
 ```
 
@@ -319,7 +321,7 @@ So that you can see development messages
 ## Examples
 
 Visit [this](https://github.com/epeli/piler/blob/master/examples/simple/app.js) directory to see a simple example 
-using ExpressJS 3.x.
+using ExpressJS 4.x.
 
 This [example](https://github.com/epeli/piler/blob/master/examples/simple/app.js) uses ExpressJS 4.x a custom 
 logger (winston) and a global socket.io instance together with Piler.

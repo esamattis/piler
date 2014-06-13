@@ -59,6 +59,6 @@
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
     "csslint": "*",
-    "socket.io": "0.9.x"
+    "socket.io": "0.x.x"
   }
 }

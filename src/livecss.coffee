@@ -27,9 +27,11 @@ clientUpdater = ->
 
   pile.on "connect", ->
     console.log "CSS updater has connected"
+    return
 
   pile.on "disconnect", ->
     console.log "CSS updater has disconnected! Refresh to reconnect"
+    return
 
   pile.on "update", (fileId) ->
     elem = document.getElementById "pile-" + fileId
@@ -38,6 +40,10 @@ clientUpdater = ->
       elem.href = PILE.incUrlSeq elem.href
     else
       console.log "id", fileId, "not found"
+
+    return
+
+  return
 
 class LiveUpdateMixin
 
