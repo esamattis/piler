@@ -1,14 +1,10 @@
 
 # Example Express application using Piler
 
-Install dependencies
+Install dependencies and run it
 
-    npm install express@2.x.x socket.io stylus less
-
-
-And run it
-
-    node app.js
+```bash
+npm install && npm run start
+```
 
 Then open up http://localhost:8001/ and try editing `style.css`.
-

@@ -291,6 +291,7 @@ class PileManager
             throw err if err
             logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
 
+        return
     return
 
   getSources: (namespaces...) ->

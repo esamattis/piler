@@ -26,7 +26,3 @@ module.exports = p = (url) ->
   ob.ext = ext
 
   return ob
-
-
-if require.main is module
-  debug p "/pile/dev/my.exec-123.js"

@@ -1,7 +1,6 @@
 'use strict'
 
 fs = require "graceful-fs"
-debug = require("debug")("piler:livecss")
 
 try
   socketio = require('socket.io')
@@ -22,29 +21,30 @@ incUrlSeq = (url) ->
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
-  debug "CSS updater is active. Waiting for connection..."
+  console.log "CSS updater is active. Waiting for connection..."
 
   pile = io.connect('/pile')
 
   pile.on "connect", ->
-    debug "CSS updater has connected"
+    console.log "CSS updater has connected"
 
   pile.on "disconnect", ->
-    debug "CSS updater has disconnected! Refresh to reconnect"
+    console.log "CSS updater has disconnected! Refresh to reconnect"
 
   pile.on "update", (fileId) ->
     elem = document.getElementById "pile-" + fileId
     if elem
-      debug "updating", fileId, elem
+      console.log "updating", fileId, elem
       elem.href = PILE.incUrlSeq elem.href
     else
-      debug "id", fileId, "not found"
+      console.log "id", fileId, "not found"
 
 class LiveUpdateMixin
 
   installSocketIo: (userio) ->
 
     @addUrl "/socket.io/socket.io.js"
+
     @addOb PILE:
       incUrlSeq: incUrlSeq
     @addExec clientUpdater
@@ -53,10 +53,6 @@ class LiveUpdateMixin
       io = socketio.listen @app
     else
       io = userio
-
-    # Why does not work?
-    io.configure ->
-      io.set 'log level', 0
 
     @io = io.of "/pile"
 

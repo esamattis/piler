@@ -17,11 +17,13 @@ types =
   object: (obj) ->
 
     # typeof reports array as object
-    return this._array obj if Array.isArray obj
+    return @_array obj if Array.isArray obj
 
     code = "{"
-    code +=  "\"#{ k }\": #{ codeFrom v }," for k, v of obj
-    removeTrailingComma(code) + "}"
+    for k, v of obj
+      code += "\"#{ k }\": #{ codeFrom(v) },"
+
+    "#{removeTrailingComma(code)} }"
 
   _array: (array) ->
     code = "["
@@ -33,11 +35,3 @@ types =
 # and even functions. Does not handle circular references.
 exports.stringify = codeFrom = (obj) ->
   types[typeof obj]?(obj)
-
-
-if require.main is module
-  console.log exports.stringify
-    foo: 1
-    bar:
-      lol: ":D"
-      hah: 2

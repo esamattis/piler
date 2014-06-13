@@ -1,0 +1,15 @@
+{
+  "name"   : "logger-example",
+  "private": true,
+  "version": "0.0.1",
+  "scripts":{
+    "start":"node app.js"
+  },
+  "dependencies": {
+    "express":"4.x",
+    "winston":"*",
+    "socket.io":"1.x",
+    "stylus":"*",
+    "less":"*"
+  }
+}

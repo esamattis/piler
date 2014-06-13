@@ -13,6 +13,7 @@
   * Forbid using of ECMAScript reserved words for namespaces in JS
   * Added `graceful-fs` for your open file descriptor uneaseness
   * Added `cache` for minified code, you may provide your own cache mechanism. It uses filesystem by default
+  * Fix examples
   
 # 0.4.2 - 2013-04-16
 

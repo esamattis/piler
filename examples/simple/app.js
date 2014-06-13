@@ -1,5 +1,7 @@
+process.env.NODE_ENV = 'development';
 
-var createServer = require("express").createServer;
+var app = require("express")();
+var server = require('http').createServer(app);
 
 var pile = require("../../index");
 var js = pile.createJSManager({ outputDirectory: __dirname + "/out" });
@@ -13,19 +15,14 @@ function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
 }
 
-var app = createServer();
+js.bind(app, server);
+css.bind(app, server);
 
+app.set('views', __dirname + "/views");
 
-js.bind(app);
-css.bind(app);
-
-app.configure(function() {
-	app.set('views', __dirname + "/views");
-});
-
-app.configure("development", function() {
+if (process.env.NODE_ENV === 'development') {
    js.liveUpdate(css);
-});
+}
 
 css.addFile(__dirname + "/style.css");
 css.addFile(__dirname + "/style.styl");

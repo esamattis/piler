@@ -1,9 +1,8 @@
-var express = require('express');
-var app = express();
+process.env.NODE_ENV = 'development';
+
+var app = require('express')();
 var http = require('http');
-var socketio = require('socket.io');
 var pile = require("../../index");
-var logger = {};
 var share = require("./share");
 
 console.log(share.test());
@@ -52,13 +51,7 @@ var logger = new (require('winston').Logger)(loggerConf);
 var srv = http.createServer(app);
 
 // Socket.IO
-var io = socketio.listen(srv,{"logger":logger});
-
-io.configure(function(){
-    io.enable('browser client gzip');
-    io.enable('browser client minification');
-    io.disable('flash policy server');
-});
+var io = require('socket.io')(srv);
 
 // Piler config
 var js = pile.createJSManager({ outputDirectory: __dirname + "/out", "logger":logger });
@@ -67,13 +60,16 @@ var css = pile.createCSSManager({ outputDirectory: __dirname + "/out", "logger":
 js.bind(app,srv);
 css.bind(app,srv);
 
-app.configure(function() {
-    app.set('views', __dirname + "/views");
+io.use(function(socket, next){
+  logger.log(socket.request);
+  next();
 });
 
-app.configure("development", function() {
-   js.liveUpdate(css,io);
-});
+app.set('views', __dirname + "/views");
+
+if (process.env.NODE_ENV === 'development') {
+   js.liveUpdate(css, io);
+}
 
 css.addFile(__dirname + "/style.css");
 css.addFile(__dirname + "/style.styl");
@@ -85,7 +81,7 @@ js.addOb({MY: {
 });
 
 js.addOb({FOO: "bar"});
-js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
+js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js");
 
 js.addFile(__dirname + "/client/underscore.js");
 js.addFile(__dirname + "/client/backbone.js");
@@ -110,6 +106,6 @@ app.get("/", function(req, res){
   });
 });
 
-srv.listen(8001, function(){
- logger.notice("listening on 8001");
+srv.listen(8001, function (){
+  logger.notice("listening on 8001");
 });
