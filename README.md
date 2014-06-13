@@ -70,51 +70,7 @@ sum of the assets.
 browsr using Socket.IO.
 
 
-**Full example Express 3.x**
-
-```js
-var http = require('http');
-var app = require("express")();
-var piler = require("piler");
-
-http.createServer(app);
-
-var clientjs = piler.createJSManager();
-var clientcss = piler.createCSSManager();
-
-app.configure(function() {
-    clientjs.bind(app);
-    clientcss.bind(app);
-
-    clientcss.addFile(__dirname + "/style.css");
-
-    clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js");
-    clientjs.addFile(__dirname + "/client/hello.js");
-});
-
-app.configure("development", function() {
-    clientjs.liveUpdate(clientcss);
-});
-
-clientjs.addOb({ VERSION: "1.0.0" });
-
-clientjs.addExec(function() {
-    alert("Hello browser" + window.navigator.appVersion);
-});
-
-app.get("/", function(req, res){
-    res.render("index.jade", {
-        layout: false,
-        js: clientjs.renderTags(),
-        css: clientcss.renderTags()
-    });
-});
-
-http.listen(8080);
-```
-
-
-**Full example Express 4.x**
+**Full example Express 3.x and 4.x**
 
 ```js
 var app = require('express')(),
@@ -126,9 +82,7 @@ var clientcss = piler.createCSSManager();
 
 var srv = require('http').createServer(app);
 
-app.use(require('body-parser')());
-
-clientjs.bind(app,srv);
+clientjs.bind(app,srv); // Make sure to bind to both Express and the server!
 clientcss.bind(app,srv);
 
 clientcss.addFile(__dirname + "/style.css");
@@ -155,19 +109,6 @@ app.get("/", function(req, res){
 });
 
 srv.listen(8080);
-```
-
-
-index.jade:
-
-```jade
-doctype html
-html
-  head
-    != css
-    != js
-  body
-    h1 Hello Piler
 ```
 
 
@@ -364,6 +305,16 @@ but in production it will render to
 So debugging should be as easy as directly using script-tags.  Line numbers
 will match your real files in the filesystem. No need to debug huge Javascript
 bundle!
+
+## Print debug
+
+This module uses the `debug` module, and you can output console debug output by using
+
+```bash
+DEBUG=piler:*
+```
+
+So that you can see development messages
 
 ## Examples
 
