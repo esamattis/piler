@@ -21,7 +21,7 @@ fileExistSync = (filePath) ->
     fs.statSync(filePath)
   catch err
     if err.code == 'ENOENT'
-      return false
+      return false 
   return true
 
 # Return a compressed version (already cached or not) of `code`, this function is synchronous
