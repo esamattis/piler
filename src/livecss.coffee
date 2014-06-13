@@ -1,6 +1,7 @@
+'use strict'
+
 fs = require "fs"
-
-
+debug = require("debug")("piler:livecss")
 
 try
   socketio = require('socket.io')
@@ -21,23 +22,23 @@ incUrlSeq = (url) ->
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
-  console.log "CSS updater is active. Waiting for connection..."
+  debug "CSS updater is active. Waiting for connection..."
 
   pile = io.connect('/pile')
 
   pile.on "connect", ->
-    console.log "CSS updater has connected"
+    debug "CSS updater has connected"
 
   pile.on "disconnect", ->
-    console.log "CSS updater has disconnected! Refresh to reconnect"
+    debug "CSS updater has disconnected! Refresh to reconnect"
 
   pile.on "update", (fileId) ->
     elem = document.getElementById "pile-" + fileId
     if elem
-      console.log "updating", fileId, elem
+      debug "updating", fileId, elem
       elem.href = PILE.incUrlSeq elem.href
     else
-      console.log "id", fileId, "not found"
+      debug "id", fileId, "not found"
 
 class LiveUpdateMixin
 

@@ -1,7 +1,11 @@
+'use strict'
+
 fs = require "fs"
 path = require "path"
 crypto = require 'crypto'
 path = require "path"
+debug = require("debug")("piler:piler")
+reserved = require('reserved')
 
 _ = require "underscore"
 async = require "async"
@@ -156,18 +160,22 @@ class BasePile
     @piledUp = true
 
     async.map @code, (codeOb, cb) =>
+
       codeOb.getCode (err, code) =>
         return cb? err if err
         cb null, @commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
+        return
+
+      return
 
     , (err, result) =>
       return cb? err if err
       @rawPile = @minify result.join("\n\n").trim()
       @_computeHash()
       cb? null, @rawPile
+      return
 
-
-
+    return
 
 class JSPile extends BasePile
   ext: "js"
@@ -283,6 +291,8 @@ class PileManager
             throw err if err
             logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
 
+    return
+
   getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
       opts = namespaces.pop()
@@ -314,10 +324,9 @@ class PileManager
     listener = if server then server else app
     listener.on "listening", =>
       @pileUp()
-
+      return
 
     @setMiddleware app
-
 
     app.use (req, res, next) =>
 
@@ -348,6 +357,10 @@ class PileManager
         res.end code
         return
 
+      return
+
+    return
+
 
 
 
@@ -374,29 +387,41 @@ class JSManager extends PileManager
           target = parts.slice(-1)[0]
           nsOb[target] = ob
 
+    return
+
   wrapInTag: (uri, extra="") ->
     "<script type=\"text/javascript\"  src=\"#{ uri }\" #{ extra } ></script>"
 
+  _isReserved: (ns) ->
+    if reserved.indexOf(ns) isnt -1
+      throw new Error("#{ns} is a reserved word and can't be used")
+
+    return
+
   addModule: defNs (ns, path) ->
+    @_isReserved(ns)
     pile = @getPile ns
     pile.addModule path
 
   addOb: defNs (ns, ob) ->
+    @_isReserved(ns)
     pile = @getPile ns
     pile.addOb ob
 
   addExec: defNs (ns, fn) ->
+    @_isReserved(ns)
     pile = @getPile ns
     pile.addExec fn
-
 
   setMiddleware: (app) ->
     responseExec = (fn) ->
       # "this" is the response object
       this._responseFns.push fn
+      return
 
     responseOb = (ob) ->
       this._responseObs.push ob
+      return
 
     # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
@@ -408,6 +433,10 @@ class JSManager extends PileManager
       res.addOb = responseOb
 
       next()
+
+      return
+
+    return
 
 class CSSManager extends PileManager
   Type: CSSPile

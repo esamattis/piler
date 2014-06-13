@@ -6,12 +6,16 @@ pile = require("../../index")
 js = pile.createJSManager()
 css = pile.createCSSManager()
 
-http.createServer(app)
-
 app.use serveStatic __dirname + '/clientscripts'
 
-js.bind app
-css.bind app
+app.set 'views', __dirname + '/views'
+app.set 'view engine', 'jade'
+app.set 'view options', {layout: 'layout'}
+
+server = http.createServer(app)
+
+js.bind app, server
+css.bind app, server
 
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile "namespaced", __dirname + "/stylesheets/namespaced.css"
@@ -35,7 +39,6 @@ js.addRaw "mynamespace", "window['raw namespace js'] = true;"
 
 js.addFile "mynamespace", __dirname + "/clientscripts/namespace.js"
 
-
 js.addExec ->
   window["js exec"] = true
 
@@ -47,22 +50,25 @@ js.addOb "namespaceob.first": true
 js.addOb "namespaceob.second": true
 
 app.get "/namespace", (req, res) ->
-  res.render "namespace.jade",
+  res.render "namespace",
    layout: false
    js: js.renderTags "mynamespace"
    css: css.renderTags "mynamespace"
 
-
-
 app.get "/", (req, res) ->
 
-  res.render "index.jade",
+  res.render "index",
     js: js.renderTags()
     css: css.renderTags("namespaced")
 
+port = if process.env.NODE_ENV is "development"
+    type = 'developement'
+    7000
+  else
+    type = 'production'
+    7001
 
-port = if process.env.NODE_ENV is "production" then 7001 else 7000
+server.listen port
 
-app.listen port
-console.log "server running on port #{ port }"
+console.log "#{type} server running on port #{ port }"
 

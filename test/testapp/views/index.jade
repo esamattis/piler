@@ -1,11 +1,14 @@
-h2 Failed CSS tests:
-#tests
-  #plain Adding plain css files is broken
-  #stylus Adding Stylus is broken
-  #less Adding LESS  is broken
-  #raw Adding CSS strings  is broken
-  #namespaced Adding namespaced CSS files is broken
-  #stylys_import Can import stylys styles
-  #less_import Can import less styles
+extends layout
 
-small (all ok if there is nothing visible above)
+block body
+  h2 Failed CSS tests:
+  #tests
+    #plain Adding plain css files is broken
+    #stylus Adding Stylus is broken
+    #less Adding LESS  is broken
+    #raw Adding CSS strings  is broken
+    #namespaced Adding namespaced CSS files is broken
+    #stylys_import Can import stylys styles
+    #less_import Can import less styles
+
+  small (all ok if there is nothing visible above)

@@ -2,6 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/epeli/piler.svg?branch=0.6.0)](http://travis-ci.org/epeli/piler)
 [![Coverage Status](https://img.shields.io/coveralls/epeli/piler.svg?branch=0.6.0)](https://coveralls.io/r/epeli/piler)
+[![Dependency Status](https://david-dm.org/epeli/piler.svg?branch=0.6.0)](https://david-dm.org/epeli/piler)
 
 [![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
 
@@ -441,6 +442,9 @@ scope is also lost here.
 
 Any valid Javascript string.
 
+NOTE: Don't use `'global'` as your namespace, as it will conflict with the internal
+namespace of Piler.
+
 ### CSS pile
 
 These are similar to ones in JS pile.
@@ -457,6 +461,9 @@ page. Use addFile if you want it be minified.
 #### addRaw( [namespace], raw CSS string )
 
 Any valid CSS string.
+
+NOTE: Don't use `'global'` as your namespace, as it will conflict with the internal
+namespace of Piler.
 
 ## Supported preprocessors
 
@@ -480,70 +487,14 @@ Feel free to contribute!
 
 From [npm][]
 
-```
-    npm install piler
+```bash
+npm install piler
 ```
 
 ## Source code
 
 Source code is licenced under [The MIT License](https://github.com/epeli/piler/blob/master/LICENSE) and it is hosted
 on [Github](https://github.com/epeli/piler).
-
-## Changelog
-
-v0.4.2 - 2013-04-16
-
-  * Fixes to work with ExpressJS 3.x
-  * Unit test fixes
-  * Make console output configurable
-
-v0.4.1 - 2012-06-12
-
-  * Add getSources
-  * Put cache key to resource url instead of query string
-
-v0.4.0 - 2012-06-17
-
-  * Remove Dynamic Helpers.
-
-Dynamic Helpers where an Express 2.0 only API. This makes Piler more framework
-agnostic and it will work with Express 3.0. This also removes support for
-response object functions. We'll add those back if there is a need for them
-(open up a issue if you miss them!)  and we'll find good framework agnostic way
-to implement them.
-
-v0.3.6 - 2012-06-17
-
-  * Bind all production dependency versions
-
-v0.3.5 - 2012-06-17
-
-  * Fix LESS @imports
-  * Fix Stylus without nib
-  * Use path module for Windows compatibility
-
-v0.3.4 - 2012-03-29
-
-  * Fix Stylus @imports
-
-v0.3.3 - noop
-
-v0.3.2 - 2011-12-11
-
-  * Workaround compiler bug in CoffeeScript
-
-v0.3.1 - 2011-11-17
-
-  * Fix CSS namespaces
-
-v0.3.0 - 2011-10-13
-
-  * Rename to Piler
-  * Really minify CSS
-  * Implemented res.addOb
-  * Implement outputDirectory and urlRoot options.
-  * addOb can now take nested namespace string and it won't override existing
-    namespaces.
 
 ## Contact
 

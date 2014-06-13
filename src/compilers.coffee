@@ -1,5 +1,8 @@
+'use strict'
+
 coffeescript = require "coffee-script"
 path = require "path"
+debug = require("debug")("piler:compilers")
 
 try
   stylus = require "stylus"

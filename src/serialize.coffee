@@ -1,3 +1,6 @@
+'use strict'
+
+debug = require("debug")("piler:serialize")
 
 # Remove last comma from string
 removeTrailingComma = (s) ->
@@ -35,6 +38,6 @@ exports.stringify = codeFrom = (obj) ->
 if require.main is module
   console.log exports.stringify
     foo: 1
-    bar: 
+    bar:
       lol: ":D"
       hah: 2

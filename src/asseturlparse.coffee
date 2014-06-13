@@ -1,5 +1,8 @@
+'use strict'
+
 _  = require 'underscore'
 _.mixin require 'underscore.string'
+debug = require("debug")("piler:asserurlparse")
 
 module.exports = p = (url) ->
   ob = {}
@@ -26,4 +29,4 @@ module.exports = p = (url) ->
 
 
 if require.main is module
-  console.info p "/pile/dev/my.exec-123.js"
+  debug p "/pile/dev/my.exec-123.js"
