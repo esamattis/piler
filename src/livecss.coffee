@@ -1,6 +1,6 @@
 'use strict'
 
-fs = require "fs"
+fs = require "graceful-fs"
 debug = require("debug")("piler:livecss")
 
 try

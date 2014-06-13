@@ -11,6 +11,9 @@
   "bugs": {
     "url": "https://github.com/epeli/piler/issues/"
   },
+  "contributors": [
+    "Francois-Guillaume Ribreau <npm@fgribreau.com> (http://fgribreau.com)"
+  ],
   "engines":{
     "node":">=0.10"
   },
@@ -30,6 +33,7 @@
   },
   "main": "./index",
   "dependencies": {
+    "graceful-fs":"3.x.x",
     "coffee-script": "1.x.x",
     "underscore": "1.x.x",
     "underscore.string": "2.x.x",

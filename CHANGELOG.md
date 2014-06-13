@@ -11,6 +11,8 @@
   * Added `debug` module to all sources
   * `use strict` for quality of code
   * Forbid using of ECMAScript reserved words for namespaces in JS
+  * Added `graceful-fs` for your open file descriptor uneaseness
+  * Added `cache` for minified code, you may provide your own cache mechanism. It uses filesystem by default
   
 # 0.4.2 - 2013-04-16
 

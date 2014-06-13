@@ -1,6 +1,6 @@
 'use strict'
 
-fs = require "fs"
+fs = require "graceful-fs"
 path = require "path"
 crypto = require 'crypto'
 path = require "path"
