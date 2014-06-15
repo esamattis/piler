@@ -1,7 +1,3 @@
-**New maintainers wanted!** Unfortunately I don't have the time to maintain this project anymore. Please contact me if you are interested! [GH Issue](https://github.com/epeli/piler/issues/49).
-
----
-
 # Piler
 
 [![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler)
@@ -14,6 +10,8 @@ Feature highlights
   * Transparent preprocessor
   * Push CSS changes to the browser using Socket.IO
   * Easy code sharing with server
+
+### **[Need feedback for upcoming version 0.6.0](https://github.com/epeli/piler/issues/61)**
 
 ## Awesome Asset Manager for Node.js
 
