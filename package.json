@@ -3,7 +3,8 @@
   "version": "0.5.1",
   "author": "Esa-Matti Suuronen",
   "maintainers": [
-    "Alexander Pirsig <self@pirsig.net>"
+    "Alexander Pirsig <self@pirsig.net>",
+    "Paulo Cesar <email@pocesar.e4ward.com>"
   ],
   "homepage": "http://epeli.github.com/piler/",
   "description": "Awesome Asset Manager for Node.js",
