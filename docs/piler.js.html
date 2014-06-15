@@ -1,10 +1,37 @@
-'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: piler.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: piler.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 /**
  * @namespace Piler
  */
 var BasePile, CSSManager, CSSPile, JSManager, JSPile, LiveUpdateMixin, OB, PileManager, asCodeOb, assetUrlParse, async, cache, compilers, crypto, cssMinify, debug, defNs, executableFrom, extension, fs, getCompiler, jsMinify, logger, path, production, reserved, toGlobals, wrapInScriptTagInline, _, _ref,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i &lt; l; i++) { if (i in this &amp;&amp; this[i] === item) return i; } return -1; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __slice = [].slice;
@@ -54,7 +81,7 @@ extension = function(filename) {
 };
 
 wrapInScriptTagInline = function(code) {
-  return "<script type=\"text/javascript\" >\n" + code + "\n</script>\n";
+  return "&lt;script type=\"text/javascript\" >\n" + code + "\n&lt;/script>\n";
 };
 
 getCompiler = function(filePath) {
@@ -189,7 +216,7 @@ BasePile = (function() {
     }
     filePath = path.normalize(filePath);
     this.warnPiledUp("addFile");
-    if (__indexOf.call(this.getFilePaths(), filePath) < 0) {
+    if (__indexOf.call(this.getFilePaths(), filePath) &lt; 0) {
       this.code[!before ? 'push' : 'unshift'](asCodeOb.call({
         type: "file",
         filePath: filePath
@@ -232,7 +259,7 @@ BasePile = (function() {
     var ob, _i, _len, _ref1, _results;
     _ref1 = this.code;
     _results = [];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+    for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
       ob = _ref1[_i];
       if (ob.type === "file") {
         _results.push(ob.filePath);
@@ -255,7 +282,7 @@ BasePile = (function() {
     if (before == null) {
       before = false;
     }
-    if (__indexOf.call(this.urls, url) < 0) {
+    if (__indexOf.call(this.urls, url) &lt; 0) {
       this.urls[!before ? 'push' : 'unshift'](url);
     }
     return this;
@@ -275,7 +302,7 @@ BasePile = (function() {
       var _i, _len, _ref1, _results;
       _ref1 = this.urls;
       _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
         u = _ref1[_i];
         _results.push([u]);
       }
@@ -289,7 +316,7 @@ BasePile = (function() {
         devCacheKey = "?v=" + (Date.now());
       }
       _ref1 = this.code;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
         ob = _ref1[_i];
         sources.push(["" + this.urlRoot + "dev/" + this.name + "." + ob.type + "-" + (ob.getId()) + "." + this.ext + devCacheKey, "id=\"pile-" + (ob.getId()) + "\""]);
       }
@@ -312,7 +339,7 @@ BasePile = (function() {
       var _i, _len, _ref1, _results;
       _ref1 = this.code;
       _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
         codeOb = _ref1[_i];
         if (codeOb.getId() === id) {
           _results.push(codeOb);
@@ -337,7 +364,7 @@ BasePile = (function() {
       var _i, _len, _ref1, _results;
       _ref1 = this.code;
       _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
         codeOb = _ref1[_i];
         if (codeOb.filePath === path) {
           _results.push(codeOb);
@@ -488,7 +515,7 @@ JSPile = (function(_super) {
     }
     filePath = path.normalize(filePath);
     this.warnPiledUp("addFile");
-    if (__indexOf.call(this.getFilePaths(), filePath) < 0) {
+    if (__indexOf.call(this.getFilePaths(), filePath) &lt; 0) {
       this.code[!before ? 'push' : 'unshift'](asCodeOb.call({
         type: "module",
         filePath: filePath
@@ -678,7 +705,7 @@ PileManager = (function() {
 
   PileManager.prototype.addFiles = defNs(function(ns, arr) {
     var file, _i, _len;
-    for (_i = 0, _len = arr.length; _i < _len; _i++) {
+    for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
       file = arr[_i];
       this.addFile(ns, file);
     }
@@ -760,7 +787,7 @@ PileManager = (function() {
 
   PileManager.prototype.getSources = function() {
     var namespaces, ns, opts, pile, sources, _i, _len;
-    namespaces = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    namespaces = 1 &lt;= arguments.length ? __slice.call(arguments, 0) : [];
     if (typeof _.last(namespaces) === "object") {
       opts = namespaces.pop();
     } else {
@@ -770,7 +797,7 @@ PileManager = (function() {
       namespaces.unshift("global");
     }
     sources = [];
-    for (_i = 0, _len = namespaces.length; _i < _len; _i++) {
+    for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
       ns = namespaces[_i];
       if (pile = this.piles[ns]) {
         sources.push.apply(sources, pile.getSources());
@@ -786,10 +813,10 @@ PileManager = (function() {
 
   PileManager.prototype.renderTags = function() {
     var namespaces, src, tags, _i, _len, _ref1;
-    namespaces = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    namespaces = 1 &lt;= arguments.length ? __slice.call(arguments, 0) : [];
     tags = "";
     _ref1 = this.getSources.apply(this, namespaces);
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+    for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
       src = _ref1[_i];
       tags += this.wrapInTag(src[0], src[1]);
       tags += "\n";
@@ -869,7 +896,7 @@ JSManager = (function(_super) {
         var ns, parent, _i, _len, _ref1;
         parent = window;
         _ref1 = nsString.split(".");
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        for (_i = 0, _len = _ref1.length; _i &lt; _len; _i++) {
           ns = _ref1[_i];
           parent = parent[ns] != null ? parent[ns] : parent[ns] = {};
         }
@@ -894,7 +921,7 @@ JSManager = (function(_super) {
     if (extra == null) {
       extra = "";
     }
-    return "<script type=\"text/javascript\"  src=\"" + uri + "\" " + extra + " ></script>";
+    return "&lt;script type=\"text/javascript\"  src=\"" + uri + "\" " + extra + " >&lt;/script>";
   };
 
   JSManager.prototype._isReserved = function(ns) {
@@ -994,7 +1021,7 @@ CSSManager = (function(_super) {
     if (extra == null) {
       extra = "";
     }
-    return "<link rel=\"stylesheet\" href=\"" + uri + "\" " + extra + " />";
+    return "&lt;link rel=\"stylesheet\" href=\"" + uri + "\" " + extra + " />";
   };
 
 
@@ -1086,7 +1113,7 @@ exports.addCompiler = function(extension, renderFn) {
     throw new Error('addCompiler function expects a function as second parameter');
   }
   def = renderFn();
-  if (_.isObject(def) && _.isFunction(def.render)) {
+  if (_.isObject(def) &amp;&amp; _.isFunction(def.render)) {
     compilers[extension] = def;
   } else {
     throw new Error('Your function must return an object containing "render" and optionally "targetExt"');
@@ -1124,9 +1151,32 @@ exports.useCache = function(cacheFn) {
   if (!_.isFunction(cacheFn)) {
     throw new Error('useCache expects a function');
   }
-  if (cacheFn.length < 3) {
+  if (cacheFn.length &lt; 3) {
     throw new Error('useCache expects a function with 3 arguments defined');
   }
   cache.options.useFS = false;
   cache.options.cacheCallback = cacheFn;
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Piler.BasePile.html">BasePile</a></li><li><a href="Piler.CSSManager.html">CSSManager</a></li><li><a href="Piler.CSSPile.html">CSSPile</a></li><li><a href="Piler.JSManager.html">JSManager</a></li><li><a href="Piler.JSPile.html">JSPile</a></li><li><a href="Piler.PileManager.html">PileManager</a></li></ul><h3>Namespaces</h3><ul><li><a href="Piler.html">Piler</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Sun Jun 15 2014 10:35:44 GMT-0300 (E. South America Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

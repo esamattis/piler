@@ -14,6 +14,12 @@
   * Added `graceful-fs` for your open file descriptor uneaseness
   * Added `cache` for minified code, you may provide your own cache mechanism. It uses filesystem by default
   * Fix examples
+  * Code cleanup
+  * Expose `BasePile` for testing and augmenting
+  * Started documenting code
+  * Added functions for adding and removing compilers from Piler
+  * Fix `findCodeObByFilePath`
+  * Fix `livecss`
   
 # 0.4.2 - 2013-04-16
 

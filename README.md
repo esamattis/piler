@@ -32,7 +32,7 @@ Copying things from Rails is just not enough. This is just a one reason why
 
 Server-side code:
 
-```js
+```javascript
 clientjs.addOb({BROWSER_GLOBAL: {
     aFunction: function() {
         console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
@@ -42,7 +42,7 @@ clientjs.addOb({BROWSER_GLOBAL: {
 
 You can also tell *Piler* to directly execute some function in the browser:
 
-```js
+```javascript
 clientjs.addExec(function() {
     BROWSER_GLOBAL.aFunction();
     alert("Hello" + window.navigator.appVersion);
@@ -71,7 +71,7 @@ browsr using Socket.IO.
 
 **Full example Express 3.x and 4.x**
 
-```js
+```javascript
 var app = require('express')(),
     http = require('http'),
     piler = require("piler");
@@ -90,7 +90,7 @@ clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js");
 clientjs.addFile(__dirname + "/client/hello.js");
 
 if (process.env.NODE_ENV === 'development') {
-    clientjs.liveUpdate(clientcss, require('socket.io')());
+    clientjs.liveUpdate(clientcss, require('socket.io')(srv));
 }
 
 clientjs.addOb({ VERSION: "1.0.0" });
@@ -118,7 +118,7 @@ The example above uses just a one pile. The global pile.
 If you for example want to add big editor files only for administration pages
 you can create a pile for it:
 
-```js
+```javascript
 clientjs.addFile("admin", __dirname + "/editor.js");
 clientjs.addFile("admin", __dirname + "/editor.extension.js");
 ```
@@ -127,7 +127,7 @@ This will add file editor.js and editor.extension.js to a admin pile. Now you
 can add that to your admin pages by using giving it as parameter for
 *renderTags*.
 
-```js
+```javascript
 js.renderTags("admin");
 ```
 
@@ -145,7 +145,7 @@ share code directly from your server code.
 Let's say that you want to share a email-validating function with a server and
 the client
 
-```js
+```javascript
 function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
 }
@@ -153,7 +153,7 @@ function isEmail(s) {
 
 You can share it with *addOb* -method:
 
-```js
+```javascript
 clientjs.addOb({MY: {
    isEmail: isEmail
    }
@@ -175,7 +175,7 @@ won't transferred to the client!
 This is nothing specific to *Piler*, but this is a nice pattern which can be
 used to share modules between the server and the client.
 
-```js
+```javascript
 // share.js
 (function(exports){
 
@@ -184,29 +184,31 @@ used to share modules between the server and the client.
   };
 
 }(typeof exports === 'undefined' ? this.share = {} : exports));
+// "this" in the browser is window, so effectively, window.share
 ```
 
 In Node.js you can use it by just requiring it as any other module
 
-```js
+```javascript
 var share = require("./share.js");
 ```
 
 and you can share it the client using `addFile`:
 
-```js
-clientjs.addFile(__dirname + "./share.js");
+```javascript
+clientjs.addFile(__dirname + "/share.js");
 ```
 
 Now you can use it in both as you would expect
 
-```js
+```javascript
 share.test();
 ```
 
 You can read more about the pattern from [here](http://caolanmcmahon.com/posts/writing_for_node_and_the_browser)
 
 ## Logging
+
 Sometimes it is nessesary to control pilers output based on the system environment your running your application in. 
 In default mode Pilers logger will output any information it has by using the "console" javascript object. The following example shows
 how to configure a custom logger  
@@ -215,7 +217,7 @@ how to configure a custom logger
 
 The basic logger facility implements the following methods.
 
-```js
+```javascript
 exports.debug    = console.debug
 exports.notice   = console.log
 exports.info     = console.info
@@ -229,13 +231,14 @@ exports.critical = console.error
 
 The following example injects "winston", a multi-transport async logging library into pilers logging mechanism.
 
-```js
+```javascript
 var piler = require('piler');
 var logger = require('winston');
 // [More logger configuration can take place here]
+var assetTmpDir = path.join(__dirname, 'public');
 
-global.js = js = piler.createJSManager({ outputDirectory: assetTmpDir , "logger": logger});
-global.css = css = piler.createCSSManager({ outputDirectory: assetTmpDir, "logger": logger});
+var js = piler.createJSManager({ outputDirectory: assetTmpDir , "logger": logger});
+var css = piler.createCSSManager({ outputDirectory: assetTmpDir, "logger": logger});
 ```
 
 More information about winston can be found [here](https://github.com/flatiron/winston).
@@ -256,7 +259,7 @@ tools when in development mode.
 
 Using Express you can add Live CSS editing in development mode:
 
-```js
+```javascript
 if (process.env.NODE_ENV === 'development') {
    clientjs.liveUpdate(clientcss, io);
 }
@@ -269,7 +272,7 @@ If your app already uses Socket.IO you need to add the *io*-object as second
 parameter to liveUpdate:
 
 
-```js
+```javascript
 var app = require('express')();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
@@ -281,9 +284,9 @@ clientjs.liveUpdate(clientcss, io);
 
 In development mode every JS and CSS file will be rendered as a separate tag.
 
-For example js.renderTags("admin") will render
+For example `js.renderTags("admin")` will render
 
-```js
+```javascript
 clientjs.addFile(__dirname + "/helpers.js");
 clientjs.addFile("admin", __dirname + "/editor.js");
 clientjs.addFile("admin", __dirname + "/editor.extension.js");
@@ -292,16 +295,16 @@ clientjs.addFile("admin", __dirname + "/editor.extension.js");
 in development mode, to
 
 ```html
-<script type="text/javascript" src="/pile/dev/_global/1710d-helpers.js?v=1317298508710" ></script>
-<script type="text/javascript" src="/pile/dev/admin/3718d-editor.js?v=1317298508714" ></script>
-<script type="text/javascript" src="/pile/dev/admin/1411d-editor.extension.js?v=1317298508716" ></script>
+&lt;script type="text/javascript" src="/pile/dev/global.file-helpers.js?v=1317298508710" &gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="/pile/dev/admin.file-editor.js?v=1317298508714" &gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="/pile/dev/admin.file-editor.extension.js?v=1317298508716" &gt;&lt;/script&gt;
 ```
 
 but in production it will render to
 
 ```html
-<script type="text/javascript"  src="/pile/min/_global.js?v=f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c"  ></script>
-<script type="text/javascript"  src="/pile/min/admin.js?v=2d730ac54f9e63e1a7e99cd669861bda33905365"  ></script>
+&lt;script type="text/javascript"  src="/pile/min/f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c/global.js"  &gt;&lt;/script&gt;
+&lt;script type="text/javascript"  src="/pile/min/2d730ac54f9e63e1a7e99cd669861bda33905365/admin.js"  &gt;&lt;/script&gt;
 ```
 
 So debugging should be as easy as directly using script-tags.  Line numbers
@@ -313,10 +316,14 @@ bundle!
 This module uses the `debug` module, and you can output console debug output by using
 
 ```bash
-DEBUG=piler:*
+export DEBUG=piler:*
 ```
 
-So that you can see development messages
+So that you can see development messages. You can filter out specific debug messages by using:
+
+```bash
+export DEBUG=piler:minify
+```
 
 ## Examples
 
@@ -335,7 +342,7 @@ of `addUrl` which will be rendered as first.
 
 Can take an optional configuration object as an argument with following keys.
 
-```js
+```javascript
 var jsclient = piler.createJSManager({
     outputDirectory: __dirname + "/mydir",
     urlRoot: "/my/root"
@@ -348,13 +355,13 @@ Url root to which Piler's paths are appended. For example urlRoot "/my/root"
 will result in following script tag:
 
 ```html
-<script type="text/javascript" src="/my/root/min/code.js?v=f4ec8d2b2be16a4ae8743039c53a1a2c31e50570" ></script>
+&lt;script type="text/javascript" src="/my/root/min/f4ec8d2b2be16a4ae8743039c53a1a2c31e50570/code.js" &gt;&lt;/script&gt;
 ```
 
 #### outputDirectory
 
 If specified *Piler* will write the minified assets to this folder. Useful if
-you want to share you assets from Apache etc. instead of directly serving from
+you want to share you assets from Apache, nginx, lighttpd etc. instead of directly serving from
 Piler's Connect middleware.
 
 ### JavaScript pile
@@ -374,7 +381,7 @@ choosing those.  Also remember that parent scope of functions will be lost.
 
 You can also give a nested namespace for it
 
-```js
+```javascript
 clientjs.addOb({"foo.bar": "my thing"});
 ```
 
@@ -418,7 +425,31 @@ Any valid CSS string.
 NOTE: Don't use `'global'` as your namespace, as it will conflict with the internal
 namespace of Piler.
 
-## Supported preprocessors
+## Preprocessors
+
+You can easily add new compilers by doing, for example, compiling livescript (.ls files) to .js:
+ 
+```javascript
+var piler = require('piler');
+
+piler.addCompiler('ls', function(){
+    var livescript = require('LiveScript');
+    
+    // this is the initialization function, called once, you must return a rendering 
+    // object
+    return {
+        render: function(filename, code, cb){
+            try {
+                code = livescript.compile(code);
+                cb(null, code);
+            } catch (e) {
+                cb(e);
+            }
+        },
+        targetExt: 'js' // this is optional in some cases, for this example, we need to convert .ls to .js
+    };
+});
+```
 
 ### JavaScript
 
@@ -433,8 +464,6 @@ CSS-compilers are not included in *Piler*. Just install what you need using [npm
 * [LESS][] (npm install less)
 
 Adding support for new compilers should be [easy](https://github.com/epeli/pile/blob/master/lib/compilers.js).
-
-Feel free to contribute!
 
 ## Installing
 

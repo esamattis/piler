@@ -1,12 +1,16 @@
 'use strict'
 
+###*
+ * @namespace Piler
+###
+
+cache = require './cache'
 fs = require "graceful-fs"
 path = require "path"
 crypto = require 'crypto'
 path = require "path"
 debug = require("debug")("piler:piler")
-reserved = require('reserved')
-
+reserved = require 'reserved'
 _ = require "underscore"
 async = require "async"
 
@@ -36,11 +40,18 @@ getCompiler = (filePath) ->
     throw new Error "Could not find compiler for #{ filePath }"
   compiler.render
 
+###*
+ * A code object
+ * @typedef {Object} Piler.codeOb
+ * @property {Function} getId Get the code id
+ * @property {Function} getCode Get the code itself
+###
+
 #http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/
 asCodeOb = do ->
+
   getId = ->
     sum = crypto.createHash('sha1')
-
 
     if @type is "file"
       # If code is on filesystem the url to the file should only change when
@@ -60,17 +71,28 @@ asCodeOb = do ->
       hash = filename + "_" + hash
 
     return hash
+
   pilers =
-    raw: (ob, cb) -> cb null, ob.raw
+    raw: (ob, cb) ->
+      cb null, ob.raw
+      return
+
     object: (ob, cb) ->
       cb null, toGlobals ob.object
+      return
+
     exec: (ob, cb) ->
       cb null, executableFrom ob.object
+      return
+
     file: (ob, cb) ->
-      fs.readFile ob.filePath, (err, data) =>
+      fs.readFile ob.filePath, (err, data) ->
         return cb? err if err
         getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
           cb err, code
+        return
+
+      return
 
     module: (ob, cb) ->
       this.file ob, (err, code) ->
@@ -78,84 +100,180 @@ asCodeOb = do ->
         cb null, """require.register("#{ path.basename(ob.filePath).split(".")[0] }", function(module, exports, require) {
         #{ code }
         });"""
+        return
+      return
 
-
-  return ->
+  ->
     @getId = getId
     @getCode = (cb) ->
       pilers[@type] @, cb
-    return @
 
+    @
 
 class BasePile
+  ###*
+   * @member {String} urlRoot
+   * @instance
+   * @memberof Piler.BasePile
+  ###
   urlRoot: "/piler/"
 
+  ###*
+   * @member {Boolean} production
+   * @instance
+   * @memberof Piler.BasePile
+  ###
   production: false
 
-  constructor: (@name, @production, urlRoot) ->
+  ###*
+   * @constructor Piler.BasePile
+  ###
+  constructor: (@name, @production, urlRoot, cacheKeys) ->
     if urlRoot?
       @urlRoot = urlRoot
 
     @code = []
     @rawPile = null
     @urls = []
-    @devMapping = {}
     @piledUp = false
+    @cacheKeys = if cacheKeys isnt undefined then !!cacheKeys else true
 
-  addFile: (filePath) ->
+  ###*
+   * Add an array of files at once
+   *
+   * @example
+   *   Pile.addFile("/path/to/file")
+   *
+   * @memberof BasePile
+   * @function addFile
+   * @instance
+   * @param {String} filePath Absolute path to the file
+   * @param {Boolean} [before] Prepend this file instead of adding to the end of the pile
+   *
+   * @returns {Piler.BasePile}
+  ###
+  addFile: (filePath, before = false) ->
     filePath = path.normalize filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
-      @code.push asCodeOb.call
+      @code[if not before then 'push' else 'unshift'] asCodeOb.call
         type: "file"
         filePath: filePath
 
+    @
 
-  addRaw: (raw) ->
+  ###*
+   * @memberof Piler.BasePile
+   * @function addRaw
+   * @param {*} raw
+   * @param {Boolean} [before]
+   * @instance
+   * @returns {Piler.BasePile}
+  ###
+  addRaw: (raw, before = false) ->
     @warnPiledUp "addRaw"
-    @code.push asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] asCodeOb.call
       type: "raw"
       raw: raw
 
+    @
+
+  ###*
+   * @memberof Piler.BasePile
+   * @function getFilePaths
+   * @instance
+   * @returns {Piler.BasePile}
+  ###
   getFilePaths: ->
     (ob.filePath for ob in @code when ob.type is "file")
 
-  addUrl: (url) ->
+  ###*
+   * @memberof Piler.BasePile
+   * @function addUrl
+   * @param {String} url
+   * @param {Boolean} [before]
+   * @instance
+   * @returns {Piler.BasePile}
+  ###
+  addUrl: (url, before = false) ->
     if url not in @urls
-      @urls.push url
+      @urls[if not before then 'push' else 'unshift'] url
 
+    @
 
+  ###*
+   * @memberof Piler.BasePile
+   * @function getSources
+   * @instance
+   * @returns {Piler.BasePile}
+  ###
   getSources: ->
-    devCacheKey = Date.now()
-
     # Start with plain urls
     sources = ([u] for u in @urls)
 
     if @production
       sources.push ["#{ @urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
     else
+      devCacheKey = ''
+      if @cacheKeys
+        devCacheKey = "?v=#{Date.now()}"
       for ob in @code
-        sources.push ["#{ @urlRoot }dev/#{ devCacheKey }/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }", "id=\"pile-#{ ob.getId() }\""]
+        sources.push ["#{ @urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }#{devCacheKey}", "id=\"pile-#{ ob.getId() }\""]
+
     return sources
 
-
+  ###*
+   * @memberof Piler.BasePile
+   * @function findCodeObById
+   * @param {String} id
+   * @instance
+   * @returns {Piler.codeOb}
+  ###
   findCodeObById: (id) ->
     (codeOb for codeOb in @code when codeOb.getId() is id)[0]
 
+  ###*
+   * @memberof Piler.BasePile
+   * @function findCodeObByFilePath
+   * @param {String} path
+   * @instance
+   * @returns {Piler.codeOb}
+  ###
   findCodeObByFilePath: (path) ->
-    (codeOb for codeOb in @code when codeOb.filePath is id)[0]
+    (codeOb for codeOb in @code when codeOb.filePath is path)[0]
 
-
-
+  ###*
+   * @memberof {Piler.BasePile}
+   * @function _computeHash
+   * @instance
+   * @private
+   *
+   * @returns {Piler.BasePile}
+  ###
   _computeHash: ->
     sum = crypto.createHash('sha1')
     sum.update @rawPile
     @pileHash = sum.digest('hex')
 
+  ###*
+   * @memberof {Piler.BasePile}
+   * @function warnPiledUp
+   * @instance
+   * @protected
+  ###
   warnPiledUp: (fnname) ->
     if @piledUp
       @logger.warn "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
 
+    return
+
+  ###*
+   * @memberof {Piler.BasePile}
+   * @function pileUp
+   * @param {Function} [cb]
+   * @instance
+   * @returns {Piler.BasePile}
+  ###
   pileUp: (cb) ->
     @piledUp = true
 
@@ -175,60 +293,133 @@ class BasePile
       cb? null, @rawPile
       return
 
-    return
+    @
 
 class JSPile extends BasePile
+  ###*
+   * @member {String} ext
+   * @memberof Piler.JSPile
+   * @instance
+  ###
   ext: "js"
 
+  ###*
+   * Add line comment
+   *
+   * @function commentLine
+   * @memberof Piler.JSPile
+   * @returns {String}
+   * @instance
+  ###
   commentLine: (line) ->
-    return "// #{ line.trim() }"
+    "// #{ line.trim() }"
 
+  ###*
+   * Minify any valid Javascript code
+   *
+   * @memberof Piler.JSPile
+   * @returns {String}
+   * @instance
+  ###
   minify: (code) ->
     if @production
       jsMinify code
     else
       code
 
+  ###*
+   * @augments Piler.BasePile
+   * @constructor Piler.JSPile
+  ###
   constructor: ->
     super
     @objects = []
 
-
-  # CommonJS module
-  addModule: (filePath) ->
+  ###*
+   * Add a CommonJS module
+   * @memberof Piler.JSPile
+   * @function addModule
+   * @param {String} filePath
+   * @param {Boolean} [before]
+   * @instance
+   * @returns {Piler.JSPile}
+  ###
+  addModule: (filePath, before = false) ->
     filePath = path.normalize filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
-      @code.push asCodeOb.call
+      @code[if not before then 'push' else 'unshift'] asCodeOb.call
         type: "module"
         filePath: filePath
+    @
 
-
-  addOb: (ob) ->
+  ###*
+   * Add a CommonJS module
+   * @memberof Piler.JSPile
+   * @param {Object} ob
+   * @param {Boolean} [before]
+   * @instance
+   * @returns {Piler.JSPile}
+  ###
+  addOb: (ob, before = false) ->
     @warnPiledUp "addOb"
-    @code.push asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] asCodeOb.call
       type: "object"
       object: ob
+    @
 
-
-  addExec: (fn) ->
+  ###*
+   * Add a CommonJS module
+   * @memberof Piler.JSPile
+   * @param {Function} fn
+   * @param {Boolean} [before]
+   * @instance
+   * @function addExec
+   * @returns {Piler.JSPile}
+  ###
+  addExec: (fn, before = false) ->
     @warnPiledUp "addExec"
-    @code.push asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] asCodeOb.call
       type: "exec"
       object: fn
-
-
-
-
-
-
+    @
 
 class CSSPile extends BasePile
+  ###*
+   * @member {String} ext
+   * @memberof Piler.CSSPile
+   * @instance
+  ###
   ext: "css"
 
+  ###*
+   * @constructor Piler.CSSPile
+   * @augments Piler.BasePile
+  ###
+  constructor: ->
+    super
+
+  ###*
+   * Add a line comment to CSS
+   *
+   * @memberof Piler.CSSPile
+   * @param {String} line
+   * @instance
+   * @function commentLine
+   * @returns {Piler.CSSPile}
+  ###
   commentLine: (line) ->
     return "/* #{ line.trim() } */"
 
+  ###*
+   * Minify any CSS code
+   *
+   * @memberof Piler.CSSPile
+   * @param {String} code
+   * @instance
+   * @function minify
+   * @returns {Piler.CSSPile}
+  ###
   minify: (code) ->
     if @production
       cssMinify code
@@ -243,40 +434,80 @@ defNs = (fn) ->
       ns = "global"
     fn.call this, ns, path
 
-
 class PileManager
-
+  ###*
+   * @memberof Piler.PileManager
+   * @member {Piler.BasePile} Type
+   * @instance
+  ###
   Type: null
 
+  ###*
+   * @constructor Piler.PileManager
+  ###
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
     @logger = @settings.logger || logger
 
-
-
     @piles =
       global: new @Type "global", @production, @settings.urlRoot
 
+  ###*
+   * @memberof Piler.PileManager
+   * @instance
+   * @function getPile
+   * @returnss {Piler.BasePile}
+  ###
   getPile: (ns) ->
     pile = @piles[ns]
     if not pile
       pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot
     pile
 
+  ###*
+   * Add an array of files at once
+   *
+   * @example
+   *   PileManager.addFiles("namespace", ["/file/1","/file/2"])
+   *
+   * @memberof Piler.PileManager
+   *
+   * @function addFiles
+   * @param {String} ns
+   * @param {Array} arr
+   *
+   * @returns {Piler.BasePile}
+  ###
+  addFiles: defNs (ns, arr) ->
+    @addFile(ns, file) for file in arr
 
+    @
+
+  ###*
+   * @memberof Piler.PileManager
+  ###
   addFile: defNs (ns, path) ->
     pile = @getPile ns
     pile.addFile path
 
+  ###*
+   * @memberof Piler.PileManager
+  ###
   addRaw: defNs (ns, raw) ->
     pile = @getPile ns
     pile.addRaw raw
 
+  ###*
+   * @memberof Piler.PileManager
+  ###
   addUrl: defNs (ns, url) ->
     pile = @getPile ns
     pile.addUrl url
 
+  ###*
+   * @memberof Piler.PileManager
+  ###
   pileUp: ->
     logger = @logger
     logger.notice "Start assets generation for '#{ @Type::ext }'"
@@ -294,6 +525,9 @@ class PileManager
         return
     return
 
+  ###*
+   * @memberof Piler.PileManager
+  ###
   getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
       opts = namespaces.pop()
@@ -309,6 +543,9 @@ class PileManager
         sources.push pile.getSources()...
     return sources
 
+  ###*
+   * @memberof Piler.PileManager
+  ###
   renderTags: (namespaces...) ->
 
     tags = ""
@@ -317,13 +554,17 @@ class PileManager
       tags += "\n"
     return tags
 
-  bind: (app, server=null) ->
+  ###*
+   * @memberof Piler.PileManager
+  ###
+  bind: (app, server) ->
+    if not server
+      throw new Error('You must pass an existing server to bind function as second parameter')
 
     @app = app
     @server = server
 
-    listener = if server then server else app
-    listener.on "listening", =>
+    server.on "listening", =>
       @pileUp()
       return
 
@@ -362,13 +603,14 @@ class PileManager
 
     return
 
-
-
-
 class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
 
+  ###*
+   * @constructor Piler.JSManager
+   * @augments Piler.PileManager
+  ###
   constructor: ->
     super
     @piles.global.addExec ->
@@ -440,12 +682,42 @@ class JSManager extends PileManager
     return
 
 class CSSManager extends PileManager
+  ###*
+   * @member {CSSPile} Type
+   * @memberof Piler.CSSManager
+   * @instance
+  ###
   Type: CSSPile
+  ###*
+   * @member {String} contentType
+   * @memberof Piler.CSSManager
+   * @instance
+  ###
   contentType: "text/css"
 
+  ###*
+   * @constructor Piler.CSSManager
+   * @augments Piler.PileManager
+  ###
+  constructor: ->
+    super
+
+  ###*
+   * Wrap a stylesheet path in a link tag
+   *
+   * @memberof Piler.CSSManager
+   * @function wrapInTag
+   * @instance
+   * @returns {String}
+  ###
   wrapInTag: (uri, extra="") ->
     "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra } />"
 
+  ###*
+   * @memberof Piler.CSSManager
+   * @function setMiddleware
+   * @instance
+  ###
   setMiddleware: (app) ->
 
 # Creates immediately executable string presentation of given function.
@@ -454,27 +726,88 @@ executableFrom = (fn, context) ->
   return "(#{ fn })();\n" unless context
   return "(#{ fn }).call(#{ context });\n"
 
-
-
 LiveUpdateMixin = require "./livecss"
 _.extend JSManager::, LiveUpdateMixin::
 
 exports.production = production = process.env.NODE_ENV is "production"
 
+exports.BasePile = BasePile
 exports.CSSPile = CSSPile
 exports.JSPile = JSPile
 exports.JSManager = JSManager
 exports.CSSManager = CSSManager
 
+###*
+ * Create a new JS Manager for adding Javascript files
+ *
+ * @param {Object} [settings] Settings to pass to JSManager
+ *
+ * @function Piler.createJSManager
+ * @returns {Piler.JSManager}
+###
 exports.createJSManager = (settings={}) ->
   settings.production = production
   new JSManager settings
 
+###*
+ * Create a new CSS Manager for adding stylesheet files
+ *
+ * @function Piler.createCSSManager
+ *
+ * @param {Object} [settings] Settings to pass to CSSManager
+ * @returns {Piler.CSSManager}
+###
 exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
 
+###*
+ * Add a compiler to Piler. You can override existing extensions like css or js
+ *
+ * @function Piler.addCompiler
+ *
+ * @throws Error
+ * @param {String} extension The extension that you want compiling
+ * @param {Function} renderFn The function that will be factory for generating code
+###
+exports.addCompiler = (extension, renderFn) ->
+  throw new Error('addCompiler function expects a function as second parameter') if not _.isFunction(renderFn)
+  def = renderFn()
 
+  if _.isObject(def) and _.isFunction(def.render)
+    compilers[extension] = def
+  else
+    throw new Error('Your function must return an object containing "render" and optionally "targetExt"')
 
+  return
 
+###*
+ * @function Piler.removeCompiler
+ * @param {String} extension Extension to remove the compiler
+###
+exports.removeCompiler = (extension) ->
+  delete compilers[extension] if compilers[extension]
 
+  return
+
+###*
+ * Add the cache method.
+ * By default it uses the filesystem
+ *
+ * @example
+ *   piler.useCache(function(){
+ *   });
+ *
+ * @param {Function} cacheFn Function that will be called with the current code, generated hash and the callback
+ * @throws Error
+ *
+ * @function Piler.useCache
+###
+exports.useCache = (cacheFn) ->
+  throw new Error('useCache expects a function') if not _.isFunction(cacheFn)
+  throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
+
+  cache.options.useFS = false
+  cache.options.cacheCallback = cacheFn
+
+  return

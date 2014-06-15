@@ -17,7 +17,7 @@ incUrlSeq = (url) ->
   else
     cleanUrl = url
 
-  cleanUrl = cleanUrl.substr(0,cleanUrl.lastIndexOf('.'))+"--#{ seq+1 }"+cleanUrl.substr(cleanUrl.lastIndexOf('.'))
+  cleanUrl.substr(0,cleanUrl.lastIndexOf('.'))+"--#{ seq+1 }"+cleanUrl.substr(cleanUrl.lastIndexOf('.'))
 
 # Yep, this function will be executed in the browser.
 clientUpdater = ->
@@ -53,10 +53,11 @@ class LiveUpdateMixin
 
     @addOb PILE:
       incUrlSeq: incUrlSeq
+
     @addExec clientUpdater
 
     if not userio
-      io = socketio.listen @app
+      io = socketio.listen @server
     else
       io = userio
 
@@ -68,14 +69,13 @@ class LiveUpdateMixin
       @logger.info "Not activating live update in production"
       return
 
-    if not @app
+    if not @server
       throw new Error 'JSManager must be bind to a http server (Express app)
         before it can live update CSS'
 
     @installSocketIo userio
 
-    listener = if @server then @server else @app
-    listener.on "listening", =>
+    @server.on "listening", =>
       @logger.info "Activating CSS updater"
 
       for k, pile of cssmanager.piles
@@ -86,9 +86,13 @@ class LiveUpdateMixin
   _watch: (pile, codeOb) ->
     return unless codeOb.type is "file"
     @logger.info "watching #{ codeOb.filePath } for changes"
-    fs.watch codeOb.filePath, =>
-      @logger.info "updated", codeOb.filePath
-      @io.emit "update", codeOb.getId()
+    fs.watch codeOb.filePath, (type) =>
+      if type is 'change'
+        @logger.info "updated", codeOb.filePath
+        @io.emit "update", codeOb.getId()
+      return
+
+    return
 
 # For testing
 LiveUpdateMixin.incUrlSeq = incUrlSeq
@@ -99,4 +103,5 @@ else
   module.exports = class LiveUpdateDisabled
     liveUpdate: ->
       @logger.error "No socket.io installed. Live update won't work."
+      return
 

@@ -22,6 +22,8 @@
     "url": "https://github.com/epeli/piler.git"
   },
   "scripts": {
+    "pregendoc": "npm run compile",
+    "gendoc": "jsdoc -d docs lib README.md",
     "compile": "coffee --bare --no-header -o lib -c src",
     "pretest": "npm run compile",
     "test": "node ./test/tests.js",
@@ -44,7 +46,9 @@
     "reserved": "*"
   },
   "devDependencies": {
+    "sinon":"*",
     "mocha": "*",
+    "supertest":"*",
     "express": "3.x",
     "expect.js": "*",
     "zombie": ">=2.0.0-",
@@ -59,6 +63,7 @@
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
     "csslint": "*",
-    "socket.io": "0.x.x"
+    "socket.io": "0.x.x",
+    "jsdoc": "*"
   }
 }

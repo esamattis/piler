@@ -8,6 +8,7 @@
   "dependencies": {
     "express": "4.x",
     "socket.io":"0.x",
+    "LiveScript":"*",
     "stylus":"*",
     "less":"*"
   }

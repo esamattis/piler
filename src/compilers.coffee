@@ -19,9 +19,13 @@ catch e
 compilers =
   # Dummy compilers
   css:
-    render: (filename, code, cb) -> cb null, code
+    render: (filename, code, cb) ->
+      cb null, code
+      return
   js:
-    render: (filename, code, cb) -> cb null, code
+    render: (filename, code, cb) ->
+      cb null, code
+      return
 
   # We always have coffee-script compiler ;)
   coffee:
@@ -56,5 +60,7 @@ if less?
         paths: [path.dirname filename]
         cb
     targetExt: "css"
+
+debug('Available built-in compilers:', Object.keys(compilers).join(','))
 
 module.exports = compilers

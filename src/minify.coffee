@@ -6,7 +6,9 @@
 
 csso = require "csso"
 debug = require("debug")("piler:minify")
-cache = require "./cache"
+cache = require './cache'
+
+UglifyJS = false
 
 try
   UglifyJS = require("uglify-js")
@@ -19,11 +21,13 @@ catch error
 exports.cssMinify = (code) -> cache(code, -> csso.justDoIt code)
 
 if UglifyJS?
+  debug("using uglify", error)
 
   exports.jsMinify = (code) ->
     cache(code, ->
       ast = UglifyJS.parse code
       ast.figure_out_scope()
+
       compressor = UglifyJS.Compressor()
       compressed_ast = ast.transform(compressor)
 

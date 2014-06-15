@@ -8,12 +8,6 @@ path   = require 'path'
 crypto = require 'crypto'
 debug  = require('debug')('piler:cache')
 
-module.exports.options = options =
-  enable: true
-  useFS: true
-  cached: (code, hash, fnCompress) ->
-    fnCompress()
-
 # e.g. /var/folders/zm/jmjb49l172g6g_h1y8701spc0000gn/T/
 TMPDIR = os.tmpDir()
 
@@ -28,8 +22,8 @@ fileExistSync = (filePath) ->
 # Return a compressed version (already cached or not) of `code`, this function is synchronous
 module.exports = (code, fnCompress) ->
   if options.enable isnt true
-    debug('minify cache isnt enabled')
-    return options.cached(code, fnCompress)
+    debug('minified code cache isnt enabled')
+    return fnCompress()
 
   hash = crypto.createHash('sha1').update(code).digest('hex')
 
@@ -44,7 +38,7 @@ module.exports = (code, fnCompress) ->
       return fs.readFileSync(file, {encoding: 'utf8'})
 
     # if not: compress the code
-    cache = options.cached(code, hash, fnCompress)
+    cache = options.cacheCallback(code, hash, fnCompress)
 
     # write the file
     fs.writeFileSync(file, cache, {encoding: 'utf8'})
@@ -53,4 +47,11 @@ module.exports = (code, fnCompress) ->
     cache
   else
     debug('not using file system. calling custom callback.', 'hash:', hash)
-    options.cached(code, hash, fnCompress)
+    options.cacheCallback(code, hash, fnCompress)
+
+module.exports.options = options =
+  enable: true
+  useFS: true
+  cacheCallback: (code, hash, fnCompress) ->
+    console.log 'asdfdsa'
+    fnCompress()

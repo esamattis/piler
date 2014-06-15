@@ -1,11 +1,40 @@
-process.env.NODE_ENV = 'development';
+//process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'production';
 
 var app = require("express")();
 var server = require('http').createServer(app);
 
-var pile = require("../../index");
-var js = pile.createJSManager({outputDirectory: __dirname + "/out"});
-var css = pile.createCSSManager({outputDirectory: __dirname + "/out"});
+var piler = require("../../index");
+var js = piler.createJSManager({outputDirectory: __dirname + "/out"});
+var css = piler.createCSSManager({outputDirectory: __dirname + "/out"});
+
+/* adds the livescript preprocessor to it */
+piler.addCompiler('ls', function(){
+  var ls = require('LiveScript');
+
+  return {
+    render: function(filename, code, cb) {
+        try {
+            code = ls.compile(code);
+            cb(null, code);
+        } catch (e) {
+            cb(e);
+        }
+    },
+    targetExt: 'js'
+  };
+});
+
+/* Cache is only used during production */
+var memoryCache = {};
+
+piler.useCache(function(code, hash, fnCompress){
+  if (typeof memoryCache[hash] === 'undefined') {
+    console.log('not cached, caching hash', hash);
+    memoryCache[hash] = fnCompress(); //retrieve the minified code
+  }
+  return memoryCache[hash];
+});
 
 var share = require("./share");
 console.log(share.test());
@@ -40,13 +69,14 @@ js.addFile(__dirname + "/client/underscore.js");
 js.addFile(__dirname + "/client/backbone.js");
 js.addFile(__dirname + "/client/hello.js");
 js.addFile(__dirname + "/client/hello.coffee");
+js.addFile(__dirname + "/client/hello.ls");
 js.addFile("foo", __dirname + "/client/foo.coffee");
 js.addFile("bar", __dirname + "/client/bar.coffee");
 js.addFile(__dirname + "/share.js");
 
 app.get("/", function (req, res){
 
-  res.exec(function (){
+  res.addExec(function (){
     console.log("Run client code from the response", FOO);
     console.log(share.test());
   });
