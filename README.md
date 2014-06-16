@@ -295,16 +295,16 @@ clientjs.addFile("admin", __dirname + "/editor.extension.js");
 in development mode, to
 
 ```html
-&lt;script type="text/javascript" src="/pile/dev/global.file-helpers.js?v=1317298508710" &gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="/pile/dev/admin.file-editor.js?v=1317298508714" &gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="/pile/dev/admin.file-editor.extension.js?v=1317298508716" &gt;&lt;/script&gt;
+<script type="text/javascript" src="/pile/dev/global.file-helpers.js?v=1317298508710" ></script>
+<script type="text/javascript" src="/pile/dev/admin.file-editor.js?v=1317298508714" ></script>
+<script type="text/javascript" src="/pile/dev/admin.file-editor.extension.js?v=1317298508716" ></script>
 ```
 
 but in production it will render to
 
 ```html
-&lt;script type="text/javascript"  src="/pile/min/f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c/global.js"  &gt;&lt;/script&gt;
-&lt;script type="text/javascript"  src="/pile/min/2d730ac54f9e63e1a7e99cd669861bda33905365/admin.js"  &gt;&lt;/script&gt;
+<script type="text/javascript"  src="/pile/min/f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c/global.js"  ></script>
+<script type="text/javascript"  src="/pile/min/2d730ac54f9e63e1a7e99cd669861bda33905365/admin.js"  ></script>
 ```
 
 So debugging should be as easy as directly using script-tags.  Line numbers
@@ -355,7 +355,7 @@ Url root to which Piler's paths are appended. For example urlRoot "/my/root"
 will result in following script tag:
 
 ```html
-&lt;script type="text/javascript" src="/my/root/min/f4ec8d2b2be16a4ae8743039c53a1a2c31e50570/code.js" &gt;&lt;/script&gt;
+<script type="text/javascript" src="/my/root/min/f4ec8d2b2be16a4ae8743039c53a1a2c31e50570/code.js" ></script>
 ```
 
 #### outputDirectory

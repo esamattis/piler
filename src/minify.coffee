@@ -21,7 +21,7 @@ catch error
 exports.cssMinify = (code) -> cache(code, -> csso.justDoIt code)
 
 if UglifyJS?
-  debug("using uglify", error)
+  debug("using uglify")
 
   exports.jsMinify = (code) ->
     cache(code, ->

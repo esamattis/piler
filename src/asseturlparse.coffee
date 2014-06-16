@@ -2,7 +2,7 @@
 
 _  = require 'underscore'
 _.mixin require 'underscore.string'
-debug = require("debug")("piler:asseturlparse")
+module.exports.debug = debug = require("debug")("piler:asseturlparse")
 
 module.exports = p = (url) ->
   ob = {}
@@ -11,6 +11,8 @@ module.exports = p = (url) ->
   url = _.first url.split "?"
   [__..., mode, filename] = url.split "/"
 
+
+  debug('asset', url, mode, filename)
 
   if mode is "dev"
     [__..., name, devopt, ext] = filename.split "."

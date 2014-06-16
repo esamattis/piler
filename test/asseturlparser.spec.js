@@ -38,7 +38,7 @@ describe('asseturlparser', function(){
 
   describe("can find global", function (){
     var urlOb;
-    urlOb = assetUrlParse("/pile/min/cachekey/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
+    urlOb = assetUrlParse("/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
 
     it("has the default global", function (){
       expect(urlOb.min).to.be.ok();
@@ -56,7 +56,7 @@ describe('asseturlparser', function(){
 
   describe("parses url development url", function (){
     var url, urlOb, _i, _len, _ref;
-    _ref = ["/pile/dev/cachekey/my.exec-123.js?v=43234", "/pile/dev/cachekey/my.exec-123.js"];
+    _ref = ["/pile/dev/my.exec-123.js?v=43234", "/pile/dev/my.exec-123.js"];
 
     var testIt = function (){
       it("name is my", function (){
@@ -95,7 +95,7 @@ describe('asseturlparser', function(){
 
   describe("parses css urls too", function (){
     var url, urlOb, _i, _len, _ref;
-    _ref = ["/pile/dev/cachekey/my.file-321.css?v=43234", "/pile/dev/cachekey/my.file-321.css"];
+    _ref = ["/pile/dev/my.file-321.css?v=43234", "/pile/dev/my.file-321.css"];
 
     var testIt = function (){
       it("is css", function (){
@@ -144,7 +144,7 @@ describe('asseturlparser', function(){
 
   describe("longer custom url root works too and in development", function (){
     var urlOb;
-    urlOb = assetUrlParse("/node-pile/pile/dev/cachekey/my.file-321.css?v=43234");
+    urlOb = assetUrlParse("/node-pile/pile/dev/my.file-321.css?v=43234");
 
     it("is min", function (){
 

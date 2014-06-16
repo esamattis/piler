@@ -61,6 +61,6 @@ if less?
         cb
     targetExt: "css"
 
-debug('Available built-in compilers:', Object.keys(compilers).join(','))
+debug('Available built-in compilers:', Object.keys(compilers).join(', '))
 
 module.exports = compilers

@@ -556,6 +556,9 @@ class PileManager
 
   ###*
    * @memberof Piler.PileManager
+   * @function bind
+   * @param {Express} app Express application
+   * @param {http.Server} server HTTP server
   ###
   bind: (app, server) ->
     if not server
@@ -571,12 +574,14 @@ class PileManager
     @setMiddleware app
 
     app.use (req, res, next) =>
-
       if not _.startsWith req.url, @settings.urlRoot
         return next()
 
+
       res.setHeader "Content-type", @contentType
       asset = assetUrlParse req.url
+
+      debug('request url', req.url, 'asset', asset)
 
       # Wrong asset type. Lets skip to next middleware.
       if asset.ext isnt @Type::ext
@@ -585,6 +590,8 @@ class PileManager
       pile = @piles[asset.name]
 
       if not pile
+        debug('pile not found', asset.name)
+
         res.send "Cannot find pile #{ asset.name }", 404
         return
 
@@ -632,30 +639,60 @@ class JSManager extends PileManager
 
     return
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   wrapInTag: (uri, extra="") ->
     "<script type=\"text/javascript\"  src=\"#{ uri }\" #{ extra } ></script>"
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   _isReserved: (ns) ->
     if reserved.indexOf(ns) isnt -1
       throw new Error("#{ns} is a reserved word and can't be used")
 
     return
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   addModule: defNs (ns, path) ->
     @_isReserved(ns)
     pile = @getPile ns
     pile.addModule path
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   addOb: defNs (ns, ob) ->
     @_isReserved(ns)
     pile = @getPile ns
     pile.addOb ob
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   addExec: defNs (ns, fn) ->
     @_isReserved(ns)
     pile = @getPile ns
     pile.addExec fn
 
+  ###*
+   * @memberof Piler.JSManager
+   * @instance
+   * @function
+  ###
   setMiddleware: (app) ->
     responseExec = (fn) ->
       # "this" is the response object
