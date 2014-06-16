@@ -42,9 +42,10 @@ getCompiler = (filePath) ->
 
 ###*
  * A code object
+ *
  * @typedef {Object} Piler.codeOb
  * @property {Function} getId Get the code id
- * @property {Function} getCode Get the code itself
+ * @property {Function(cb:Function)} getCode Get the code itself
 ###
 
 #http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/
@@ -150,7 +151,7 @@ class BasePile
    * @param {String} filePath Absolute path to the file
    * @param {Boolean} [before] Prepend this file instead of adding to the end of the pile
    *
-   * @returns {Piler.BasePile}
+   * @returns {Piler.BasePile} `this`
   ###
   addFile: (filePath, before = false) ->
     filePath = path.normalize filePath
@@ -168,7 +169,7 @@ class BasePile
    * @param {*} raw
    * @param {Boolean} [before]
    * @instance
-   * @returns {Piler.BasePile}
+   * @returns {Piler.BasePile} `this`
   ###
   addRaw: (raw, before = false) ->
     @warnPiledUp "addRaw"
@@ -182,7 +183,7 @@ class BasePile
    * @memberof Piler.BasePile
    * @function getFilePaths
    * @instance
-   * @returns {Piler.BasePile}
+   * @returns {Array.<String>} Array of file paths
   ###
   getFilePaths: ->
     (ob.filePath for ob in @code when ob.type is "file")
@@ -193,7 +194,7 @@ class BasePile
    * @param {String} url
    * @param {Boolean} [before]
    * @instance
-   * @returns {Piler.BasePile}
+   * @returns {Piler.BasePile} `this`
   ###
   addUrl: (url, before = false) ->
     if url not in @urls
@@ -205,7 +206,7 @@ class BasePile
    * @memberof Piler.BasePile
    * @function getSources
    * @instance
-   * @returns {Piler.BasePile}
+   * @returns {Array.<String>} Array of sources
   ###
   getSources: ->
     # Start with plain urls
@@ -248,7 +249,7 @@ class BasePile
    * @instance
    * @private
    *
-   * @returns {Piler.BasePile}
+   * @returns {String}
   ###
   _computeHash: ->
     sum = crypto.createHash('sha1')
@@ -272,7 +273,7 @@ class BasePile
    * @function pileUp
    * @param {Function} [cb]
    * @instance
-   * @returns {Piler.BasePile}
+   * @returns {Piler.BasePile} `this`
   ###
   pileUp: (cb) ->
     @piledUp = true
@@ -342,7 +343,7 @@ class JSPile extends BasePile
    * @param {String} filePath
    * @param {Boolean} [before]
    * @instance
-   * @returns {Piler.JSPile}
+   * @returns {Piler.JSPile} `this`
   ###
   addModule: (filePath, before = false) ->
     filePath = path.normalize filePath
@@ -359,7 +360,7 @@ class JSPile extends BasePile
    * @param {Object} ob
    * @param {Boolean} [before]
    * @instance
-   * @returns {Piler.JSPile}
+   * @returns {Piler.JSPile} `this`
   ###
   addOb: (ob, before = false) ->
     @warnPiledUp "addOb"
@@ -375,7 +376,7 @@ class JSPile extends BasePile
    * @param {Boolean} [before]
    * @instance
    * @function addExec
-   * @returns {Piler.JSPile}
+   * @returns {Piler.JSPile} `this`
   ###
   addExec: (fn, before = false) ->
     @warnPiledUp "addExec"
@@ -406,7 +407,7 @@ class CSSPile extends BasePile
    * @param {String} line
    * @instance
    * @function commentLine
-   * @returns {Piler.CSSPile}
+   * @returns {Piler.CSSPile} `this`
   ###
   commentLine: (line) ->
     return "/* #{ line.trim() } */"
@@ -418,7 +419,7 @@ class CSSPile extends BasePile
    * @param {String} code
    * @instance
    * @function minify
-   * @returns {Piler.CSSPile}
+   * @returns {Piler.CSSPile} `this`
   ###
   minify: (code) ->
     if @production
@@ -457,7 +458,7 @@ class PileManager
    * @memberof Piler.PileManager
    * @instance
    * @function getPile
-   * @returnss {Piler.BasePile}
+   * @returnss {Piler.BasePile} `this`
   ###
   getPile: (ns) ->
     pile = @piles[ns]
@@ -476,8 +477,8 @@ class PileManager
    * @function addFiles
    * @param {String} ns
    * @param {Array} arr
-   *
-   * @returns {Piler.BasePile}
+   * @instance
+   * @returns {Piler.PileManager} `this`
   ###
   addFiles: defNs (ns, arr) ->
     @addFile(ns, file) for file in arr
@@ -486,27 +487,42 @@ class PileManager
 
   ###*
    * @memberof Piler.PileManager
+   * @instance
+   * @function addFile
+   * @returns {Piler.PileManager} `this`
   ###
   addFile: defNs (ns, path) ->
     pile = @getPile ns
     pile.addFile path
+    @
 
   ###*
    * @memberof Piler.PileManager
+   * @function addRaw
+   * @instance
+   * @returns {Piler.PileManager} `this`
   ###
   addRaw: defNs (ns, raw) ->
     pile = @getPile ns
     pile.addRaw raw
+    @
 
   ###*
    * @memberof Piler.PileManager
+   * @function addUrl
+   * @instance
+   * @returns {Piler.PileManager} `this`
   ###
   addUrl: defNs (ns, url) ->
     pile = @getPile ns
     pile.addUrl url
+    @
 
   ###*
    * @memberof Piler.PileManager
+   * @function pileUp
+   * @instance
+   * @returns {Piler.PileManager} `this`
   ###
   pileUp: ->
     logger = @logger
@@ -523,10 +539,13 @@ class PileManager
             logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
 
         return
-    return
+    @
 
   ###*
    * @memberof Piler.PileManager
+   * @instance
+   * @param {...*} [namespaces]
+   * @returns {Array.<String>} Array of sources
   ###
   getSources: (namespaces...) ->
     if typeof _.last(namespaces) is "object"
@@ -545,6 +564,8 @@ class PileManager
 
   ###*
    * @memberof Piler.PileManager
+   * @instance
+   * @returns {String} Rendered tags
   ###
   renderTags: (namespaces...) ->
 
@@ -559,6 +580,8 @@ class PileManager
    * @function bind
    * @param {Express} app Express application
    * @param {http.Server} server HTTP server
+   * @instance
+   * @returns {Piler.PileManager} `this`
   ###
   bind: (app, server) ->
     if not server
@@ -608,7 +631,7 @@ class PileManager
 
       return
 
-    return
+    @
 
 class JSManager extends PileManager
   Type: JSPile
@@ -801,6 +824,17 @@ exports.createCSSManager = (settings={}) ->
 ###*
  * Add a compiler to Piler. You can override existing extensions like css or js
  *
+ * @example
+ *   piler.addCompiler(function(){
+ *     return {
+ *       render: function(filename, code, cb){
+ *         //do your compilation, then pass it to the callback
+ *         cb(null, code);
+ *       },
+ *       targetExt: 'js'
+ *     };
+ *   });
+ *
  * @function Piler.addCompiler
  *
  * @throws Error
@@ -828,14 +862,23 @@ exports.removeCompiler = (extension) ->
   return
 
 ###*
- * Add the cache method.
- * By default it uses the filesystem
+ * @typedef {Function} Piler.cacheFn
+ * @param {String} code The raw code itself
+ * @param {String} hash The current sha1 of the code
+ * @param {Function} code Execute the minify routine that generates code
+###
+###*
+ * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override the internal one.
  *
  * @example
- *   piler.useCache(function(){
+ *   piler.useCache(function(code, hash, fnCompress) {
+ *     if (typeof memoryCache[hash] === 'undefined') {
+ *       memoryCache[hash] = fnCompress();
+ *     }
+ *     return memoryCache[hash];
  *   });
  *
- * @param {Function} cacheFn Function that will be called with the current code, generated hash and the callback
+ * @param {Piler.cacheFn} cacheFn Function that will be called with the current code, generated hash and the callback
  * @throws Error
  *
  * @function Piler.useCache

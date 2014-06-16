@@ -23,7 +23,7 @@
   },
   "scripts": {
     "pregendoc": "npm run compile",
-    "gendoc": "jsdoc -d docs lib README.md",
+    "gendoc": "jsdoc -c jsdoc.conf.json lib README.md",
     "compile": "coffee --bare --no-header -o lib -c src",
     "pretest": "npm run compile",
     "test": "node ./test/tests.js",
@@ -64,6 +64,7 @@
     "coveralls": "*",
     "csslint": "*",
     "socket.io": "0.x.x",
-    "jsdoc": "*"
+    "jsdoc": "*",
+    "ink-docstrap":"*"
   }
 }

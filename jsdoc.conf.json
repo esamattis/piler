@@ -1,0 +1,34 @@
+{
+  "tags"     : {
+    "allowUnknownTags": true
+  },
+  "plugins"  : [
+    "plugins/markdown",
+    "plugins/overloadHelper"
+  ],
+  "opts"     : {
+    "recurse"    : false,
+    "private"    : true,
+    "destination": "./docs",
+    "template"   : "./node_modules/ink-docstrap/template"
+  },
+  "templates": {
+    "cleverLinks"      : false,
+    "monospaceLinks"   : false,
+    "dateFormat"       : "DD / MM / YYYY",
+    "outputSourceFiles": false,
+    "outputSourcePath" : false,
+    "systemName"       : "Awesome Asset Manager for Node.js | Piler",
+    "footer"           : "",
+    "copyright"        : "",
+    "navType"          : "vertical",
+    "theme"            : "cerulean",
+    "linenums"         : true,
+    "collapseSymbols"  : false,
+    "inverseNav"       : false
+  },
+  "markdown" : {
+    "parser"  : "gfm",
+    "hardwrap": true
+  }
+}
