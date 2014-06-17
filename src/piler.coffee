@@ -26,13 +26,9 @@ toGlobals = (globals) ->
     code += "__SET(#{ JSON.stringify nsString }, #{ OB.stringify v });\n"
   code
 
-
 extension = (filename) ->
   parts = filename.split "."
   parts[parts.length-1]
-
-wrapInScriptTagInline = (code) ->
-  "<script type=\"text/javascript\" >\n#{ code }\n</script>\n"
 
 getCompiler = (filePath) ->
   compiler = compilers[extension filePath]
@@ -129,7 +125,7 @@ class BasePile
   ###*
    * @constructor Piler.BasePile
   ###
-  constructor: (@name, @production, urlRoot, cacheKeys) ->
+  constructor: (@name, @production, urlRoot, @options = {}) ->
     if urlRoot?
       @urlRoot = urlRoot
 
@@ -137,7 +133,8 @@ class BasePile
     @rawPile = null
     @urls = []
     @piledUp = false
-    @cacheKeys = if cacheKeys isnt undefined then !!cacheKeys else true
+    @options.cacheKeys ?= true
+    @options.volatile ?= false
 
   ###*
    * Add an array of files at once
@@ -145,7 +142,7 @@ class BasePile
    * @example
    *   Pile.addFile("/path/to/file")
    *
-   * @memberof BasePile
+   * @memberof Piler.BasePile
    * @function addFile
    * @instance
    * @param {String} filePath Absolute path to the file
@@ -161,6 +158,13 @@ class BasePile
         type: "file"
         filePath: filePath
 
+    @
+
+  reset: ->
+    if @options.volatile
+      @code.length = 0
+      @urls.length = 0
+      @rawPile = null
     @
 
   ###*
@@ -216,7 +220,7 @@ class BasePile
       sources.push ["#{ @urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
     else
       devCacheKey = ''
-      if @cacheKeys
+      if @options.cacheKeys
         devCacheKey = "?v=#{Date.now()}"
       for ob in @code
         sources.push ["#{ @urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }#{devCacheKey}", "id=\"pile-#{ ob.getId() }\""]
@@ -244,7 +248,7 @@ class BasePile
     (codeOb for codeOb in @code when codeOb.filePath is path)[0]
 
   ###*
-   * @memberof {Piler.BasePile}
+   * @memberof Piler.BasePile
    * @function _computeHash
    * @instance
    * @private
@@ -257,26 +261,27 @@ class BasePile
     @pileHash = sum.digest('hex')
 
   ###*
-   * @memberof {Piler.BasePile}
+   * @memberof Piler.BasePile
    * @function warnPiledUp
    * @instance
    * @protected
   ###
   warnPiledUp: (fnname) ->
-    if @piledUp
+    if @logger and @piledUp and @options.volatile isnt true
       @logger.warn "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
 
     return
 
   ###*
-   * @memberof {Piler.BasePile}
+   * @memberof Piler.BasePile
    * @function pileUp
    * @param {Function} [cb]
    * @instance
    * @returns {Piler.BasePile} `this`
   ###
   pileUp: (cb) ->
-    @piledUp = true
+    if @options.volatile isnt true
+      @piledUp = true
 
     async.map @code, (codeOb, cb) =>
 
@@ -324,7 +329,7 @@ class JSPile extends BasePile
   ###
   minify: (code) ->
     if @production
-      jsMinify code
+      jsMinify code, {noCache: @options.volatile}
     else
       code
 
@@ -334,7 +339,6 @@ class JSPile extends BasePile
   ###
   constructor: ->
     super
-    @objects = []
 
   ###*
    * Add a CommonJS module
@@ -423,7 +427,7 @@ class CSSPile extends BasePile
   ###
   minify: (code) ->
     if @production
-      cssMinify code
+      cssMinify code, {noCache: @options.volatile}
     else
       code
 
@@ -449,10 +453,14 @@ class PileManager
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
-    @logger = @settings.logger || logger
+    @logger = @settings.logger or logger
 
-    @piles =
-      global: new @Type "global", @production, @settings.urlRoot
+    @piles = {}
+
+    @getPile "global"
+    @getPile "temp", {volatile: true}
+
+    return
 
   ###*
    * @memberof Piler.PileManager
@@ -460,10 +468,10 @@ class PileManager
    * @function getPile
    * @returnss {Piler.BasePile} `this`
   ###
-  getPile: (ns) ->
+  getPile: (ns, settings = {}) ->
     pile = @piles[ns]
     if not pile
-      pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot
+      pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot, settings
     pile
 
   ###*
@@ -530,7 +538,10 @@ class PileManager
     for name, pile of @piles then do (pile) =>
       pile.pileUp (err, code) =>
         throw err if err
+
         if @settings.outputDirectory?
+          # skip volatile piles
+          return if pile.options.volatile is true
 
           outputPath = path.join @settings.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
 
@@ -556,10 +567,14 @@ class PileManager
     if not opts.disableGlobal
       namespaces.unshift "global"
 
+    if not opts.disableTemp
+      namespaces.push "temp"
+
     sources = []
     for ns in namespaces
       if pile = @piles[ns]
         sources.push pile.getSources()...
+
     return sources
 
   ###*
@@ -573,6 +588,7 @@ class PileManager
     for src in @getSources namespaces...
       tags += @wrapInTag src[0], src[1]
       tags += "\n"
+
     return tags
 
   ###*
@@ -594,12 +610,13 @@ class PileManager
       @pileUp()
       return
 
-    @setMiddleware app
+    @setMiddleware?(app)
+
+    debug('setting middleware')
 
     app.use (req, res, next) =>
       if not _.startsWith req.url, @settings.urlRoot
         return next()
-
 
       res.setHeader "Content-type", @contentType
       asset = assetUrlParse req.url
@@ -620,14 +637,33 @@ class PileManager
 
       # TODO: set cache headers to forever
       if asset.min
-        res.end pile.rawPile
+        if pile.options.volatile is true
+          debug('prod code volatile object', asset.name, asset.ext)
+
+          pile.pileUp((err, code) ->
+            throw err if err
+            res.end code
+            pile.reset()
+            return
+          )
+
+        else
+          res.end pile.rawPile
+
         return
 
       codeOb = pile.findCodeObById asset.dev.uid
-      codeOb.getCode (err, code) ->
-        throw err if err
-        res.end code
-        return
+      if codeOb
+        debug('dev code object', codeOb)
+        codeOb.getCode (err, code) ->
+          throw err if err
+          res.end code
+          return
+      else
+        res.send "Cannot find codeOb #{ asset.dev.uid }", 404
+
+      if pile.options.volatile is true
+        pile.reset()
 
       return
 
@@ -717,23 +753,28 @@ class JSManager extends PileManager
    * @function
   ###
   setMiddleware: (app) ->
+    debug('setting JSManager middleware')
+    _this = @
+
     responseExec = (fn) ->
       # "this" is the response object
-      this._responseFns.push fn
+      debug('res addExec', fn.toString())
+      _this.addExec "temp", fn
       return
 
     responseOb = (ob) ->
-      this._responseObs.push ob
+      debug('res addOb', ob)
+      _this.addOb "temp", ob
       return
 
     # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
-      res._responseFns ?= []
-      res._responseObs ?= []
+      res.piler ?= {}
+      res.piler.js ?= {}
 
       # TODO: deprecate res.exec
-      res.exec = res.addExec = responseExec
-      res.addOb = responseOb
+      res.piler.js.exec = res.piler.js.addExec = responseExec
+      res.piler.js.addOb = responseOb
 
       next()
 
@@ -779,6 +820,27 @@ class CSSManager extends PileManager
    * @instance
   ###
   setMiddleware: (app) ->
+    debug('setting CSSManager middleware')
+    _this = @
+
+    responseRaw = (ob) ->
+      debug('res raw', ob)
+      _this.addRaw "temp", ob
+      return
+
+    # Middleware that adds add & exec methods to response objects.
+    app.use (req, res, next) ->
+      res.piler ?= {}
+      res.piler.css ?= {}
+
+      # TODO: deprecate res.exec
+      res.piler.css.addRaw = responseRaw
+
+      next()
+
+      return
+
+    return
 
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.

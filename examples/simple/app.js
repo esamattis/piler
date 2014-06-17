@@ -1,5 +1,5 @@
-process.env.NODE_ENV = 'development';
-//process.env.NODE_ENV = 'production';
+//process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'production';
 
 var app = require("express")();
 var server = require('http').createServer(app);
@@ -76,10 +76,14 @@ js.addFile(__dirname + "/share.js");
 
 app.get("/", function (req, res){
 
-  res.addExec(function (){
+  res.piler.js.addExec(function (){
     console.log("Run client code from the response", FOO);
     console.log(share.test());
   });
+
+  res.piler.css.addRaw("h2{" +
+    "text-decoration: underline;" +
+  "}");
 
   res.render("index.jade", {
     layout: false,

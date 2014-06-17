@@ -20,6 +20,8 @@
   * Added functions for adding and removing compilers from Piler
   * Fix `findCodeObByFilePath`
   * Fix `livecss`
+  * Fix Express response helper
+  * Added `volatile` Pile (that can be reset on demand) 
   
 # 0.4.2 - 2013-04-16
 

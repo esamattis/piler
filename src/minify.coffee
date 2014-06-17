@@ -18,13 +18,17 @@ catch error
   exports.jsMinify = (code) -> code
   exports.jsBeautify = (code) -> code
 
-exports.cssMinify = (code) -> cache(code, -> csso.justDoIt code)
+exports.cssMinify = (code, options = {}) ->
+  if options.noCache is true
+    csso.justDoIt code
+  else
+    cache(code, -> csso.justDoIt code)
 
 if UglifyJS?
   debug("using uglify")
 
-  exports.jsMinify = (code) ->
-    cache(code, ->
+  exports.jsMinify = (code, options = {}) ->
+    fnCompress = ->
       ast = UglifyJS.parse code
       ast.figure_out_scope()
 
@@ -32,13 +36,26 @@ if UglifyJS?
       compressed_ast = ast.transform(compressor)
 
       compressed_ast.figure_out_scope()
-      compressed_ast.mangle_names()
-      compressed_ast.print_to_string(beautify: false)
-    )
 
-  exports.jsBeautify = (code) ->
-    cache(code, ->
+      if options.noMangleNames isnt true
+        compressed_ast.mangle_names()
+
+      compressed_ast.print_to_string(beautify: false)
+
+    if options.noCache is true
+      fnCompress()
+    else
+      cache(code, fnCompress)
+
+
+
+  exports.jsBeautify = (code, options = {}) ->
+    fnCompress = ->
       ast = UglifyJS.parse code
       ast.figure_out_scope()
       ast.print_to_string(beautify: true)
-    )
+
+    if options.noCache is true
+      fnCompress()
+    else
+      cache(code, fnCompress)
