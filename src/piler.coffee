@@ -36,6 +36,11 @@ getCompiler = (filePath) ->
     throw new Error "Could not find compiler for #{ filePath }"
   compiler.render
 
+bindFn = (_this, name) -> (fn) ->
+  debug("res #{name}", fn)
+  _this[name] "temp", fn
+  return
+
 ###*
  * A code object
  *
@@ -61,7 +66,7 @@ asCodeOb = do ->
 
     hash = sum.digest('hex').substring 10, 0
 
-    if @type  in ["file", "module"]
+    if @type in ["file", "module"]
       filename = path.basename @filePath
       filename = filename.replace /\./g, "_"
       filename = filename.replace /\-/g, "_"
@@ -635,7 +640,6 @@ class PileManager
         res.send "Cannot find pile #{ asset.name }", 404
         return
 
-      # TODO: set cache headers to forever
       if asset.min
         if pile.options.volatile is true
           debug('prod code volatile object', asset.name, asset.ext)
@@ -648,11 +652,15 @@ class PileManager
           )
 
         else
+          res.set(
+            'Cache-Control': 'max-age=31556900'
+          )
           res.end pile.rawPile
 
         return
 
       codeOb = pile.findCodeObById asset.dev.uid
+
       if codeOb
         debug('dev code object', codeOb)
         codeOb.getCode (err, code) ->
@@ -756,25 +764,16 @@ class JSManager extends PileManager
     debug('setting JSManager middleware')
     _this = @
 
-    responseExec = (fn) ->
-      # "this" is the response object
-      debug('res addExec', fn.toString())
-      _this.addExec "temp", fn
-      return
-
-    responseOb = (ob) ->
-      debug('res addOb', ob)
-      _this.addOb "temp", ob
-      return
-
     # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
       res.piler ?= {}
       res.piler.js ?= {}
 
       # TODO: deprecate res.exec
-      res.piler.js.exec = res.piler.js.addExec = responseExec
-      res.piler.js.addOb = responseOb
+      res.piler.js =
+        addExec: bindFn(_this, 'addExec')
+        addOb: bindFn(_this, 'addOb')
+        addModule: bindFn(_this, 'addModule')
 
       next()
 
@@ -823,18 +822,13 @@ class CSSManager extends PileManager
     debug('setting CSSManager middleware')
     _this = @
 
-    responseRaw = (ob) ->
-      debug('res raw', ob)
-      _this.addRaw "temp", ob
-      return
-
     # Middleware that adds add & exec methods to response objects.
     app.use (req, res, next) ->
       res.piler ?= {}
       res.piler.css ?= {}
 
       # TODO: deprecate res.exec
-      res.piler.css.addRaw = responseRaw
+      res.piler.css.addRaw = bindFn(_this, 'addRaw')
 
       next()
 

@@ -67,7 +67,7 @@ compiled files.
 * Use heavy caching. Browser caches are killed automatically using the hash
 sum of the assets.
 * Awesome development mode. Build-in support for pushing CSS changes to
-browsr using Socket.IO.
+browser using Socket.IO.
 
 **Full example Express 3.x and 4.x**
 
