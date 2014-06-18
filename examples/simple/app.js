@@ -1,5 +1,5 @@
-//process.env.NODE_ENV = 'development';
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = 'development';
+//process.env.NODE_ENV = 'production';
 
 var app = require("express")();
 var server = require('http').createServer(app);
@@ -84,6 +84,8 @@ app.get("/", function (req, res){
   res.piler.css.addRaw("h2{" +
     "text-decoration: underline;" +
   "}");
+
+  res.piler.css.addUrl('//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', true);
 
   res.render("index.jade", {
     layout: false,

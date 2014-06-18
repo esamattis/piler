@@ -15,10 +15,9 @@ try
 catch error
   # uglify-js' packaging currently sucks. Add fallback.
   debug("no uglify", error)
-  exports.jsMinify = (code) -> code
-  exports.jsBeautify = (code) -> code
+  exports.js = (code) -> code
 
-exports.cssMinify = (code, options = {}) ->
+exports.css = (code, options = {}) ->
   if options.noCache is true
     csso.justDoIt code
   else
@@ -27,7 +26,7 @@ exports.cssMinify = (code, options = {}) ->
 if UglifyJS?
   debug("using uglify")
 
-  exports.jsMinify = (code, options = {}) ->
+  exports.js = (code, options = {}) ->
     fnCompress = ->
       ast = UglifyJS.parse code
       ast.figure_out_scope()
@@ -41,19 +40,6 @@ if UglifyJS?
         compressed_ast.mangle_names()
 
       compressed_ast.print_to_string(beautify: false)
-
-    if options.noCache is true
-      fnCompress()
-    else
-      cache(code, fnCompress)
-
-
-
-  exports.jsBeautify = (code, options = {}) ->
-    fnCompress = ->
-      ast = UglifyJS.parse code
-      ast.figure_out_scope()
-      ast.print_to_string(beautify: true)
 
     if options.noCache is true
       fnCompress()

@@ -21,7 +21,11 @@
   * Fix `findCodeObByFilePath`
   * Fix `livecss`
   * Fix Express response helper
-  * Added `volatile` Pile (that can be reset on demand) 
+  * Added `volatile` Piles (that can be reset on demand) 
+  * Properly return 304 when setting Cache-Control on production mode
+  * Added `before` option to all 'add' methods
+  * Refactor `BasePile` and `PileManager` classes
+  * Expose `addMinifier`
   
 # 0.4.2 - 2013-04-16
 

@@ -4,14 +4,17 @@ coffeescript = require "coffee-script"
 path = require "path"
 debug = require("debug")("piler:compilers")
 
+###istanbul ignore next ###
 try
   stylus = require "stylus"
 catch e
 
+###istanbul ignore next ###
 try
   nib = require "nib"
 catch e
 
+###istanbul ignore next ###
 try
   less = require "less"
 catch e
@@ -36,6 +39,7 @@ compilers =
         cb e, null
     targetExt: "js"
 
+###istanbul ignore else###
 if stylus?
   compilers.styl =
     targetExt: "css"
@@ -44,6 +48,7 @@ if stylus?
       .set('filename', filename)
       .render cb
 
+  ###istanbul ignore else###
   if nib?
     Renderer = require "stylus/lib/renderer"
     compilers.styl.render = (filename, code, cb) ->
@@ -53,6 +58,7 @@ if stylus?
       .render cb
 
 
+###istanbul ignore else###
 if less?
   compilers.less =
     render: (filename, code, cb) ->

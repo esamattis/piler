@@ -495,5 +495,3 @@ Questions and suggestions are very welcome
 [nib]: https://github.com/visionmedia/nib
 [npm]: http://npmjs.org/
 [CoffeeScript]: http://jashkenas.github.com/coffee-script/
-
-
