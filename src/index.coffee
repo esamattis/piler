@@ -15,7 +15,7 @@ files =
       parts[parts.length - 1]
 
   AssetUrlParse: require './asseturlparse'
-  Minify: require './minify'
+  Minifiers: require './minifiers'
   Cache: require './cache'
   LiveCSS: require './livecss'
   Piler: require './piler'

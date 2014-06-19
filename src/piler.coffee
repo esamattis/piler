@@ -85,7 +85,7 @@ module.exports = (classes, mainExports) ->
     ###
     addUrl: (url, before = false) ->
       if url not in @getObjects('url')
-        @add({type:'url', object:url}, , before)
+        @add({type:'url', object:url}, before)
 
       @
 
@@ -225,7 +225,7 @@ module.exports = (classes, mainExports) ->
     ###
     addExec: (fn, before = false) ->
       @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-        type: "exec"
+        type: "fn"
         object: fn
       @
 
@@ -381,7 +381,7 @@ module.exports = (classes, mainExports) ->
     pileUp: (cb) ->
       logger = @logger
       piles = @piles
-      settings = @settings
+      options = @options
       logger.notice "Start assets generation for '#{ @type::ext }'"
 
       classes.utils.Q.map(Object.keys(piles), (name) ->
@@ -389,24 +389,19 @@ module.exports = (classes, mainExports) ->
 
         pile.pileUp().then(
           (code) ->
-            d = classes.utils.Q.defer()
 
-            if settings.outputDirectory?
+            if options.outputDirectory
               # skip volatile piles
               return code if pile.options.volatile is true
 
-              outputPath = classes.utils.path.join settings.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
+              outputPath = classes.utils.path.join options.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
 
-              classes.utils.fs.writeFile outputPath, code, (err) ->
-                d.reject(err) if err
+              classes.utils.fs.writeFileAsync(outputPath, code).then ->
                 logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
-                d.resolve(code)
-                return
+                code
 
             else
-              d.resolve(code)
-
-            d.promise
+              code
         )
       ).nodeify(cb)
 
@@ -429,11 +424,12 @@ module.exports = (classes, mainExports) ->
         namespaces.push "__temp"
 
       sources = []
+
       for ns in namespaces
         if pile = @piles[ns]
           sources.push pile.getSources()...
 
-      return sources
+      sources
 
     ###*
      * @memberof Piler.PileManager

@@ -95,8 +95,9 @@ var clientcss = piler.createCSSManager();
 
 var srv = http.createServer(app);
 
-clientjs.bind(app,srv); // Make sure to bind to both Express and the server!
-clientcss.bind(app,srv);
+app
+    .use(clientjs.middleware(srv))
+    .use(clientcss.middleware(srv));
 
 clientcss.addFile(__dirname + "/style.css");
 

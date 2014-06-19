@@ -16,6 +16,9 @@ module.exports = (classes, mainExports) ->
     raw: (ob) ->
       ob.object
 
+    url: (ob) ->
+      ob.object
+
     obj: (ob) ->
       toGlobals ob.object
 
