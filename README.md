@@ -325,13 +325,10 @@ So that you can see development messages. You can filter out specific debug mess
 export DEBUG=piler:minify
 ```
 
-## Examples
+## Example
 
-Visit [this](https://github.com/epeli/piler/blob/master/examples/simple/app.js) directory to see a simple example 
-using ExpressJS 4.x.
-
-This [example](https://github.com/epeli/piler/blob/master/examples/simple/app.js) uses ExpressJS 4.x a custom 
-logger (winston) and a global socket.io instance together with Piler.
+This [example](https://github.com/epeli/piler/blob/master/examples/app.js) uses ExpressJS 4.x and a 
+custom logger (winston) and a global socket.io instance together with Piler.
 
 ## API summary
 

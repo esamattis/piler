@@ -1,18 +1,16 @@
 'use strict';
 
-var Compilers, c;
-
-Compilers = require("../lib/compilers");
-c = Compilers.compilers;
+var
+  Compilers = Piler.Compilers, c = Compilers.compile;
 
 describe('built-in compilers', function(){
 
   it('must return unchanged plain css and js', function(done){
-    c.js.render(null, 'asdf', function(err, code){
+    c('js', null, 'asdf', function(err, code){
       expect(err).to.be(null);
       expect(code).to.be('asdf');
 
-      c.css.render(null, 'dsa', function(err, code){
+      c('css', null, 'dsa', function(err, code){
         expect(err).to.be(null);
         expect(code).to.be('dsa');
         done();
@@ -21,10 +19,10 @@ describe('built-in compilers', function(){
   });
 
   it('compiles coffee-script', function(done){
-    c.coffee.render(null, '@', function(err, code) {
+    c('coffee', null, '@', function(err, code) {
       expect(err).to.be(null);
       expect(code).to.be('(function() {\n  this;\n\n\n}).call(this);\n');
-      c.coffee.render(null, '~', function(err){
+      c('coffee', null, '~', function(err){
         expect(err).to.be.ok();
         done();
       });
@@ -33,7 +31,7 @@ describe('built-in compilers', function(){
 
   describe('stylus', function(){
     it('compiles', function(done){
-      c.styl.render('file.styl', 'body\n  color #000\n', function(err, code){
+      c('styl', 'file.styl', 'body\n  color #000\n', function(err, code){
         expect(err).to.be(null);
         expect(code).to.be('body {\n  color: #000;\n}\n');
         done();
@@ -41,7 +39,7 @@ describe('built-in compilers', function(){
     });
 
     it('uses nib', function(done){
-      c.styl.render('file.styl', '@import "nib"\nbody\n  clearfix()', function(err, code){
+      c('styl', 'file.styl', '@import "nib"\nbody\n  clearfix()', function(err, code){
         expect(err).to.be(null);
         expect(code).to.match(/:before/);
         done();
@@ -50,7 +48,7 @@ describe('built-in compilers', function(){
   });
 
   it('compiles less', function(done){
-    c.less.render('file.less', '@base: #f938ab;\nbody { color: @base; } ', function(err, code){
+    c('less', 'file.less', '@base: #f938ab;\nbody { color: @base; } ', function(err, code){
       expect(err).to.be(null);
       expect(code).to.be('body {\n  color: #f938ab;\n}\n');
       done();
@@ -72,8 +70,7 @@ describe('built-in compilers', function(){
         };
       });
 
-      expect(c.dummy).to.be.ok();
-      c.dummy.render('file.dummy', 'test', function(err, code){
+      c('dummy', 'file.dummy', 'test', function(err, code){
         expect(err).to.be(null);
         expect(code).to.be('dummy(test)');
         Compilers.removeCompiler('dummy');

@@ -1,14 +1,8 @@
 'use strict';
 
-var CSSManager, CSSPile, JSManager, JSPile, Pile, _fn, _i, _len, _ref, _ref1;
+var _fn, _i, _len, piles;
 
-_ref = require("../lib/piler");
-JSPile = _ref.JSPile;
-CSSPile = _ref.CSSPile;
-JSManager = _ref.JSManager;
-CSSManager = _ref.CSSManager;
-
-_ref1 = [JSPile, CSSPile];
+piles = [Piler.JSPile, Piler.CSSPile];
 
 _fn = function (Pile){
 
@@ -60,15 +54,14 @@ _fn = function (Pile){
 };
 
 describe('basepile', function(){
-  for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-    Pile = _ref1[_i];
-    _fn(Pile);
+  for (_i = 0, _len = piles.length; _i < _len; _i++) {
+    _fn(piles[_i]);
   }
 
   describe('Exceptions', function(){
 
     it('throws on reserved word', function(){
-      var manager = _ref.createJSManager();
+      var manager = Piler.createJSManager();
 
       expect(function(){
         manager.addOb('Array', '');

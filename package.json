@@ -51,6 +51,7 @@
   "main": "./lib",
   "dependencies": {
     "graceful-fs":"3.x.x",
+    "socket.io": "1.x.x",
     "coffee-script": "1.x.x",
     "lodash": "*",
     "underscore.string": "2.x.x",
@@ -58,14 +59,13 @@
     "csso": "1.x.x",
     "debug": "*",
     "reserved": "*",
-    "bluebird":"2.x",
-    "gaze":"0.x.x"
+    "bluebird":"2.x"
   },
   "devDependencies": {
     "sinon":"*",
     "mocha": "*",
     "supertest":"*",
-    "express": "3.x",
+    "express": "4.x",
     "expect.js": "*",
     "zombie": ">=2.0.0-",
     "supervisor": "*",
@@ -79,7 +79,6 @@
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
     "csslint": "*",
-    "socket.io": "0.x.x",
     "jsdoc": "*",
     "ink-docstrap":"*"
   }

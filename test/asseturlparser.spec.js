@@ -1,8 +1,6 @@
 'use strict';
 
-var assetUrlParse;
-
-assetUrlParse = require("../lib/asseturlparse");
+var parse = Piler.AssetUrlParse.parse;
 
 describe('asseturlparser', function(){
 
@@ -30,7 +28,7 @@ describe('asseturlparser', function(){
 
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       url = _ref[_i];
-      urlOb = assetUrlParse(url);
+      urlOb = parse(url);
 
       testIt();
     }
@@ -38,7 +36,7 @@ describe('asseturlparser', function(){
 
   describe("can find global", function (){
     var urlOb;
-    urlOb = assetUrlParse("/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
+    urlOb = parse("/pile/min/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
 
     it("has the default global", function (){
       expect(urlOb.min).to.be.ok();
@@ -87,7 +85,7 @@ describe('asseturlparser', function(){
 
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       url = _ref[_i];
-      urlOb = assetUrlParse(url);
+      urlOb = parse(url);
 
       testIt();
     }
@@ -116,7 +114,7 @@ describe('asseturlparser', function(){
 
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       url = _ref[_i];
-      urlOb = assetUrlParse(url);
+      urlOb = parse(url);
 
       testIt();
     }
@@ -124,7 +122,7 @@ describe('asseturlparser', function(){
 
   describe("longer custom url root works too", function (){
     var urlOb;
-    urlOb = assetUrlParse("/node-pile/pile/min/cachekey/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
+    urlOb = parse("/node-pile/pile/min/cachekey/global.js?v=67cc16bec85749bfe34592397e4a31b0f47d4c59");
 
     it("is min", function (){
 
@@ -144,7 +142,7 @@ describe('asseturlparser', function(){
 
   describe("longer custom url root works too and in development", function (){
     var urlOb;
-    urlOb = assetUrlParse("/node-pile/pile/dev/my.file-321.css?v=43234");
+    urlOb = parse("/node-pile/pile/dev/my.file-321.css?v=43234");
 
     it("is min", function (){
 

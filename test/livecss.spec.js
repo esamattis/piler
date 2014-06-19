@@ -1,8 +1,6 @@
 'use strict';
 
-var Live;
-
-Live = require("../lib/livecss");
+var LiveCSS = Piler.LiveCSS;
 
 describe('livecss', function(){
 

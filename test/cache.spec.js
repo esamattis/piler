@@ -1,24 +1,23 @@
 'use strict';
 
-var Cache;
-
-Cache = require("../lib/cache");
+var Cache = Piler.Cache;
 
 describe('cache', function(){
 
   it('uses the filesystem by default', function(){
     var random = ((Math.random() * 1000) + 2213).toString();
 
-    var cached = Cache(random, function(){
+    var cached = Cache.cache(random, function(){
       return '1';
     });
 
     expect(cached).to.be('1');
-    cached = Cache(random, function(){
+    cached = Cache.cache(random, function(){
       return '2';
     });
     expect(cached).to.be('1');
-    cached = Cache(random, function(){
+
+    cached = Cache.cache(random, function(){
       return '3';
     });
     expect(cached).to.be('1');
@@ -27,7 +26,7 @@ describe('cache', function(){
   it('when not using filesystem it passes through', function(){
     Cache.options.useFS = false;
 
-    var cached = Cache('fdsa', function(){
+    var cached = Cache.cache('fdsa', function(){
       return '123';
     });
 
@@ -41,7 +40,7 @@ describe('cache', function(){
       return fnCompress();
     });
 
-    Cache('fdsa', function(){
+    Cache.cache('fdsa', function(){
       done();
     });
   });
@@ -52,7 +51,7 @@ describe('cache', function(){
     Cache.options.useFS = false;
     sinon.spy(Cache.options, 'cacheCallback');
 
-    var cached = Cache('fdas', function(){
+    var cached = Cache.cache('fdas', function(){
       return '123';
     });
 

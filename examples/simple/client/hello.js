@@ -1,6 +1,0 @@
-
-
-console.log("hello js");
-
-
-

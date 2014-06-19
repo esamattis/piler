@@ -1,8 +1,6 @@
 'use strict';
 
-var incUrlSeq;
-
-incUrlSeq = require("../lib/livecss").incUrlSeq;
+var incUrlSeq = Piler.LiveCSS.incUrlSeq;
 
 describe('hrefupdater', function(){
 

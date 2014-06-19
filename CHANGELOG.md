@@ -29,7 +29,6 @@
   * Expose `addMinifier`
   * Remove `async` and use `Bluebird` promises
   * Fix `nib` usage
-  * Change `fs.watch` to gaze
   
 # 0.4.2 - 2013-04-16
 

@@ -1,31 +1,29 @@
-'use strict'
+module.exports = (classes) ->
+  'use strict'
 
-_  = require 'lodash'
-_.mixin require 'underscore.string'
-module.exports.debug = debug = require("debug")("piler:asseturlparse")
+  debug: debug = classes.utils.debug("piler:asseturlparse")
+  parse: (url) ->
+    ob = {}
 
-module.exports = p = (url) ->
-  ob = {}
+    # remove qs
+    url = classes.utils._.first url.split "?"
+    [__..., mode, filename] = url.split "/"
 
-  # remove qs
-  url = _.first url.split "?"
-  [__..., mode, filename] = url.split "/"
+    debug('asset', url, mode, filename)
 
-  debug('asset', url, mode, filename)
+    if mode is "dev"
+      [__..., name, devopt, ext] = filename.split "."
+      [type, uid] = devopt.split "-"
+      debug('parsing in dev mode', url, type, uid)
+      ob.dev =
+         uid: uid
+         type: type
+    else
+      [__..., name, ext] = filename.split "."
+      debug('parsing in prod mode', url, name, ext)
+      ob.min = true
 
-  if mode is "dev"
-    [__..., name, devopt, ext] = filename.split "."
-    [type, uid] = devopt.split "-"
-    debug('parsing in dev mode', url, type, uid)
-    ob.dev =
-       uid: uid
-       type: type
-  else
-    [__..., name, ext] = filename.split "."
-    debug('parsing in prod mode', url, name, ext)
-    ob.min = true
+    ob.name = name
+    ob.ext = ext
 
-  ob.name = name
-  ob.ext = ext
-
-  ob
+    ob

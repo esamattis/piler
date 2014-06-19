@@ -1,10 +1,10 @@
-process.env.NODE_ENV = 'development';
-//process.env.NODE_ENV = 'production';
+//process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'production';
 
 var app = require("express")();
 var server = require('http').createServer(app);
 
-var piler = require("../../lib");
+var piler = require("../lib");
 var js = piler.createJSManager({outputDirectory: __dirname + "/out"});
 var css = piler.createCSSManager({outputDirectory: __dirname + "/out"});
 
@@ -25,7 +25,7 @@ piler.addCompiler('ls', function(){
   };
 });
 
-/* Cache is only used during production */
+/* Cache is only used during production, you can distribuite */
 var memoryCache = {};
 
 piler.useCache(function(code, hash, fnCompress){

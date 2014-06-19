@@ -1,8 +1,6 @@
 'use strict';
 
-var Minify, m;
-
-Minify = require("../lib/minify");
+var Minify = Piler.Minify;
 
 describe('minify', function(){
 

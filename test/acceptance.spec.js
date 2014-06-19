@@ -2,7 +2,6 @@
 
 var CSSLint, Q, port, r, request, rules, servers, type, validateCSS, zombie, _fn, _i, _len;
 
-Q = require("bluebird");
 request = require("request");
 zombie = require("zombie");
 CSSLint = require("csslint").CSSLint;
@@ -146,8 +145,8 @@ _fn = function (type, port){
         return this.href;
       }).get();
 
-      Q.reduce(cssUrls, function (memo, path){
-        var d = Q.defer();
+      Piler.utils.Q.reduce(cssUrls, function (memo, path){
+        var d = Piler.utils.Q.defer();
 
         request(self.httpRoot + path, function (err, res, body){
           expect(res.statusCode).to.be(200, "" + path + " is missing");
