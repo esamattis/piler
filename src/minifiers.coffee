@@ -11,45 +11,12 @@ module.exports = (classes, mainExports) ->
     debug: debug = classes.utils.debug("piler:minify")
   }
 
-  UglifyJS = false
-
-  ###istanbul ignore next###
-  js = (code) -> code
-
-  ###istanbul ignore catch###
-  try
-    UglifyJS = require("uglify-js")
-  catch
-
   css = (code, options = {}) ->
     if options.noCache is true
       csso.justDoIt code
     else
       classes.Cache.cache(code, -> csso.justDoIt code)
 
-  ###istanbul ignore else###
-  if UglifyJS?
-    debug("using uglify")
-
-    js = (code, options = {}) ->
-      fnCompress = ->
-        ast = UglifyJS.parse code
-        ast.figure_out_scope()
-
-        compressor = UglifyJS.Compressor()
-        compressed_ast = ast.transform(compressor)
-
-        compressed_ast.figure_out_scope()
-
-        if options.noMangleNames isnt true
-          compressed_ast.mangle_names()
-
-        compressed_ast.print_to_string(beautify: false)
-
-      if options.noCache is true
-        fnCompress()
-      else
-        classes.Cache.cache(code, fnCompress)
 
   minifiers = {}
 
@@ -77,11 +44,6 @@ module.exports = (classes, mainExports) ->
     oldFn = if minifiers[ext] then minifiers[ext] else ->
     minifiers[ext] = factoryFn(classes)
     oldFn
-
-  do ->
-    addMinifier('js', -> js )
-    addMinifier('css', -> css )
-    return
 
   ###*
    * Remove a minifier
