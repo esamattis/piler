@@ -57,26 +57,25 @@ module.exports = (classes, mainExports) ->
    * Minify code on demand
    * @returns {String}
   ###
-  out.minify = mainExports.minify = (ext, code, options) ->
+  out.minify = mainExports.minify = (ext, code, options, cb) ->
     throw new Error("Minify for '#{ext}' not found") if not ext or not minifiers[ext]
     debug("Minifying code for '#{ext}'")
-    minifiers[ext](code, options)
 
-  ###*
-   * @typedef {Function} Piler.minifyFactory
-   * @returns {{render:Function}}
-  ###
+    classes.utils.Q.try(->
+      minifiers[ext](code, options)
+    ).nodeify(cb)
+
   ###*
    * Add your own minifier
    *
    * @function Piler.addMinifier
    * @param {String} ext Extension
-   * @param {Piler.minifyFactory} factory Function that returns a function
+   * @param {Piler.factoryFn} factory Function that returns a function
    * @returns {Function} Returns the old minify function, if any
   ###
-  out.addMinifier = addMinifier = mainExports.addMinifier = (ext, factory) ->
+  out.addMinifier = addMinifier = mainExports.addMinifier = (ext, factoryFn) ->
     oldFn = if minifiers[ext] then minifiers[ext] else ->
-    minifiers[ext] = factory()
+    minifiers[ext] = factoryFn(classes)
     oldFn
 
   do ->

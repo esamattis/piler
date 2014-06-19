@@ -1,32 +1,50 @@
 # Piler
 
-[![Build Status](https://secure.travis-ci.org/epeli/piler.svg?branch=0.6.0)](http://travis-ci.org/epeli/piler)
-[![Coverage Status](https://coveralls.io/repos/epeli/piler/badge.png?branch=0.6.0)](https://coveralls.io/r/epeli/piler?branch=0.6.0)
-[![Dependency Status](https://david-dm.org/epeli/piler.svg?branch=0.6.0)](https://david-dm.org/epeli/piler)
+[![Build Status](https://secure.travis-ci.org/epeli/piler.svg)](http://travis-ci.org/epeli/piler)
+[![Coverage Status](https://coveralls.io/repos/epeli/piler/badge.png)](https://coveralls.io/r/epeli/piler)
+[![Dependency Status](https://david-dm.org/epeli/piler.svg)](https://david-dm.org/epeli/piler)
 
 [![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
 
 ## Feature highlights
 
+  * Promise based interface
   * Minify and concatenate JS and CSS for fast page loads
-  * Tag rendering
+  * Tag rendering, for example, `<script type="text/javascript">`, `<link>`, `<script type="text/ng-template">`, etc
   * Namespaces
-  * Transparent preprocessor
-  * Push CSS changes to the browser using Socket.IO 0.9.x (not yet compatible with 1.0, but is planned)
-  * Easy code sharing with server
+  * Flexible and distributed cache
+  * Transparent preprocessor (`.coffee -> .js` without a hassle)
+  * Push CSS changes to the browser using Socket.IO 1.x.x in development mode
+  * Reuse server code in the browser and vice-versa
+
+## Whats new in 1.0.0
+
+Version 1.x is almost a complete rewrite from the 0.x versions. A lot changed since Node.js community
+and some 'best practices' have emerged, a lot of great tools and of course, with great power, 
+comes great responsibility. 
+
+Piler 1.x aims to be completly flexible and expose as many API possible to ensure
+community modules can be quickly used along with Piler. By modularizing the asset management 'inner' 
+workings, we can achieve more testable and maintainable code. With the plugin interface, plugins
+can set minifiers, managers, compilers, all in one export etc.
+
+This is a big change, and it's almost completely not backward compatible. But the adaptation of 
+existing code shouldn't be a problem. 
 
 ## Awesome Asset Manager for Node.js
 
-*Piler* allows you to manage all your JavaScript and CSS assets cleanly and
-directly from code. It will concatenate and minify them in production and it
-takes care of rendering the tags. The idea is to make your pages load as
-quickly as possible.
+*Piler* allows you to manage all your assets cleanly and directly from code. 
+It will concatenate and minify them in production and it takes care of rendering 
+the tags. The idea is to make your pages load as quickly as possible.
 
 So why create a yet another asset manager? Because Node.js is special. In
 Node.js a JavaScript asset isn't just a pile of bits that are sent to the
 browser. It's code. It's code that can be also used in the server and I think
-that it's the job of asset managers to help with it. So in *Piler* you can take
-code directly from your Javascript objects, not just from JavaScript files.
+that it's the job of asset managers to help with it. 
+
+So in *Piler* you can take code directly from your Javascript objects, not just 
+from JavaScript files.
+
 Copying things from Rails is just not enough. This is just a one reason why
 *Piler* was created.
 
@@ -48,10 +66,6 @@ clientjs.addExec(function() {
     alert("Hello" + window.navigator.appVersion);
 });
 ```
-
-Currently *Piler* works only with [Express][], but other frameworks are planned
-as well.
-
 
 *Piler* is written following principles in mind:
 

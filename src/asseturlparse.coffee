@@ -1,12 +1,12 @@
-module.exports = (classes) ->
+module.exports = (Piler) ->
   'use strict'
 
-  debug: debug = classes.utils.debug("piler:asseturlparse")
+  debug: debug = Piler.utils.debug("piler:asseturlparse")
   parse: (url) ->
     ob = {}
 
     # remove qs
-    url = classes.utils._.first url.split "?"
+    url = Piler.utils._.first url.split "?"
     [__..., mode, filename] = url.split "/"
 
     debug('asset', url, mode, filename)

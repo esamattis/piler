@@ -1,4 +1,4 @@
-module.exports = (classes, mainExports) ->
+module.exports = (Piler, mainExports) ->
   #
   # Don't uglify again files if they didn't change
   #
@@ -8,30 +8,30 @@ module.exports = (classes, mainExports) ->
   # e.g. /var/folders/zm/jmjb49l172g6g_h1y8701spc0000gn/T/
   TMPDIR = os.tmpDir()
 
-  debug: debug = classes.utils.debug('piler:cache')
+  debug: debug = Piler.utils.debug('piler:cache')
   # Return a compressed version (already cached or not) of `code`, this function is synchronous
   cache: (code, fnCompress) ->
     if options.enable isnt true
       debug('minified code cache isnt enabled')
       return fnCompress()
 
-    hash = classes.Serialize.sha1(code, 'hex')
+    hash = Piler.Serialize.sha1(code, 'hex')
 
     if options.useFS is true
-      file = classes.utils.path.join TMPDIR, '/', hash
+      file = Piler.utils.path.join TMPDIR, '/', hash
 
       debug('using filesystem.', 'hash:', hash, 'file:', file)
 
-      if classes.utils.fs.existsSync(file)
+      if Piler.utils.fs.existsSync(file)
         debug('file already in cache')
         # if already in cache
-        return classes.utils.fs.readFileSync(file, {encoding: 'utf8'})
+        return Piler.utils.fs.readFileSync(file, {encoding: 'utf8'})
 
       # if not: compress the code
       cache = fnCompress()
 
       # write the file
-      classes.utils.fs.writeFileSync(file, cache, {encoding: 'utf8'})
+      Piler.utils.fs.writeFileSync(file, cache, {encoding: 'utf8'})
 
       # .. and return the compressed version
       cache
@@ -69,7 +69,7 @@ module.exports = (classes, mainExports) ->
    * @function Piler.useCache
   ###
   useCache: mainExports.useCache = (cacheFn) ->
-    throw new Error('useCache expects a function') if not classes.utils._.isFunction(cacheFn)
+    throw new Error('useCache expects a function') if not Piler.utils._.isFunction(cacheFn)
     throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
 
     options.useFS = false

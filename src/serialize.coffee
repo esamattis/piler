@@ -1,4 +1,4 @@
-module.exports = (classes) ->
+module.exports = (classes, mainExports) ->
   'use strict'
 
   crypto = require 'crypto'
@@ -12,10 +12,28 @@ module.exports = (classes) ->
    * @property {Function(cb:Function)} getCode Get the code itself
   ###
 
+  pilers =
+    raw: (ob) ->
+      ob.object
 
-  # Remove last comma from string
-  removeTrailingComma = (s) ->
-    s.trim().replace(/,$/, "")
+    obj: (ob) ->
+      toGlobals ob.object
+
+    fn: (ob) ->
+      executableFrom ob.object
+
+    file: (ob) ->
+      classes.utils.fs.readFileAsync(ob.object)
+      .then((data) ->
+        classes.Compilers.compile(classes.utils.extension(ob.object), ob.object, data.toString())
+      )
+
+    module: (ob) ->
+      @file(ob).then((code) ->
+        """require.register("#{ classes.utils.path.basename(ob.object).split(".")[0] }", function(module, exports, require) {
+        #{ code }
+        });"""
+      )
 
   # Map of functions that can convert various Javascript objects to strings.
   types =
@@ -38,8 +56,9 @@ module.exports = (classes) ->
 
     _array: (array) ->
       code = "["
-      code += " #{ codeFrom v },"  for v in array
-      removeTrailingComma(code) + "]"
+      arr = []
+      arr.push "#{ codeFrom v }" for v in array
+      arr.join(', ') + code + "]"
 
   # Creates immediately executable string presentation of given function.
   # context will be function's "this" if given.
@@ -54,15 +73,15 @@ module.exports = (classes) ->
     code
 
   debug: debug
-  codeObject: do ->
+  serialize: do ->
 
     getId = ->
       sum = crypto.createHash('sha1')
 
-      if @type is "file"
+      if @fromUrl
         # If code is on filesystem the url to the file should only change when
         # the path to it changes.
-        sum.update @filePath
+        sum.update @object
       else
         # If there is no file for code code. We need to generate id from the code
         # itself.
@@ -70,8 +89,8 @@ module.exports = (classes) ->
 
       hash = sum.digest('hex').substring 10, 0
 
-      if @type in ["file", "module"]
-        filename = classes.utils.path.basename @filePath
+      if @adjustFilename
+        filename = classes.utils.path.basename @object
         filename = filename.replace /\./g, "_"
         filename = filename.replace /\-/g, "_"
         hash = filename + "_" + hash
@@ -81,41 +100,12 @@ module.exports = (classes) ->
     ->
       @getId = getId
       @getCode = (cb) ->
-        pilers[@type] @, cb
+        type = @type
+        classes.utils.Q.try(->
+          pilers[type] @
+        ).nodeify(cb)
 
       @
-
-  pilers: pilers =
-      raw: (ob, cb) ->
-        cb null, ob.raw
-        return
-
-      object: (ob, cb) ->
-        cb null, toGlobals ob.object
-        return
-
-      exec: (ob, cb) ->
-        cb null, executableFrom ob.object
-        return
-
-      file: (ob, cb) ->
-        classes.utils.fs.readFile ob.filePath, (err, data) ->
-          return cb? err if err
-          classes.Compilers.compile(classes.utils.extension(ob.filePath), ob.filePath, data.toString(), (err, code) ->
-            cb err, code
-          )
-          return
-
-        return
-
-      module: (ob, cb) ->
-        this.file ob, (err, code) ->
-          return cb? err if err
-          cb null, """require.register("#{ classes.utils.path.basename(ob.filePath).split(".")[0] }", function(module, exports, require) {
-          #{ code }
-          });"""
-          return
-        return
 
   sha1: (code, out) ->
     sha1 = crypto.createHash('sha1')
@@ -124,6 +114,14 @@ module.exports = (classes) ->
       if out
         return sha1.digest(out)
     sha1
+
+  ###*
+   * @function Piler.addSerializable
+  ###
+  addSerializable: mainExports.addSerializable = (name, factoryFn)->
+    oldFn = if pilers[name] then pilers[name] else ->
+    pilers[name] = factoryFn(classes)
+    oldFn
 
   # Generates code string from given object. Works for numbers, strings, regexes
   # and even functions. Does not handle circular references.

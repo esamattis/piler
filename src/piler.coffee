@@ -11,44 +11,28 @@ module.exports = (classes, mainExports) ->
 
   bindFn = (_this, name) -> (fn, before) ->
     debug("res #{name}", fn)
-    _this[name] "temp", fn, before
+    _this[name] "__temp", fn, before
     return
 
-  class BasePile extends require('events').EventEmitter
-    ###*
-     * @member {String} urlRoot
-     * @instance
-     * @memberof Piler.BasePile
-    ###
-    urlRoot: "/piler/"
-
-    ###*
-     * @member {Boolean} production
-     * @instance
-     * @memberof Piler.BasePile
-    ###
-    production: false
-
+  class BasePile
     ###*
      * @constructor Piler.BasePile
     ###
-    constructor: (@name, @production, urlRoot, @options = {}) ->
-      super()
-
-      if urlRoot?
-        @urlRoot = urlRoot
-
-      @code = []
+    constructor: (@name, @options = {}) ->
+      @assets = []
       @rawPile = null
-      @urls = []
-      @piledUp = false
       @options.cacheKeys ?= true
       @options.volatile ?= false
+      @options.urlRoot ?= '/piler/'
+      @options.production ?= false
 
-      @on('before', ->
-      )
-      @on('after', ->
-      )
+    add: (config, before = false) ->
+      @assets[if not before then 'push' else 'unshift'] classes.Serialize.serialize.call
+        type: config.type
+        adjustFilename: !!config.adjustFilename
+        object: config.object
+        fromUrl: !!config.fromUrl
+      @
 
     ###*
      * Add an array of files at once
@@ -66,18 +50,14 @@ module.exports = (classes, mainExports) ->
     ###
     addFile: (filePath, before = false) ->
       filePath = classes.utils.path.normalize filePath
-      @warnPiledUp "addFile"
       if filePath not in @getFilePaths()
-        @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-          type: "file"
-          filePath: filePath
+        @add({type: "file", adjustFilename: true, object: filePath, fromUrl: true}, before)
 
       @
 
     reset: ->
       if @options.volatile
-        @code.length = 0
-        @urls.length = 0
+        @assets.length = 0
         @rawPile = null
       @
 
@@ -90,21 +70,10 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.BasePile} `this`
     ###
     addRaw: (raw, before = false) ->
-      @warnPiledUp "addRaw"
-      @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-        type: "raw"
-        raw: raw
+      @add({type: "raw", object: raw}, before)
 
-      @
-
-    ###*
-     * @memberof Piler.BasePile
-     * @function getFilePaths
-     * @instance
-     * @returns {Array.<String>} Array of file paths
-    ###
-    getFilePaths: ->
-      (ob.filePath for ob in @code when ob.type is "file")
+    getObjects: (type) ->
+      (ob.object for ob in @code when ob.type is type)
 
     ###*
      * @memberof Piler.BasePile
@@ -115,8 +84,8 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.BasePile} `this`
     ###
     addUrl: (url, before = false) ->
-      if url not in @urls
-        @urls[if not before then 'push' else 'unshift'] url
+      if url not in @getObjects('url')
+        @add({type:'url', object:url}, , before)
 
       @
 
@@ -130,36 +99,21 @@ module.exports = (classes, mainExports) ->
       # Start with plain urls
       sources = ([u] for u in @urls)
 
-      if @production
-        sources.push ["#{ @urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
+      if @options.production
+        sources.push ["#{ @options.urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
       else
         devCacheKey = ''
+
         if @options.cacheKeys
           devCacheKey = "?v=#{Date.now()}"
-        for ob in @code
-          sources.push ["#{ @urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }#{devCacheKey}", "id=\"pile-#{ ob.getId() }\""]
+
+        for ob in @assets
+          sources.push ["#{ @options.urlRoot }dev/#{ @name }.#{ ob.type }-#{ ob.getId() }.#{ @ext }#{devCacheKey}", "id=\"pile-#{ ob.getId() }\""]
 
       return sources
 
-    ###*
-     * @memberof Piler.BasePile
-     * @function findCodeObById
-     * @param {String} id
-     * @instance
-     * @returns {Piler.codeOb}
-    ###
-    findCodeObById: (id) ->
-      (codeOb for codeOb in @code when codeOb.getId() is id)[0]
-
-    ###*
-     * @memberof Piler.BasePile
-     * @function findCodeObByFilePath
-     * @param {String} path
-     * @instance
-     * @returns {Piler.codeOb}
-    ###
-    findCodeObByFilePath: (path) ->
-      (codeOb for codeOb in @code when codeOb.filePath is path)[0]
+    findAssetBy: (member, search) ->
+      (codeOb for codeOb in @assets when codeOb[member]() is search)[0]
 
     ###*
      * @memberof Piler.BasePile
@@ -171,18 +125,6 @@ module.exports = (classes, mainExports) ->
     ###
     _computeHash: ->
       @pileHash = classes.Serialize.sha1(@rawPile, 'hex')
-
-    ###*
-     * @memberof Piler.BasePile
-     * @function warnPiledUp
-     * @instance
-     * @protected
-    ###
-    warnPiledUp: (fnname) ->
-      if @logger and @piledUp and @options.volatile isnt true
-        @logger.warn "Warning pile #{ @name } has been already piled up. Calling #{ fnname } does not do anything."
-
-      return
 
     minify: (code, options = {}) ->
       return code if not @ext
@@ -200,21 +142,12 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     pileUp: (cb) ->
-      if @options.volatile isnt true
-        @piledUp = true
-
       self = @
 
       classes.utils.Q.map(@code, (codeOb) ->
 
-        d = classes.utils.Q.defer()
-
-        codeOb.getCode (err, code) ->
-          return d.reject(err) if err
-          d.resolve self.commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
-          return
-
-        d.promise
+        codeOb.getCode().then (code) ->
+          self.commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
 
       ).then(
         (result) ->
@@ -262,11 +195,9 @@ module.exports = (classes, mainExports) ->
     ###
     addModule: (filePath, before = false) ->
       filePath = classes.utils.path.normalize filePath
-      @warnPiledUp "addFile"
       if filePath not in @getFilePaths()
-        @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-          type: "module"
-          filePath: filePath
+        @add({type: "module", object: filePath}, before)
+
       @
 
     ###*
@@ -278,7 +209,6 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.JSPile} `this`
     ###
     addOb: (ob, before = false) ->
-      @warnPiledUp "addOb"
       @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
         type: "object"
         object: ob
@@ -294,7 +224,6 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.JSPile} `this`
     ###
     addExec: (fn, before = false) ->
-      @warnPiledUp "addExec"
       @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
         type: "exec"
         object: fn
@@ -329,11 +258,12 @@ module.exports = (classes, mainExports) ->
 
 
   defNs = (fn) ->
-    (ns, path, before = false) ->
+    (ns, obj, before = false) ->
       if arguments.length is 1
-        path = ns
+        obj = ns
         ns = "global"
-      fn.call @, ns, path, before
+
+      fn.call @, ns, obj, before
 
   ###*
    * @typedef {Object} Piler.PileSettings
@@ -344,25 +274,22 @@ module.exports = (classes, mainExports) ->
   class PileManager
     ###*
      * @memberof Piler.PileManager
-     * @member {Piler.BasePile} Type
+     * @member {Piler.BasePile} type
      * @instance
     ###
-    Type: null
+    type: null
 
     ###*
      * @constructor Piler.PileManager
     ###
-    constructor: (@settings) ->
-      @production = @settings.production
-      @settings.urlRoot ?= "/pile/"
-      @logger = @settings.logger or classes.Logger
+    constructor: (@options) ->
+      @options.urlRoot ?= "/pile/"
+      @options.logger ?= classes.Logger
 
       @piles = {}
 
       @getPile "global"
-      @getPile "temp", {volatile: true}
-
-      return
+      @getPile "__temp", {volatile: true}
 
     ###*
      * @memberof Piler.PileManager
@@ -375,8 +302,12 @@ module.exports = (classes, mainExports) ->
     getPile: (ns, settings = {}) ->
       pile = @piles[ns]
       if not pile
-        pile =  @piles[ns] = new @Type ns, @production, @settings.urlRoot, settings
+        pile =  @piles[ns] = new @type ns, settings
       pile
+
+    add: defNs (ns, type, before) ->
+      pile = @getPile ns
+      pile["add#{type}"]()
 
     ###*
      * Add an array of files at once
@@ -451,7 +382,7 @@ module.exports = (classes, mainExports) ->
       logger = @logger
       piles = @piles
       settings = @settings
-      logger.notice "Start assets generation for '#{ @Type::ext }'"
+      logger.notice "Start assets generation for '#{ @type::ext }'"
 
       classes.utils.Q.map(Object.keys(piles), (name) ->
         pile = piles[name]
@@ -495,7 +426,7 @@ module.exports = (classes, mainExports) ->
         namespaces.unshift "global"
 
       if not opts.disableTemp
-        namespaces.push "temp"
+        namespaces.push "__temp"
 
       sources = []
       for ns in namespaces
@@ -552,7 +483,7 @@ module.exports = (classes, mainExports) ->
         debug('request url', req.url, 'asset', asset)
 
         # Wrong asset type. Lets skip to next middleware.
-        if asset.ext isnt @Type::ext
+        if asset.ext isnt @type::ext
           return next()
 
         pile = @piles[asset.name]
@@ -603,7 +534,7 @@ module.exports = (classes, mainExports) ->
       @
 
   class JSManager extends PileManager
-    Type: JSPile
+    type: JSPile
     contentType: "application/javascript"
 
     ###*
@@ -735,7 +666,7 @@ module.exports = (classes, mainExports) ->
      * @memberof Piler.CSSManager
      * @instance
     ###
-    Type: CSSPile
+    type: CSSPile
     ###*
      * @member {String} contentType
      * @memberof Piler.CSSManager
