@@ -35,12 +35,11 @@ describe('cache', function(){
   });
 
   it('uses custom callback', function(done){
-    Cache.options.useFS = false;
-    Cache.options.cacheCallback = function(code, hash, fnCompress){
+    Cache.useCache(function(code, hash, fnCompress){
       expect(code).to.be('fdsa');
       expect(hash).to.be('a14fbfb7b88dacd1af65d31bade857bc8e839e46');
       return fnCompress();
-    };
+    });
 
     Cache('fdsa', function(){
       done();
@@ -61,6 +60,15 @@ describe('cache', function(){
     expect(Cache.options.cacheCallback.called).to.be(false);
 
     Cache.options.cacheCallback.restore();
+  });
+
+  it('throws exception', function(){
+    expect(function(){
+      Cache.useCache();
+    }).to.throwException();
+    expect(function(){
+      Cache.useCache(function(){});
+    }).to.throwException();
   });
 
   after(function(){

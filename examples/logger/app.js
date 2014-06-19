@@ -2,7 +2,7 @@ process.env.NODE_ENV = 'development';
 
 var app = require('express')();
 var http = require('http');
-var pile = require("../../index");
+var pile = require("../../lib");
 var share = require("./share");
 
 console.log(share.test());

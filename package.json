@@ -1,12 +1,13 @@
 {
   "name": "piler",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "author": "Esa-Matti Suuronen",
+  "license": "MIT",
   "maintainers": [
     "Alexander Pirsig <self@pirsig.net>",
     "Paulo Cesar <email@pocesar.e4ward.com>"
   ],
-  "homepage": "http://epeli.github.com/piler/",
+  "homepage": "http://epeli.github.io/piler/",
   "description": "Awesome Asset Manager for Node.js",
   "bugs": {
     "url": "https://github.com/epeli/piler/issues/"
@@ -17,6 +18,20 @@
   "engines":{
     "node":">=0.10"
   },
+  "keywords":[
+    "asset",
+    "manager",
+    "preprocessor",
+    "compiler",
+    "stylesheet",
+    "pipeline",
+    "css",
+    "less",
+    "stylus",
+    "minifier",
+    "packager",
+    "package"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/epeli/piler.git"
@@ -33,17 +48,18 @@
     "precoveralls": "npm run compile",
     "coveralls": "npm run serverstart | node ./node_modules/istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha --report lcovonly -- && cat ./coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"
   },
-  "main": "./index",
+  "main": "./lib",
   "dependencies": {
     "graceful-fs":"3.x.x",
     "coffee-script": "1.x.x",
-    "underscore": "1.x.x",
+    "lodash": "*",
     "underscore.string": "2.x.x",
     "uglify-js": "2.x.x",
-    "async": "0.x.x",
     "csso": "1.x.x",
     "debug": "*",
-    "reserved": "*"
+    "reserved": "*",
+    "bluebird":"2.x",
+    "gaze":"0.x.x"
   },
   "devDependencies": {
     "sinon":"*",

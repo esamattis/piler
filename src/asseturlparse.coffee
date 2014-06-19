@@ -1,6 +1,6 @@
 'use strict'
 
-_  = require 'underscore'
+_  = require 'lodash'
 _.mixin require 'underscore.string'
 module.exports.debug = debug = require("debug")("piler:asseturlparse")
 

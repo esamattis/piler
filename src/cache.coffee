@@ -2,11 +2,13 @@
 # Don't uglify again files if they didn't change
 #
 
-fs     = require 'graceful-fs'
-os     = require 'os'
-path   = require 'path'
+fs = require 'graceful-fs'
+_ = require 'lodash'
+serialize = require './serialize'
+os = require 'os'
+path = require 'path'
 crypto = require 'crypto'
-debug  = require('debug')('piler:cache')
+debug = require('debug')('piler:cache')
 
 # e.g. /var/folders/zm/jmjb49l172g6g_h1y8701spc0000gn/T/
 TMPDIR = os.tmpDir()
@@ -17,7 +19,7 @@ module.exports = (code, fnCompress) ->
     debug('minified code cache isnt enabled')
     return fnCompress()
 
-  hash = crypto.createHash('sha1').update(code).digest('hex')
+  hash = serialize.sha1(code, 'hex')
 
   if options.useFS is true
     file = path.join TMPDIR, '/', hash
@@ -46,3 +48,35 @@ module.exports.options = options =
   useFS: true
   cacheCallback: (code, hash, fnCompress) ->
     fnCompress()
+
+###*
+ * @typedef {Function} Piler.cacheFn
+ * @param {String} code The raw code itself
+ * @param {String} hash The current sha1 of the code
+ * @param {Function} code Execute the minify routine that generates code
+ * @returns {String}
+###
+###*
+ * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override the internal one.
+ *
+ * @example
+ *   piler.useCache(function(code, hash, fnCompress) {
+ *     if (typeof memoryCache[hash] === 'undefined') {
+ *       memoryCache[hash] = fnCompress();
+ *     }
+ *     return memoryCache[hash];
+ *   });
+ *
+ * @param {Piler.cacheFn} cacheFn Function that will be called with the current code, generated hash and the callback
+ * @throws Error
+ *
+ * @function Piler.useCache
+###
+module.exports.useCache = (cacheFn) ->
+  throw new Error('useCache expects a function') if not _.isFunction(cacheFn)
+  throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
+
+  options.useFS = false
+  options.cacheCallback = cacheFn
+
+  return

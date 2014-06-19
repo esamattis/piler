@@ -1,5 +1,6 @@
-# 0.6.0 - 2014-06-12
+# 1.0.0 - 2014-06-19
 
+  * Dual promise/callback API
   * Fixed tests to run on any environment
   * Fixed tests for using new jade and express >=3.x conventions
   * Updated jQuery test version
@@ -26,6 +27,9 @@
   * Added `before` option to all 'add' methods
   * Refactor `BasePile` and `PileManager` classes
   * Expose `addMinifier`
+  * Remove `async` and use `Bluebird` promises
+  * Fix `nib` usage
+  * Change `fs.watch` to gaze
   
 # 0.4.2 - 2013-04-16
 

@@ -1,11 +1,13 @@
 'use strict'
 
-fs = require "graceful-fs"
+socketio = null
+gaze = require 'gaze'
 
+###istanbul ignore catch ###
 try
   socketio = require('socket.io')
-catch e
-  socketio = null
+catch
+
 
 incUrlSeq = (url) ->
   seqRegexp = /(--([0-9]+))\..*$/
@@ -20,6 +22,7 @@ incUrlSeq = (url) ->
   cleanUrl.substr(0,cleanUrl.lastIndexOf('.'))+"--#{ seq+1 }"+cleanUrl.substr(cleanUrl.lastIndexOf('.'))
 
 # Yep, this function will be executed in the browser.
+###istanbul ignore next: can't coverage client code###
 clientUpdater = ->
   console.log "CSS updater is active. Waiting for connection..."
 
@@ -75,8 +78,10 @@ class LiveUpdateMixin
 
     @installSocketIo userio
 
-    @server.on "listening", =>
-      @logger.info "Activating CSS updater"
+    logger = @logger
+
+    @server.on "listening", ->
+      logger.info "Activating CSS updater"
 
       for k, pile of cssmanager.piles
         for codeOb in pile.code
@@ -85,11 +90,17 @@ class LiveUpdateMixin
 
   _watch: (pile, codeOb) ->
     return unless codeOb.type is "file"
+    logger = @logger
+    io = @io
     @logger.info "watching #{ codeOb.filePath } for changes"
-    fs.watch codeOb.filePath, (type) =>
-      if type is 'change'
-        @logger.info "updated", codeOb.filePath
-        @io.emit "update", codeOb.getId()
+
+    gaze codeOb.filePath, (err, watcher) ->
+
+      watcher.on('changed', ->
+        logger.info "updated", codeOb.filePath
+        io.emit "update", codeOb.getId()
+        return
+      )
       return
 
     return
@@ -100,6 +111,7 @@ LiveUpdateMixin.incUrlSeq = incUrlSeq
 if socketio?
   module.exports = LiveUpdateMixin
 else
+  ###istanbul ignore next###
   module.exports = class LiveUpdateDisabled
     liveUpdate: ->
       @logger.error "No socket.io installed. Live update won't work."

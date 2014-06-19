@@ -1,7 +1,7 @@
 http = require('http')
 serveStatic = require "serve-static"
 app = require("express")()
-pile = require("../../index")
+pile = require("../../lib")
 
 js = pile.createJSManager()
 css = pile.createCSSManager()

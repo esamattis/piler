@@ -1,8 +1,8 @@
 'use strict';
 
-var CSSLint, async, port, r, request, rules, servers, type, validateCSS, zombie, _fn, _i, _len;
+var CSSLint, Q, port, r, request, rules, servers, type, validateCSS, zombie, _fn, _i, _len;
 
-async = require("async");
+Q = require("bluebird");
 request = require("request");
 zombie = require("zombie");
 CSSLint = require("csslint").CSSLint;
@@ -139,32 +139,34 @@ _fn = function (type, port){
     });
 
     it("has valid CSS", function (done){
-      var $, cssUrls;
+      var $, cssUrls, self = this, spy = sinon.spy();
       $ = this.browser.window.jQuery;
 
       cssUrls = $("link[rel='stylesheet']").map(function (){
         return this.href;
-      });
+      }).get();
 
-      async.reduce(cssUrls, "", (function (_this){
-        return function (memo, path, cb){
+      Q.reduce(cssUrls, function (memo, path){
+        var d = Q.defer();
 
-          request(_this.httpRoot + path, function (err, res, body){
-            expect(res.statusCode).to.be(200, "" + path + " is missing");
+        request(self.httpRoot + path, function (err, res, body){
+          expect(res.statusCode).to.be(200, "" + path + " is missing");
 
-            if (err) {
-              return cb(err);
-            }
-            cb(null, memo + body);
-          });
-        };
-      })(this), function (err, css){
+          if (err) {
+            return d.reject(err);
+          }
+
+          d.resolve(memo + body);
+        });
+
+        return d.promise;
+      }, "").done(function (css){
         var result;
-        expect(err).to.not.be.ok();
+        expect(spy.called).to.be(false);
         result = validateCSS(css, rules);
         expect(result.messages.length).to.be(0, "" + (util.inspect(result.messages)));
         done();
-      });
+      }, spy);
 
     });
 

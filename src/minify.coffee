@@ -10,23 +10,25 @@ cache = require './cache'
 
 UglifyJS = false
 
+###istanbul ignore next###
+js = (code) -> code
+
+###istanbul ignore catch###
 try
   UglifyJS = require("uglify-js")
-catch error
-  # uglify-js' packaging currently sucks. Add fallback.
-  debug("no uglify", error)
-  exports.js = (code) -> code
+catch
 
-exports.css = (code, options = {}) ->
+css = (code, options = {}) ->
   if options.noCache is true
     csso.justDoIt code
   else
     cache(code, -> csso.justDoIt code)
 
+###istanbul ignore else###
 if UglifyJS?
   debug("using uglify")
 
-  exports.js = (code, options = {}) ->
+  js = (code, options = {}) ->
     fnCompress = ->
       ast = UglifyJS.parse code
       ast.figure_out_scope()
@@ -45,3 +47,44 @@ if UglifyJS?
       fnCompress()
     else
       cache(code, fnCompress)
+
+minifiers = {}
+
+module.exports.minify = (ext, code, options) ->
+  throw new Error("Minify for '#{ext}' not found") if not ext or not minifiers[ext]
+  debug("Minifying code for '#{ext}'")
+  minifiers[ext](code, options)
+
+###*
+ * @typedef {Function} Piler.minifyFactory
+ * @returns {{render:Function}}
+###
+###*
+ * Add your own minifier
+ *
+ * @function Piler.addMinifier
+ * @param {String} ext Extension
+ * @param {Piler.minifyFactory} factory Function that returns a function
+ * @returns {Function} Returns the old minify function, if any
+###
+module.exports.addMinifier = addMinifier = (ext, factory) ->
+  oldFn = if minifiers[ext] then minifiers[ext] else ->
+  minifiers[ext] = factory()
+  oldFn
+
+do ->
+  addMinifier('js', -> js )
+  addMinifier('css', -> css )
+  return
+
+###*
+ * Remove a minifier
+ *
+ * @function Piler.removeMinifier
+ * @param {String} ext Extension
+###
+module.exports.removeMinifier = (ext) ->
+  ###istanbul ignore else###
+  delete minifiers[ext] if minifiers[ext]
+
+  return

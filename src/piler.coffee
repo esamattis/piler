@@ -5,40 +5,17 @@
 ###
 
 cache = require './cache'
+serialize = require './serialize'
 fs = require "graceful-fs"
-path = require "path"
-crypto = require 'crypto'
 path = require "path"
 debug = require("debug")("piler:piler")
 reserved = require 'reserved'
-_ = require "underscore"
-async = require "async"
+_ = require "lodash"
+Q = require 'bluebird'
 
-
-OB = require "./serialize"
-_minify = require "./minify"
-_compilers = require "./compilers"
+minify = require "./minify"
 assetUrlParse = require "./asseturlparse"
 logger = require "./logger"
-
-minifiers = {}
-compilers = {}
-
-toGlobals = (globals) ->
-  code = ""
-  for nsString, v of globals
-    code += "__SET(#{ JSON.stringify nsString }, #{ OB.stringify v });\n"
-  code
-
-extension = (filename) ->
-  parts = filename.split "."
-  parts[parts.length-1]
-
-getCompiler = (filePath) ->
-  compiler = compilers[extension filePath]
-  if not compiler
-    throw new Error "Could not find compiler for #{ filePath }"
-  compiler.render
 
 bindFn = (_this, name) -> (fn, before) ->
   debug("res #{name}", fn)
@@ -53,70 +30,9 @@ bindFn = (_this, name) -> (fn, before) ->
  * @property {Function(cb:Function)} getCode Get the code itself
 ###
 
-module.exports.pilers = pilers =
-    raw: (ob, cb) ->
-      cb null, ob.raw
-      return
+module.exports.pilers = serialize.pilers
 
-    object: (ob, cb) ->
-      cb null, toGlobals ob.object
-      return
-
-    exec: (ob, cb) ->
-      cb null, executableFrom ob.object
-      return
-
-    file: (ob, cb) ->
-      fs.readFile ob.filePath, (err, data) ->
-        return cb? err if err
-        getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
-          cb err, code
-        return
-
-      return
-
-    module: (ob, cb) ->
-      this.file ob, (err, code) ->
-        return cb? err if err
-        cb null, """require.register("#{ path.basename(ob.filePath).split(".")[0] }", function(module, exports, require) {
-        #{ code }
-        });"""
-        return
-      return
-
-#http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/
-asCodeOb = do ->
-
-  getId = ->
-    sum = crypto.createHash('sha1')
-
-    if @type is "file"
-      # If code is on filesystem the url to the file should only change when
-      # the path to it changes.
-      sum.update @filePath
-    else
-      # If there is no file for code code. We need to generate id from the code
-      # itself.
-      sum.update OB.stringify @
-
-    hash = sum.digest('hex').substring 10, 0
-
-    if @type in ["file", "module"]
-      filename = path.basename @filePath
-      filename = filename.replace /\./g, "_"
-      filename = filename.replace /\-/g, "_"
-      hash = filename + "_" + hash
-
-    return hash
-
-  ->
-    @getId = getId
-    @getCode = (cb) ->
-      pilers[@type] @, cb
-
-    @
-
-class BasePile
+class BasePile extends require('events').EventEmitter
   ###*
    * @member {String} urlRoot
    * @instance
@@ -135,6 +51,8 @@ class BasePile
    * @constructor Piler.BasePile
   ###
   constructor: (@name, @production, urlRoot, @options = {}) ->
+    super()
+
     if urlRoot?
       @urlRoot = urlRoot
 
@@ -144,6 +62,11 @@ class BasePile
     @piledUp = false
     @options.cacheKeys ?= true
     @options.volatile ?= false
+
+    @on('before', ->
+    )
+    @on('after', ->
+    )
 
   ###*
    * Add an array of files at once
@@ -163,7 +86,7 @@ class BasePile
     filePath = path.normalize filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
-      @code[if not before then 'push' else 'unshift'] asCodeOb.call
+      @code[if not before then 'push' else 'unshift'] serialize.call
         type: "file"
         filePath: filePath
 
@@ -186,7 +109,7 @@ class BasePile
   ###
   addRaw: (raw, before = false) ->
     @warnPiledUp "addRaw"
-    @code[if not before then 'push' else 'unshift'] asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] serialize.call
       type: "raw"
       raw: raw
 
@@ -265,9 +188,7 @@ class BasePile
    * @returns {String}
   ###
   _computeHash: ->
-    sum = crypto.createHash('sha1')
-    sum.update @rawPile
-    @pileHash = sum.digest('hex')
+    @pileHash = serialize.sha1(@rawPile, 'hex')
 
   ###*
    * @memberof Piler.BasePile
@@ -281,34 +202,46 @@ class BasePile
 
     return
 
+  minify: (code, options = {}) ->
+    return code if not @ext
+
+    if @production
+      minify.minify @ext, code, _.merge({noCache: @options.volatile}, options)
+    else
+      code
+
   ###*
    * @memberof Piler.BasePile
    * @function pileUp
    * @param {Function} [cb]
    * @instance
-   * @returns {Piler.BasePile} `this`
+   * @returns {Promise}
   ###
   pileUp: (cb) ->
     if @options.volatile isnt true
       @piledUp = true
 
-    async.map @code, (codeOb, cb) =>
+    self = @
 
-      codeOb.getCode (err, code) =>
-        return cb? err if err
-        cb null, @commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
+    Q.map(@code, (codeOb) ->
+
+      d = Q.defer()
+
+      codeOb.getCode (err, code) ->
+        return d.reject(err) if err
+        d.resolve self.commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
         return
 
-      return
+      d.promise
 
-    , (err, result) =>
-      return cb? err if err
-      @rawPile = @minify result.join("\n\n").trim()
-      @_computeHash()
-      cb? null, @rawPile
-      return
-
-    @
+    ).then(
+      (result) ->
+        self.rawPile = self.minify result.join("\n\n").trim()
+        self._computeHash()
+        self.rawPile
+      (err) ->
+        err
+    ).nodeify(cb)
 
 class JSPile extends BasePile
   ###*
@@ -330,19 +263,6 @@ class JSPile extends BasePile
     "// #{ line.trim() }"
 
   ###*
-   * Minify any valid Javascript code
-   *
-   * @memberof Piler.JSPile
-   * @returns {String}
-   * @instance
-  ###
-  minify: (code) ->
-    if @production
-      minifiers.js code, {noCache: @options.volatile}
-    else
-      code
-
-  ###*
    * @augments Piler.BasePile
    * @constructor Piler.JSPile
   ###
@@ -362,7 +282,7 @@ class JSPile extends BasePile
     filePath = path.normalize filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
-      @code[if not before then 'push' else 'unshift'] asCodeOb.call
+      @code[if not before then 'push' else 'unshift'] serialize.call
         type: "module"
         filePath: filePath
     @
@@ -377,7 +297,7 @@ class JSPile extends BasePile
   ###
   addOb: (ob, before = false) ->
     @warnPiledUp "addOb"
-    @code[if not before then 'push' else 'unshift'] asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] serialize.call
       type: "object"
       object: ob
     @
@@ -393,7 +313,7 @@ class JSPile extends BasePile
   ###
   addExec: (fn, before = false) ->
     @warnPiledUp "addExec"
-    @code[if not before then 'push' else 'unshift'] asCodeOb.call
+    @code[if not before then 'push' else 'unshift'] serialize.call
       type: "exec"
       object: fn
     @
@@ -424,21 +344,6 @@ class CSSPile extends BasePile
   ###
   commentLine: (line) ->
     return "/* #{ line.trim() } */"
-
-  ###*
-   * Minify any CSS code
-   *
-   * @memberof Piler.CSSPile
-   * @param {String} code
-   * @instance
-   * @function minify
-   * @returns {Piler.CSSPile} `this`
-  ###
-  minify: (code) ->
-    if @production
-      minifiers.css code, {noCache: @options.volatile}
-    else
-      code
 
 
 defNs = (fn) ->
@@ -556,28 +461,41 @@ class PileManager
   ###*
    * @memberof Piler.PileManager
    * @function pileUp
+   * @param {Function} [cb]
    * @instance
-   * @returns {Piler.PileManager} `this`
+   * @returns {Promise}
   ###
-  pileUp: ->
+  pileUp: (cb) ->
     logger = @logger
+    piles = @piles
+    settings = @settings
     logger.notice "Start assets generation for '#{ @Type::ext }'"
-    for name, pile of @piles then do (pile) =>
-      pile.pileUp (err, code) =>
-        throw err if err
 
-        if @settings.outputDirectory?
-          # skip volatile piles
-          return if pile.options.volatile is true
+    Q.map(Object.keys(piles), (name) ->
+      pile = piles[name]
 
-          outputPath = path.join @settings.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
+      pile.pileUp().then(
+        (code) ->
+          d = Q.defer()
 
-          fs.writeFile outputPath, code, (err) ->
-            throw err if err
-            logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
+          if settings.outputDirectory?
+            # skip volatile piles
+            return code if pile.options.volatile is true
 
-        return
-    @
+            outputPath = path.join settings.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
+
+            fs.writeFile outputPath, code, (err) ->
+              d.reject(err) if err
+              logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
+              d.resolve(code)
+              return
+
+          else
+            d.resolve(code)
+
+          d.promise
+      )
+    )
 
   ###*
    * @memberof Piler.PileManager
@@ -886,12 +804,6 @@ class CSSManager extends PileManager
 
     return
 
-# Creates immediately executable string presentation of given function.
-# context will be function's "this" if given.
-executableFrom = (fn, context) ->
-  return "(#{ fn })();\n" unless context
-  return "(#{ fn }).call(#{ context });\n"
-
 LiveUpdateMixin = require "./livecss"
 _.extend JSManager::, LiveUpdateMixin::
 
@@ -903,6 +815,7 @@ exports.JSPile = JSPile
 exports.JSManager = JSManager
 exports.CSSManager = CSSManager
 
+
 ###*
  * Create a new JS Manager for adding Javascript files
  *
@@ -911,7 +824,7 @@ exports.CSSManager = CSSManager
  * @function Piler.createJSManager
  * @returns {Piler.JSManager}
 ###
-exports.createJSManager = (settings={}) ->
+module.exports.createJSManager = (settings={}) ->
   settings.production = production
   new JSManager settings
 
@@ -923,112 +836,20 @@ exports.createJSManager = (settings={}) ->
  * @param {Object} [settings] Settings to pass to CSSManager
  * @returns {Piler.CSSManager}
 ###
-exports.createCSSManager = (settings={}) ->
+module.exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
 
-###*
- * @typedef {Function} Piler.minifyFactory
- * @returns {{render:Function}}
-###
-###*
- * Add your own minifier
- *
- * @function Piler.addMinifier
- * @param {String} ext Extension
- * @param {Piler.minifyFactory} factory Function that returns a function
- * @returns factory
-###
-exports.addMinifier = addMinifier = (ext, factory) ->
-  minifiers[ext] = factory()
+# expose sub module functions
 
-addMinifier('js', -> _minify.js )
-addMinifier('css', -> _minify.css )
+module.exports.minify = minify.minify
+module.exports.addMinifier = minify.addMinifier
+module.exports.removeMinifier = minify.removeMinifier
 
-###*
- * Remove a minifier
- *
- * @function Piler.removeMinifier
- * @param {String} ext Extension
-###
-exports.removeMinifier = (ext) ->
-  delete minifiers[ext] if minifiers[ext]
+compilers = require './compilers'
 
-  return
+module.exports.addCompiler = compilers.addCompiler
+module.exports.removeCompiler = compilers.removeCompiler
+module.exports.compile = compilers.compile
 
-###*
- * Add a compiler to Piler. You can override existing extensions like css or js
- *
- * @example
- *   piler.addCompiler(function(){
- *     return {
- *       render: function(filename, code, cb){
- *         //do your compilation, then pass it to the callback
- *         cb(null, code);
- *       },
- *       targetExt: 'js'
- *     };
- *   });
- *
- * @function Piler.addCompiler
- *
- * @throws Error
- * @param {String} extension The extension that you want compiling
- * @param {Function} renderFn The function that will be factory for generating code
-###
-exports.addCompiler = addCompiler = (extension, renderFn) ->
-  throw new Error('addCompiler function expects a function as second parameter') if not _.isFunction(renderFn)
-  def = renderFn()
-
-  if _.isObject(def) and _.isFunction(def.render)
-    compilers[extension] = def
-  else
-    throw new Error('Your function must return an object containing "render" and optionally "targetExt"')
-
-  return
-
-do ->
-  for c,def of _compilers
-    addCompiler(c, do (def) -> -> def)
-  return
-
-###*
- * @function Piler.removeCompiler
- * @param {String} extension Extension to remove the compiler
-###
-exports.removeCompiler = (extension) ->
-  delete compilers[extension] if compilers[extension]
-
-  return
-
-###*
- * @typedef {Function} Piler.cacheFn
- * @param {String} code The raw code itself
- * @param {String} hash The current sha1 of the code
- * @param {Function} code Execute the minify routine that generates code
- * @returns {String}
-###
-###*
- * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override the internal one.
- *
- * @example
- *   piler.useCache(function(code, hash, fnCompress) {
- *     if (typeof memoryCache[hash] === 'undefined') {
- *       memoryCache[hash] = fnCompress();
- *     }
- *     return memoryCache[hash];
- *   });
- *
- * @param {Piler.cacheFn} cacheFn Function that will be called with the current code, generated hash and the callback
- * @throws Error
- *
- * @function Piler.useCache
-###
-exports.useCache = (cacheFn) ->
-  throw new Error('useCache expects a function') if not _.isFunction(cacheFn)
-  throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
-
-  cache.options.useFS = false
-  cache.options.cacheCallback = cacheFn
-
-  return
+module.exports.useCache = cache.useCache

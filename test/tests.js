@@ -15,7 +15,7 @@ env.NODE_ENV = 'development';
 var development = cp.spawn('node', app, {
   cwd  : cwd,
   env  : env,
-  //stdio: 'inherit'
+  stdio: 'inherit'
 });
 
 env.NODE_ENV = 'production';
@@ -23,7 +23,7 @@ env.NODE_ENV = 'production';
 var production = cp.spawn('node', app, {
   cwd  : cwd,
   env  : env,
-  //stdio: 'inherit'
+  stdio: 'inherit'
 });
 
 if (production && development) {

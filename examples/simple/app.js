@@ -4,7 +4,7 @@ process.env.NODE_ENV = 'development';
 var app = require("express")();
 var server = require('http').createServer(app);
 
-var piler = require("../../index");
+var piler = require("../../lib");
 var js = piler.createJSManager({outputDirectory: __dirname + "/out"});
 var css = piler.createCSSManager({outputDirectory: __dirname + "/out"});
 
