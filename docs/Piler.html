@@ -31,6 +31,42 @@
 							<a href="Piler.html">Piler</a>
 						</li>
 						
+						<li>
+							<a href="Piler.AssetUrlParse.html">AssetUrlParse</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Cache.html">Cache</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Compilers.html">Compilers</a>
+						</li>
+						
+						<li>
+							<a href="Piler.LiveCSS.html">LiveCSS</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Logger.html">Logger</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.html">Main</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Minifiers.html">Minifiers</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Serialize.html">Serialize</a>
+						</li>
+						
+						<li>
+							<a href="Piler.utils.html">utils</a>
+						</li>
+						
 
 					</ul>
 				</li>
@@ -42,27 +78,11 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Piler.BasePile.html">BasePile</a>
+							<a href="Piler.Main.PileManager.html">PileManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.CSSManager.html">CSSManager</a>
-						</li>
-						
-						<li>
-							<a href="Piler.CSSPile.html">CSSPile</a>
-						</li>
-						
-						<li>
-							<a href="Piler.JSManager.html">JSManager</a>
-						</li>
-						
-						<li>
-							<a href="Piler.JSPile.html">JSPile</a>
-						</li>
-						
-						<li>
-							<a href="Piler.PileManager.html">PileManager</a>
+							<a href="ler.Main.BasePile.html">BasePile</a>
 						</li>
 						
 
@@ -142,29 +162,38 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
 
         <dl>
-            <dt><a href="Piler.BasePile.html">BasePile</a></dt>
+            <dt><a href="namespaces.html#Piler.AssetUrlParse"><a href="Piler.AssetUrlParse.html">AssetUrlParse</a></a></dt>
             <dd></dd>
         
-            <dt><a href="Piler.CSSManager.html">CSSManager</a></dt>
+            <dt><a href="namespaces.html#Piler.Cache"><a href="Piler.Cache.html">Cache</a></a></dt>
             <dd></dd>
         
-            <dt><a href="Piler.CSSPile.html">CSSPile</a></dt>
+            <dt><a href="namespaces.html#Piler.Compilers"><a href="Piler.Compilers.html">Compilers</a></a></dt>
             <dd></dd>
         
-            <dt><a href="Piler.JSManager.html">JSManager</a></dt>
+            <dt><a href="namespaces.html#Piler.LiveCSS"><a href="Piler.LiveCSS.html">LiveCSS</a></a></dt>
             <dd></dd>
         
-            <dt><a href="Piler.JSPile.html">JSPile</a></dt>
+            <dt><a href="namespaces.html#Piler.Logger"><a href="Piler.Logger.html">Logger</a></a></dt>
             <dd></dd>
         
-            <dt><a href="Piler.PileManager.html">PileManager</a></dt>
+            <dt><a href="namespaces.html#Piler.Main"><a href="Piler.Main.html">Main</a></a></dt>
+            <dd></dd>
+        
+            <dt><a href="namespaces.html#Piler.Minifiers"><a href="Piler.Minifiers.html">Minifiers</a></a></dt>
+            <dd></dd>
+        
+            <dt><a href="namespaces.html#Piler.Serialize"><a href="Piler.Serialize.html">Serialize</a></a></dt>
+            <dd></dd>
+        
+            <dt><a href="namespaces.html#Piler.utils"><a href="Piler.utils.html">utils</a></a></dt>
             <dd></dd>
         </dl>
-    
-
     
 
     
@@ -175,94 +204,18 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="addCompiler"><span class="type-signature">&lt;static> </span>addCompiler<span class="signature">(extension, renderFn)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addCompiler"><span class="type-signature">&lt;static> </span>addCompiler<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        <p>Add a compiler to Piler. You can override existing extensions like css or js</p>
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>extension</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The extension that you want compiling</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>renderFn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The function that will be factory for generating code</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -304,33 +257,206 @@
     
     
     
-    <h5>Throws:</h5>
     
-            
-
-    <div class="param-desc">
     
-        Error
     
-    </div>
-
+    
+</dd>
 
         
+            
+<dt>
+    <h4 class="name" id="addMinifier"><span class="type-signature">&lt;static> </span>addMinifier<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="compile"><span class="type-signature">&lt;static> </span>compile<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="loadPilerModule"><span class="type-signature">&lt;static> </span>loadPilerModule<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p><code>require</code> a Piler module, inject the classes repository to it and provide options for the module</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
     
     
     
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">piler.addCompiler(function(){
-  return {
-    render: function(filename, code, cb){
-      //do your compilation, then pass it to the callback
-      cb(null, code);
-    },
-    targetExt: &#x27;js&#x27;
-  };
-});</pre>
+    <pre class="sunlight-highlight-javascript">// piler module looks like this
+module.exports = function(Piler, options) {
+   // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
+}</pre>
 
 
     
@@ -339,460 +465,7 @@
         
             
 <dt>
-    <h4 class="name" id="addMinifier"><span class="type-signature">&lt;static> </span>addMinifier<span class="signature">(ext, factory)</span><span class="type-signature"> &rarr; {function}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Add your own minifier</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>ext</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Extension</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>factory</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Piler.html#FactoryFn">Piler.FactoryFn</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Function that returns a function</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Returns the old minify function, if any</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">function</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="createCSSManager"><span class="type-signature">&lt;static> </span>createCSSManager<span class="signature">(<span class="optional">settings</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.CSSManager.html">Piler.CSSManager</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Create a new CSS Manager for adding stylesheet files</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>settings</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Settings to pass to CSSManager</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="Piler.CSSManager.html">Piler.CSSManager</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="createJSManager"><span class="type-signature">&lt;static> </span>createJSManager<span class="signature">(<span class="optional">settings</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.JSManager.html">Piler.JSManager</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Create a new JS Manager for adding Javascript files</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>settings</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Settings to pass to JSManager</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="Piler.JSManager.html">Piler.JSManager</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="removeCompiler"><span class="type-signature">&lt;static> </span>removeCompiler<span class="signature">(extension)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="minify"><span class="type-signature">&lt;static> </span>minify<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -804,55 +477,6 @@
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>extension</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Extension to remove the compiler</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -903,71 +527,18 @@
         
             
 <dt>
-    <h4 class="name" id="removeMinifier"><span class="type-signature">&lt;static> </span>removeMinifier<span class="signature">(ext)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="removeCompiler"><span class="type-signature">&lt;static> </span>removeCompiler<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        <p>Remove a minifier</p>
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>ext</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Extension</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -1018,71 +589,18 @@
         
             
 <dt>
-    <h4 class="name" id="useCache"><span class="type-signature">&lt;static> </span>useCache<span class="signature">(cacheFn)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="removeMinifier"><span class="type-signature">&lt;static> </span>removeMinifier<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        <p>Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override the internal one.</p>
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>cacheFn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Piler.html#cacheFn">Piler.cacheFn</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Function that will be called with the current code, generated hash and the callback</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -1124,32 +642,71 @@
     
     
     
-    <h5>Throws:</h5>
     
+    
+    
+    
+</dd>
+
+        
             
+<dt>
+    <h4 class="name" id="useCache"><span class="type-signature">&lt;static> </span>useCache<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
 
-    <div class="param-desc">
     
-        Error
     
-    </div>
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
 
 
-        
-    
-    
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">piler.useCache(function(code, hash, fnCompress) {
-  if (typeof memoryCache[hash] === &#x27;undefined&#x27;) {
-    memoryCache[hash] = fnCompress();
-  }
-  return memoryCache[hash];
-});</pre>
 
+	
 
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
     
 </dd>
 
@@ -1160,318 +717,6 @@
         <h3 class="subsection-title">Type Definitions</h3>
 
         <dl>
-                
-<dt>
-    <h4 class="name" id="cacheFn"><span class="type-signature"></span>cacheFn<span class="signature">(code, hash, code)</span><span class="type-signature"> &rarr; {String}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>code</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The raw code itself</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>hash</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The current sha1 of the code</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>code</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Execute the minify routine that generates code</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-            
-                
-<dt>
-    <h4 class="name" id="codeOb">codeOb</h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>A code object</p>
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	<h5 class="subsection-title">Properties:</h5>
-
-	<dl>
-
-<table class="props table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>getId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Get the code id</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>getCode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Get the code itself</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-</dl>
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
-            
                 
 <dt>
     <h4 class="name" id="FactoryFn"><span class="type-signature"></span>FactoryFn<span class="signature">(classes)</span><span class="type-signature"> &rarr; {Object}</span></h4>
@@ -1605,138 +850,6 @@
     
 </dd>
 
-            
-                
-<dt>
-    <h4 class="name" id="PileSettings">PileSettings</h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	<h5 class="subsection-title">Properties:</h5>
-
-	<dl>
-
-<table class="props table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>cacheKeys</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>volatile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-</dl>
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
             </dl>
     
 
@@ -1756,7 +869,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a>
-		on 19 / 06 / 2014 using the <a
+		on 20 / 06 / 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

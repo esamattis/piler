@@ -23,13 +23,13 @@ Version 1.x is almost a complete rewrite from the 0.x versions. A lot changed si
 and some 'best practices' have emerged, a lot of great tools and of course, with great power, 
 comes great responsibility. 
 
-Piler 1.x aims to be completly flexible and expose as many API possible to ensure
+Piler 1.x aims to be completely flexible and expose as many API possible to ensure
 community modules can be quickly used along with Piler. By modularizing the asset management 'inner' 
-workings, we can achieve more testable and maintainable code. With the plugin interface, plugins
-can set minifiers, managers, compilers, all in one export etc.
+workings, we can achieve more testable and maintainable code. With the module interface, modules
+can set minifiers, managers, compilers, all in one export. Also, the code is well tested and 
+commented, so it's not a blackbox. 
 
-This is a big change, and it's almost completely not backward compatible. But the adaptation of 
-existing code shouldn't be a problem. 
+This is a big change, and it's almost completely not backward compatible with 0.x. 
 
 ## Awesome Asset Manager for Node.js
 

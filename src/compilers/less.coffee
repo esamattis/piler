@@ -1,7 +1,7 @@
 module.exports = (Piler) ->
   less = require "less"
 
-  render = Piler.utils.promisify less.render, less
+  render = Piler.utils.Q.promisify less.render, less
 
   Piler.addCompiler('less', ->
     render: (filename, code, options) ->

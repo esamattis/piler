@@ -1,27 +1,27 @@
 module.exports = (classes, mainExports) ->
   'use strict'
-  #
-  # Simple wrappers for JS and CSS minifiers so that they are easy to change if
-  # needed.
-  #
 
-  csso = require "csso"
+  ###*
+   * @namespace Piler.Minifiers
+  ###
 
   out = {
-    debug: debug = classes.utils.debug("piler:minify")
+    ###*
+     * Output debug messages as if it was from {@link Piler.Minifiers}
+     * @function Piler.Minifiers.debug
+    ###
+    debug: debug = classes.utils.debug("piler:minifiers")
   }
-
-  css = (code, options = {}) ->
-    if options.noCache is true
-      csso.justDoIt code
-    else
-      classes.Cache.cache(code, -> csso.justDoIt code)
-
 
   minifiers = {}
 
   ###*
+   * @function Piler.minify
+  ###
+  ###*
    * Minify code on demand
+   *
+   * @function Piler.Minifiers.minify
    * @returns {String}
   ###
   out.minify = mainExports.minify = (ext, code, options, cb) ->
@@ -33,22 +33,28 @@ module.exports = (classes, mainExports) ->
     ).nodeify(cb)
 
   ###*
+   * @function Piler.addMinifier
+  ###
+  ###*
    * Add your own minifier
    *
-   * @function Piler.addMinifier
+   * @function Piler.Minifiers.addMinifier
    * @param {String} ext Extension
-   * @param {Piler.factoryFn} factory Function that returns a function
+   * @param {Piler.FactoryFn} factoryFn Function that returns a function
    * @returns {Function} Returns the old minify function, if any
   ###
-  out.addMinifier = addMinifier = mainExports.addMinifier = (ext, factoryFn) ->
+  out.addMinifier = mainExports.addMinifier = (ext, factoryFn) ->
     oldFn = if minifiers[ext] then minifiers[ext] else ->
     minifiers[ext] = factoryFn(classes)
     oldFn
 
   ###*
+   * @function Piler.removeMinifier
+  ###
+  ###*
    * Remove a minifier
    *
-   * @function Piler.removeMinifier
+   * @function Piler.Minifiers.removeMinifier
    * @param {String} ext Extension
   ###
   out.removeMinifier = mainExports.removeMinifier = (ext) ->

@@ -3,6 +3,10 @@ module.exports = (classes, mainExports) ->
 
   socketio = null
 
+  ###*
+   * @namespace Piler.LiveCSS
+  ###
+
   out = {
     debug: debug = classes.utils.debug('piler:livecss')
   }

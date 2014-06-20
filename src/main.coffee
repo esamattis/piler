@@ -2,10 +2,14 @@ module.exports = (classes, mainExports) ->
   'use strict'
 
   ###*
-   * @namespace Piler
+   * @namespace Piler.Main
   ###
 
   out = {
+    ###*
+     * Output debug messages as if it was from {@link Piler.Main}
+     * @function Piler.Main.debug
+    ###
     debug: debug = classes.utils.debug("piler:piler")
   }
 
@@ -16,7 +20,7 @@ module.exports = (classes, mainExports) ->
 
   class BasePile
     ###*
-     * @constructor Piler.BasePile
+     * @constructor Pìler.Main.BasePile
     ###
     constructor: (@name, @options = {}) ->
       @assets = []
@@ -26,6 +30,10 @@ module.exports = (classes, mainExports) ->
       @options.urlRoot ?= '/piler/'
       @options.production ?= false
 
+    ###*
+     * @memberof Piler.Main.BasePile
+     * @function add
+    ###
     add: (config, before = false) ->
       @assets[if not before then 'push' else 'unshift'] classes.Serialize.serialize.call
         type: config.type
@@ -40,13 +48,13 @@ module.exports = (classes, mainExports) ->
      * @example
      *   Pile.addFile("/path/to/file")
      *
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function addFile
      * @instance
      * @param {String} filePath Absolute path to the file
      * @param {Boolean} [before=false] Prepend this file instead of adding to the end of the pile
      *
-     * @returns {Piler.BasePile} `this`
+     * @returns {Piler.Main.BasePile} `this`
     ###
     addFile: (filePath, before = false) ->
       filePath = classes.utils.path.normalize filePath
@@ -62,12 +70,12 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function addRaw
      * @param {*} raw
      * @param {Boolean} [before=false]
      * @instance
-     * @returns {Piler.BasePile} `this`
+     * @returns {Piler.Main.BasePile} `this`
     ###
     addRaw: (raw, before = false) ->
       @add({type: "raw", object: raw}, before)
@@ -76,12 +84,12 @@ module.exports = (classes, mainExports) ->
       (ob.object for ob in @code when ob.type is type)
 
     ###*
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function addUrl
      * @param {String} url
      * @param {Boolean} [before=false]
      * @instance
-     * @returns {Piler.BasePile} `this`
+     * @returns {Piler.Main.BasePile} `this`
     ###
     addUrl: (url, before = false) ->
       if url not in @getObjects('url')
@@ -90,7 +98,7 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function getSources
      * @instance
      * @returns {Array.<String>} Array of sources
@@ -113,10 +121,10 @@ module.exports = (classes, mainExports) ->
       return sources
 
     findAssetBy: (member, search) ->
-      (codeOb for codeOb in @assets when codeOb[member]() is search)[0]
+      (obj for obj in @assets when obj[member]() is search)[0]
 
     ###*
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function _computeHash
      * @instance
      * @private
@@ -135,7 +143,7 @@ module.exports = (classes, mainExports) ->
         code
 
     ###*
-     * @memberof Piler.BasePile
+     * @memberof Piler.Main.BasePile
      * @function pileUp
      * @param {Function} [cb]
      * @instance
@@ -168,21 +176,23 @@ module.exports = (classes, mainExports) ->
       fn.call @, ns, obj, before
 
   ###*
-   * @typedef {Object} Piler.PileSettings
+   * @typedef {Object} Piler.Main.PileSettings
    * @property {Boolean} cacheKeys
    * @property {Boolean} volatile
+   * @property {String} urlRoot
+   * @property {Object} logger
   ###
 
   class PileManager
     ###*
-     * @memberof Piler.PileManager
-     * @member {Piler.BasePile} type
+     * @memberof Piler.Main.PileManager
+     * @member {Piler.Main.BasePile} type
      * @instance
     ###
     type: null
 
     ###*
-     * @constructor Piler.PileManager
+     * @constructor Piler.Main.PileManager
     ###
     constructor: (@options) ->
       @options.urlRoot ?= "/pile/"
@@ -194,12 +204,12 @@ module.exports = (classes, mainExports) ->
       @getPile "__temp", {volatile: true}
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @instance
      * @param {String} ns
-     * @param {Piler.PileSettings} settings
+     * @param {Piler.Main.PileSettings} settings
      * @function getPile
-     * @returns {Piler.BasePile} `this`
+     * @returns {Piler.Main.BasePile} `this`
     ###
     getPile: (ns, settings = {}) ->
       pile = @piles[ns]
@@ -217,14 +227,14 @@ module.exports = (classes, mainExports) ->
      * @example
      *   PileManager.addFiles("namespace", ["/file/1","/file/2"])
      *
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      *
      * @function addFiles
      * @param {String} ns
      * @param {Array} arr
      * @param {Boolean} [before=false]
      * @instance
-     * @returns {Piler.PileManager} `this`
+     * @returns {Piler.Main.PileManager} `this`
     ###
     addFiles: defNs (ns, arr, before = false) ->
       @addFile(ns, file, before) for file in arr
@@ -232,13 +242,13 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @instance
      * @param {String} ns
      * @param {String} path
      * @param {Boolean} [before=false]
      * @function addFile
-     * @returns {Piler.PileManager} `this`
+     * @returns {Piler.Main.PileManager} `this`
     ###
     addFile: defNs (ns, path, before = false) ->
       pile = @getPile ns
@@ -246,13 +256,13 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @function addRaw
      * @param {String} ns
      * @param {String} raw
      * @param {Boolean} [before=false]
      * @instance
-     * @returns {Piler.PileManager} `this`
+     * @returns {Piler.Main.PileManager} `this`
     ###
     addRaw: defNs (ns, raw, before = false) ->
       pile = @getPile ns
@@ -260,13 +270,13 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @function addUrl
      * @param {String} ns
      * @param {String} url
      * @param {Boolean} [before=false]
      * @instance
-     * @returns {Piler.PileManager} `this`
+     * @returns {Piler.Main.PileManager} `this`
     ###
     addUrl: defNs (ns, url, before = false) ->
       pile = @getPile ns
@@ -274,7 +284,7 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @function pileUp
      * @param {Function} [cb]
      * @instance
@@ -308,7 +318,7 @@ module.exports = (classes, mainExports) ->
       ).nodeify(cb)
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @instance
      * @param {...*} [namespaces]
      * @returns {Array.<String>} Array of sources
@@ -334,7 +344,7 @@ module.exports = (classes, mainExports) ->
       sources
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @param {...*} [namespaces]
      * @instance
      * @returns {String} Rendered tags
@@ -349,12 +359,12 @@ module.exports = (classes, mainExports) ->
       tags
 
     ###*
-     * @memberof Piler.PileManager
+     * @memberof Piler.Main.PileManager
      * @function bind
      * @param {Express} app Express application
      * @param {http.Server} server HTTP server
      * @instance
-     * @returns {Piler.PileManager} `this`
+     * @returns {Piler.Main.PileManager} `this`
     ###
     bind: (app, server) ->
       if not server
@@ -431,39 +441,8 @@ module.exports = (classes, mainExports) ->
 
       @
 
-  classes.utils._.extend JSManager::, classes.LiveCSS.LiveUpdateMixin::
-
   out.production = production = process.env.NODE_ENV is "production"
 
   out.BasePile = mainExports.BasePile = BasePile
-  out.CSSPile = mainExports.CSSPile = CSSPile
-  out.JSPile = mainExports.JSPile = JSPile
-  out.JSManager = mainExports.JSManager = JSManager
-  out.CSSManager = mainExports.CSSManager = CSSManager
-
-  ###*
-   * Create a new JS Manager for adding Javascript files
-   *
-   * @param {Object} [settings] Settings to pass to JSManager
-   *
-   * @function Piler.createJSManager
-   * @returns {Piler.JSManager}
-  ###
-  out.createJSManager = mainExports.createJSManager = (settings={}) ->
-    settings.production = production
-    new JSManager settings
-
-  ###*
-   * Create a new CSS Manager for adding stylesheet files
-   *
-   * @function Piler.createCSSManager
-   *
-   * @param {Object} [settings] Settings to pass to CSSManager
-   * @returns {Piler.CSSManager}
-  ###
-  out.createCSSManager = mainExports.createCSSManager = (settings={}) ->
-    settings.production = production
-    new CSSManager settings
-
-  out
+  out.PileManager = mainExports.PileManager = PileManager
 

@@ -1,15 +1,19 @@
 module.exports = (classes, mainExports) ->
   'use strict'
 
+  ###*
+   * @namespace Piler.Serialize
+  ###
+
   crypto = require 'crypto'
   debug = classes.utils.debug("piler:serialize")
 
   ###*
    * A code object
    *
-   * @typedef {Object} Piler.codeOb
-   * @property {Function} getId Get the code id
-   * @property {Function(cb:Function)} getCode Get the code itself
+   * @typedef {Object} Piler.Serialize.CodeObject
+   * @property {Function} id Get the code id
+   * @property {Function} contents Get the contents itself
   ###
 
   pilers =
@@ -75,6 +79,10 @@ module.exports = (classes, mainExports) ->
       code += "__SET(#{ JSON.stringify nsString }, #{ codeFrom v });\n"
     code
 
+  ###*
+   * Output debug messages as if it was from {@link Piler.Serialize}
+   * @function Piler.Serialize.debug
+  ###
   debug: debug
   serialize: do ->
 
@@ -84,7 +92,7 @@ module.exports = (classes, mainExports) ->
       if @fromUrl
         # If code is on filesystem the url to the file should only change when
         # the path to it changes.
-        sum.update @object
+        sum.update @object()
       else
         # If there is no file for code code. We need to generate id from the code
         # itself.
@@ -92,8 +100,8 @@ module.exports = (classes, mainExports) ->
 
       hash = sum.digest('hex').substring 10, 0
 
-      if @adjustFilename
-        filename = classes.utils.path.basename @object
+      if @adjustFilename and (obj = @object()) and (classes.utils._.isString(obj))
+        filename = classes.utils.path.basename obj
         filename = filename.replace /\./g, "_"
         filename = filename.replace /\-/g, "_"
         hash = filename + "_" + hash
@@ -101,9 +109,15 @@ module.exports = (classes, mainExports) ->
       return hash
 
     ->
-      @getId = getId
-      @getCode = (cb) ->
-        type = @type
+      type = @type
+      obj = @object
+
+      @id = getId
+      @object = ->
+        obj
+      @type = ->
+        type
+      @contents = (cb) ->
         classes.utils.Q.try(->
           pilers[type] @
         ).nodeify(cb)
@@ -119,14 +133,20 @@ module.exports = (classes, mainExports) ->
     sha1
 
   ###*
-   * @function Piler.addSerializable
+   * Add a new kind of serializable object, that should be treated differently from
+   * the built-in ones
+   *
+   * @function Piler.Serialize.addSerializable
   ###
   addSerializable: mainExports.addSerializable = (name, factoryFn)->
     oldFn = if pilers[name] then pilers[name] else ->
     pilers[name] = factoryFn(classes)
     oldFn
 
-  # Generates code string from given object. Works for numbers, strings, regexes
-  # and even functions. Does not handle circular references.
+  ###*
+   * Generates code string from given object. Works for numbers, strings, regexes
+   * and even functions. Does not handle circular references.
+   * @function Piler.Serialize.stringify
+  ###
   stringify: codeFrom = (obj) ->
     types[typeof obj]?(obj)

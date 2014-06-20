@@ -1,8 +1,18 @@
-###
+###*
  * @namespace Piler
 ###
 
 files =
+  ###*
+   * @namespace Piler.utils
+   * @property {Object} _ Lodash
+   * @property {Object} path Node.js Path
+   * @property {Object} fs Graceful-fs
+   * @property {Object} Q Promise library
+   * @property {Function} debug Debug library
+   * @property {Array} reserved ECMAScript Reserved keywords
+   * @property {Function} extension Extract file extension
+  ###
   utils:
     _: require 'lodash'
     path: require 'path'
@@ -18,7 +28,7 @@ files =
   Minifiers: require './minifiers'
   Cache: require './cache'
   LiveCSS: require './livecss'
-  Piler: require './piler'
+  Main: require './main'
   Logger: require './logger'
   Serialize: require './serialize'
   Compilers: require './compilers'
@@ -32,14 +42,30 @@ files.utils.Q.promisifyAll files.utils.fs
 for file of files when file isnt 'utils'
   files[file] = files[file](files, module.exports)
 
+###*
+ * `require` a Piler module, inject the classes repository to it and provide options for the module
+ *
+ * @function Piler.loadPilerModule
+ * @example
+ *   // piler module looks like this
+ *   module.exports = function(Piler, options) {
+ *      // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
+ *   }
+###
+module.exports.loadPilerModule = loadPilerModule = (path, options = {}) ->
+  require("#{path}")(files, options)
+
 do ->
   # Built-in compilers
-  require("./compilers/#{compilerPath}")(files) for compilerPath in ['coffee','less','styl','js','css']
+  loadPilerModule(path) for path in ['coffee','less','styl','js','css']
+  # Built-in minifiers
+  loadPilerModule(path) for path in ['uglify','csso']
+  # Built-in managers
+  loadPilerModule(path) for path in ['js','css']
   return
 
 ###*
  * @typedef {Function} Piler.FactoryFn
- * @callback
  * @param {Object} classes All classes from Piler
  * @returns {Object} Return a configuration object
 ###

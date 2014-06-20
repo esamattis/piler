@@ -1,7 +1,32 @@
 module.exports = (Piler) ->
   'use strict'
 
+  ###*
+   * @namespace Piler.AssetUrlParse
+  ###
+
+  ###*
+   * @typedef {Object} Piler.AssetUrlParse.ParseObject
+   * @property {String} name Filename
+   * @property {String} ext Extension
+   * @property {Boolean} [min] Set to true if the parsed url is a production url
+   * @property {Object} [dev] This object is set if the detected url is a development object
+   * @property {String} dev.uid The hash of the asset
+   * @property {String} dev.type The type of the asset
+  ###
+
+  ###*
+   * Output debug messages as if it was from {@link Piler.AssetUrlParse}
+   * @function Piler.AssetUrlParse.debug
+  ###
   debug: debug = Piler.utils.debug("piler:asseturlparse")
+  ###*
+   * Parse an URL for assets information
+   *
+   * @function Piler.AssetUrlParse.parse
+   * @param {String} url Any valid URL or URI
+   * @returns {Piler.AssetUrlParse.ParseObject}
+  ###
   parse: (url) ->
     ob = {}
 
