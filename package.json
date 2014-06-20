@@ -67,7 +67,7 @@
     "supertest":"*",
     "express": "4.x",
     "expect.js": "*",
-    "zombie": ">=2.0.0-",
+    "zombie": "2.0.0-alpha31",
     "supervisor": "*",
     "jade": "*",
     "stylus": "*",

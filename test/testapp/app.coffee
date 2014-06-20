@@ -3,8 +3,8 @@ serveStatic = require "serve-static"
 app = require("express")()
 pile = require("../../lib")
 
-js = pile.createJSManager()
-css = pile.createCSSManager()
+js = pile.manager('js')
+css = pile.manager('css')
 
 app.use serveStatic __dirname + '/clientscripts'
 
@@ -14,8 +14,9 @@ app.set 'view options', {layout: 'layout'}
 
 server = http.createServer(app)
 
-js.bind app, server
-css.bind app, server
+app
+  .use(js.middleware())
+  .use(css.middleware())
 
 css.addFile __dirname + "/stylesheets/style.css"
 css.addFile "namespaced", __dirname + "/stylesheets/namespaced.css"

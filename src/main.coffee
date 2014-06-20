@@ -18,21 +18,30 @@ module.exports = (classes, mainExports) ->
     _this[name] "__temp", fn, before
     return
 
+  ###*
+   * Config object for {@link Piler.Main.BasePile}
+   * @typedef {Object} Piler.Main.PileConfig
+  ###
+  ###*
+   * Config object for {@link Piler.Main.PileManager}
+   * @typedef {Object} Piler.Main.ManagerConfig
+  ###
+
+  ###*
+   * Config object for {@link Piler.Main.BasePile#add}
+   * @typedef {Object} Piler.Main.AddConfig
+  ###
+
   class BasePile
-    ###*
-     * @constructor Pìler.Main.BasePile
-    ###
-    constructor: (@name, @options = {}) ->
-      @assets = []
-      @rawPile = null
-      @options.cacheKeys ?= true
-      @options.volatile ?= false
-      @options.urlRoot ?= '/piler/'
-      @options.production ?= false
 
     ###*
-     * @memberof Piler.Main.BasePile
-     * @function add
+     * All add* calls ends here. Add an asset and mutate extend the passed
+     * configuration with mixins from {@link Piler.Serialize.CodeObject}
+     *
+     * @function Piler.Main.BasePile#add
+     * @param {Piler.Main.AddConfig} config
+     * @param {Boolean} [before=false]
+     * @returns {Piler.Main.BasePile} `this`
     ###
     add: (config, before = false) ->
       @assets[if not before then 'push' else 'unshift'] classes.Serialize.serialize.call
@@ -43,14 +52,25 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
+     * @constructor Piler.Main.BasePile
+     * @param {String} name
+     * @param {Piler.Main.PileConfig} [options={}]
+    ###
+    constructor: (@name, @options = {}) ->
+      @assets = []
+      @rawPile = null
+      @options.cacheKeys ?= true
+      @options.volatile ?= false
+      @options.urlRoot ?= '/piler/'
+      @options.production ?= false
+
+    ###*
      * Add an array of files at once
      *
      * @example
      *   Pile.addFile("/path/to/file")
      *
-     * @memberof Piler.Main.BasePile
-     * @function addFile
-     * @instance
+     * @function Piler.Main.BasePile#addFile
      * @param {String} filePath Absolute path to the file
      * @param {Boolean} [before=false] Prepend this file instead of adding to the end of the pile
      *
@@ -70,25 +90,25 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.Main.BasePile
-     * @function addRaw
+     * @function Piler.Main.BasePile#addRaw
      * @param {*} raw
      * @param {Boolean} [before=false]
-     * @instance
      * @returns {Piler.Main.BasePile} `this`
     ###
     addRaw: (raw, before = false) ->
       @add({type: "raw", object: raw}, before)
 
+    ###*
+     * @function Piler.Main.BasePile#getObjects
+     * @returns {Array}
+    ###
     getObjects: (type) ->
-      (ob.object for ob in @code when ob.type is type)
+      (ob.object for ob in @assets when ob.type is type)
 
     ###*
-     * @memberof Piler.Main.BasePile
-     * @function addUrl
+     * @function  Piler.Main.BasePile#addUrl
      * @param {String} url
      * @param {Boolean} [before=false]
-     * @instance
      * @returns {Piler.Main.BasePile} `this`
     ###
     addUrl: (url, before = false) ->
@@ -98,9 +118,7 @@ module.exports = (classes, mainExports) ->
       @
 
     ###*
-     * @memberof Piler.Main.BasePile
-     * @function getSources
-     * @instance
+     * @function Piler.Main.BasePile#getSources
      * @returns {Array.<String>} Array of sources
     ###
     getSources: ->
@@ -120,6 +138,12 @@ module.exports = (classes, mainExports) ->
 
       return sources
 
+    ###*
+     * @function Piler.Main.BasePile#findAssetBy
+     * @param {String} member
+     * @param {*} search
+     * @returns {undefined|Piler.Serialize.CodeObject}
+    ###
     findAssetBy: (member, search) ->
       (obj for obj in @assets when obj[member]() is search)[0]
 
@@ -152,7 +176,7 @@ module.exports = (classes, mainExports) ->
     pileUp: (cb) ->
       self = @
 
-      classes.utils.Q.map(@code, (codeOb) ->
+      classes.utils.Q.map(@assets, (codeOb) ->
 
         codeOb.getCode().then (code) ->
           self.commentLine("#{ codeOb.type }: #{ codeOb.getId() }") + "\n#{ code }"
@@ -193,8 +217,9 @@ module.exports = (classes, mainExports) ->
 
     ###*
      * @constructor Piler.Main.PileManager
+     * @param {Piler.Main.ManagerConfig} [options={}]
     ###
-    constructor: (@options) ->
+    constructor: (@options = {}) ->
       @options.urlRoot ?= "/pile/"
       @options.logger ?= classes.Logger
 
@@ -204,11 +229,9 @@ module.exports = (classes, mainExports) ->
       @getPile "__temp", {volatile: true}
 
     ###*
-     * @memberof Piler.Main.PileManager
-     * @instance
+     * @function Piler.Main.PileManager#getPile
      * @param {String} ns
      * @param {Piler.Main.PileSettings} settings
-     * @function getPile
      * @returns {Piler.Main.BasePile} `this`
     ###
     getPile: (ns, settings = {}) ->
@@ -217,7 +240,7 @@ module.exports = (classes, mainExports) ->
         pile =  @piles[ns] = new @type ns, settings
       pile
 
-    add: defNs (ns, type, before) ->
+    add: (ns, type, before) ->
       pile = @getPile ns
       pile["add#{type}"]()
 
@@ -236,7 +259,7 @@ module.exports = (classes, mainExports) ->
      * @instance
      * @returns {Piler.Main.PileManager} `this`
     ###
-    addFiles: defNs (ns, arr, before = false) ->
+    addFiles:  (ns, arr, before = false) ->
       @addFile(ns, file, before) for file in arr
 
       @
@@ -250,7 +273,7 @@ module.exports = (classes, mainExports) ->
      * @function addFile
      * @returns {Piler.Main.PileManager} `this`
     ###
-    addFile: defNs (ns, path, before = false) ->
+    addFile:  (ns, path, before = false) ->
       pile = @getPile ns
       pile.addFile path, before
       @
@@ -264,7 +287,7 @@ module.exports = (classes, mainExports) ->
      * @instance
      * @returns {Piler.Main.PileManager} `this`
     ###
-    addRaw: defNs (ns, raw, before = false) ->
+    addRaw:  (ns, raw, before = false) ->
       pile = @getPile ns
       pile.addRaw raw, before
       @
@@ -278,7 +301,7 @@ module.exports = (classes, mainExports) ->
      * @instance
      * @returns {Piler.Main.PileManager} `this`
     ###
-    addUrl: defNs (ns, url, before = false) ->
+    addUrl:  (ns, url, before = false) ->
       pile = @getPile ns
       pile.addUrl url, before
       @
@@ -441,8 +464,112 @@ module.exports = (classes, mainExports) ->
 
       @
 
+  managers = {
+    PileManager: PileManager
+  }
+
+  piles = {
+    BasePile: BasePile
+  }
+
   out.production = production = process.env.NODE_ENV is "production"
 
-  out.BasePile = mainExports.BasePile = BasePile
-  out.PileManager = mainExports.PileManager = PileManager
+  out.BasePile = BasePile
+  out.PileManager = PileManager
+
+  ###*
+   * @function Piler.addManager
+  ###
+  ###*
+   * Adds a manager to Piler
+   *
+   * @function Piler.Main.addManager
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+  ###
+  out.addManager = mainExports.addManager = (name, factoryFn) ->
+    oldFn = if managers[name] then managers[name] else ->
+    managers[name] = factoryFn(classes)
+    oldFn
+
+  ###*
+   * @function Piler.removeManager
+  ###
+  ###*
+   * Removes a manager from Piler
+   *
+   * @function Piler.Main.removeManager
+   * @param {String} name Name of the manager
+  ###
+  out.removeManager = mainExports.removeManager = (name) ->
+    delete managers[name] if managers[name]
+    return
+
+  ###*
+   * @function Piler.getManager
+  ###
+  ###*
+   * Get a manager from Piler
+   *
+   * @function Piler.Main.getManager
+   * @param {String} name Name of the manager
+  ###
+  out.getManager = mainExports.getManager = (name) ->
+    managers[name]
+
+  ###*
+   * @function Piler.createManager
+  ###
+  ###*
+   * Create a new manager
+   *
+   * @function Piler.Main.createManager
+   * @param {String} name Name of the manager
+   * @param {Piler.Main.Add} name Name of the manager
+  ###
+  out.createManager = mainExports.createManager = (type, name, options = {}) ->
+    new managers[type](name, options)
+
+  ###*
+   * @function Piler.addPile
+  ###
+  ###*
+   * Adds a pile to Piler
+   *
+   * @function Piler.Main.addPile
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+  ###
+  out.addPile = mainExports.addPile = (name, factoryFn) ->
+    oldFn = if managers[name] then managers[name] else ->
+    managers[name] = factoryFn(classes)
+    oldFn
+
+  ###*
+   * @function Piler.getPile
+  ###
+  ###*
+   * Get a pile from Piler
+   *
+   * @function Piler.Main.getPile
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+  ###
+  out.getPile = mainExports.getPile = (name) ->
+    piles[name]
+
+  ###*
+   * @function Piler.removePile
+  ###
+  ###*
+   * Removes a pile from Piler
+   *
+   * @function Piler.Main.removePile
+   * @param {String} name Name of the pile
+  ###
+  out.removePile = mainExports.removePile = (name) ->
+    delete piles[name] if piles[name]
+    return
+
+  out
 

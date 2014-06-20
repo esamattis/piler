@@ -56,10 +56,9 @@ module.exports = (classes, mainExports) ->
       return @_array obj if Array.isArray obj
 
       code = "{"
-      for k, v of obj
-        code += "\"#{ k }\": #{ codeFrom(v) },"
-
-      "#{removeTrailingComma(code)} }"
+      arr = []
+      arr.push "#{ JSON.stringify k }: #{ codeFrom v }" for k, v of obj
+      arr.join(',') + code + "}"
 
     _array: (array) ->
       code = "["

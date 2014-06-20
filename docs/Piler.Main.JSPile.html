@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Awesome Asset Manager for Node.js | Piler Class: PileManager</title>
+	<title>Awesome Asset Manager for Node.js | Piler Class: JSPile</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -118,14 +118,14 @@
 					
 
 
-	<h1 class="page-title">Class: PileManager</h1>
+	<h1 class="page-title">Class: JSPile</h1>
 <section>
 
 <header>
     <h2>
         <span class="ancestors"><a href="Piler.html">Piler</a><a href="Piler.Main.html">.Main</a>.</span>
     
-    PileManager
+    JSPile
     </h2>
     
 </header>
@@ -137,7 +137,7 @@
     
         
 <dt>
-    <h4 class="name" id="PileManager"><span class="type-signature"></span>new PileManager<span class="signature">(<span class="optional">options</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="JSPile"><span class="type-signature"></span>new JSPile<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -149,75 +149,6 @@
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-		<th>Default</th>
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Piler.Main.html#ManagerConfig">Piler.Main.ManagerConfig</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -269,6 +200,12 @@
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        <ul>
+            <li><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></li>
+        </ul>
+    
 
     
 
@@ -284,7 +221,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"> :<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span></h4>
+    <h4 class="name" id="ext"><span class="type-signature"></span>ext<span class="type-signature"> :String</span></h4>
     
     
 </dt>
@@ -296,7 +233,7 @@
         <ul>
             <li>
                 
-<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+<span class="param-type">String</span>
 
 
             </li>
@@ -321,6 +258,13 @@
 
 	
 
+	
+	<dt class="tag-default">Default Value:</dt>
+	<dd class="tag-default">
+		<ul class="dummy">
+			<li>js</li>
+		</ul>
+	</dd>
 	
 
 
@@ -347,12 +291,107 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(ns, path, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="_computeHash"><span class="type-signature">&lt;private> </span>_computeHash<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
     
     
 </dt>
 <dd>
     
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#_computeHash">Piler.Main.BasePile#_computeHash</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>All add* calls ends here. Add an asset and mutate extend the passed
+configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></p>
+    </div>
     
 
     
@@ -389,13 +428,13 @@
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>config</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
 
 
             
@@ -424,13 +463,180 @@
 
         <tr>
             
-                <td class="name"><code>path</code></td>
+                <td class="name"><code>before</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#add">Piler.Main.BasePile#add</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addExec"><span class="type-signature"></span>addExec<span class="signature">(fn, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add a CommonJS module</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
 
 
             
@@ -556,7 +762,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type"><a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a></span>
 
 
 	</dd>
@@ -571,7 +777,7 @@
         
             
 <dt>
-    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(ns, arr, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(filePath, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -617,7 +823,7 @@
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>filePath</code></td>
             
 
             <td class="type">
@@ -645,42 +851,7 @@
                 </td>
             
 
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>arr</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"></td>
+            <td class="description last"><p>Absolute path to the file</p></td>
         </tr>
 
 	
@@ -719,7 +890,7 @@
                 </td>
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Prepend this file instead of adding to the end of the pile</p></td>
         </tr>
 
 	
@@ -736,6 +907,15 @@
 
 	
 
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#addFile">Piler.Main.BasePile#addFile</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -784,7 +964,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
 
 
 	</dd>
@@ -796,7 +976,7 @@
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">PileManager.addFiles(&quot;namespace&quot;, [&quot;/file/1&quot;,&quot;/file/2&quot;])</pre>
+    <pre class="sunlight-highlight-javascript">Pile.addFile(&quot;/path/to/file&quot;)</pre>
 
 
     
@@ -805,12 +985,16 @@
         
             
 <dt>
-    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(ns, raw, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addModule"><span class="type-signature"></span>addModule<span class="signature">(filePath, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>}</span></h4>
     
     
 </dt>
 <dd>
     
+    
+    <div class="description">
+        <p>Add a CommonJS module</p>
+    </div>
     
 
     
@@ -847,42 +1031,7 @@
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>raw</code></td>
+                <td class="name"><code>filePath</code></td>
             
 
             <td class="type">
@@ -1014,7 +1163,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type"><a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a></span>
 
 
 	</dd>
@@ -1029,7 +1178,200 @@
         
             
 <dt>
-    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(ns, url, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addOb"><span class="type-signature"></span>addOb<span class="signature">(ob, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add a object</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ob</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>before</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -1071,13 +1413,13 @@
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>raw</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">*</span>
 
 
             
@@ -1102,6 +1444,169 @@
             <td class="description last"></td>
         </tr>
 
+	
+
+        <tr>
+            
+                <td class="name"><code>before</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#addRaw">Piler.Main.BasePile#addRaw</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
 	
 
         <tr>
@@ -1191,319 +1696,14 @@
 	
 
 	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
-
-
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#addUrl">Piler.Main.BasePile#addUrl</a>
+			</li>
+		</ul>
 	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(app, server)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>app</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Express</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Express application</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>server</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">http.Server</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>HTTP server</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getPile"><span class="type-signature"></span>getPile<span class="signature">(ns, settings)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>ns</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>settings</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Piler.Main.html#PileSettings">Piler.Main.PileSettings</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
 	
 
 	
@@ -1553,6 +1753,440 @@
 	<dd>
 		
 <span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="commentLine"><span class="type-signature"></span>commentLine<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add line comment</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="findAssetBy"><span class="type-signature"></span>findAssetBy<span class="signature">(member, search)</span><span class="type-signature"> &rarr; {undefined|<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>member</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>search</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#findAssetBy">Piler.Main.BasePile#findAssetBy</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getObjects"><span class="type-signature"></span>getObjects<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#getObjects">Piler.Main.BasePile#getObjects</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;String>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#getSources">Piler.Main.BasePile#getSources</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Array of sources</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array.&lt;String></span>
 
 
 	</dd>
@@ -1650,6 +2284,15 @@
 
 	
 
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.BasePile.html#pileUp">Piler.Main.BasePile#pileUp</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	

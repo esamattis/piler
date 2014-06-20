@@ -7,7 +7,7 @@
     "plugins/overloadHelper"
   ],
   "opts"     : {
-    "recurse"    : false,
+    "recurse"    : true,
     "private"    : true,
     "destination": "./docs",
     "template"   : "./node_modules/ink-docstrap/template"
@@ -15,7 +15,7 @@
   "templates": {
     "cleverLinks"      : false,
     "monospaceLinks"   : false,
-    "dateFormat"       : "MMM DDD YYYY",
+    "dateFormat"       : "MMM DD YYYY",
     "outputSourceFiles": false,
     "outputSourcePath" : false,
     "systemName"       : "Awesome Asset Manager for Node.js | Piler",

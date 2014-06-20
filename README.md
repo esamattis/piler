@@ -16,7 +16,8 @@
   * Transparent preprocessor (`.coffee -> .js` without a hassle)
   * Push CSS changes to the browser using Socket.IO 1.x.x in development mode
   * Reuse server code in the browser and vice-versa
-
+  * API consistency and generic interface for all your needs
+  
 ## Whats new in 1.0.0
 
 Version 1.x is almost a complete rewrite from the 0.x versions. A lot changed since Node.js community

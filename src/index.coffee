@@ -57,11 +57,11 @@ module.exports.loadPilerModule = loadPilerModule = (path, options = {}) ->
 
 do ->
   # Built-in compilers
-  loadPilerModule(path) for path in ['coffee','less','styl','js','css']
+  loadPilerModule("./compilers/#{path}") for path in ['coffee','less','styl','js','css']
   # Built-in minifiers
-  loadPilerModule(path) for path in ['uglify','csso']
+  loadPilerModule("./minifiers/#{path}") for path in ['uglify','csso']
   # Built-in managers
-  loadPilerModule(path) for path in ['js','css']
+  loadPilerModule("./managers/#{path}") for path in ['js','css']
   return
 
 ###*

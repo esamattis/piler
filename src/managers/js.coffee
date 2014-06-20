@@ -1,18 +1,16 @@
 module.exports = (Piler) ->
 
-  class JSPile extends Piler.BasePile
+  class JSPile extends Piler.getPile('BasePile')
     ###*
-     * @member {String} ext
-     * @memberof Piler.JSPile
-     * @instance
+     * @member {String} Piler.Main.JSPile#ext
+     * @default js
     ###
     ext: "js"
 
     ###*
      * Add line comment
      *
-     * @function commentLine
-     * @memberof Piler.JSPile
+     * @function Piler.Main.JSPile#commentLine
      * @returns {String}
      * @instance
     ###
@@ -20,64 +18,64 @@ module.exports = (Piler) ->
       "// #{ line.trim() }"
 
     ###*
-     * @augments Piler.BasePile
-     * @constructor Piler.JSPile
+     * @augments Piler.Main.BasePile
+     * @constructor Piler.Main.JSPile
     ###
     constructor: ->
       super
 
     ###*
      * Add a CommonJS module
-     * @memberof Piler.JSPile
-     * @function addModule
+     *
+     * @function Piler.Main.JSPile#addModule
      * @param {String} filePath
      * @param {Boolean} [before=false]
-     * @instance
-     * @returns {Piler.JSPile} `this`
+     * @returns {Piler.Main.JSPile} `this`
     ###
     addModule: (filePath, before = false) ->
-      filePath = classes.utils.path.normalize filePath
+      filePath = Piler.utils.path.normalize filePath
       if filePath not in @getFilePaths()
         @add({type: "module", object: filePath}, before)
 
       @
 
     ###*
-     * Add a CommonJS module
-     * @memberof Piler.JSPile
+     * Add a object
+     *
+     * @function Piler.Main.JSPile#addOb
      * @param {Object} ob
      * @param {Boolean} [before=false]
-     * @instance
-     * @returns {Piler.JSPile} `this`
+     * @returns {Piler.Main.JSPile} `this`
     ###
     addOb: (ob, before = false) ->
-      @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-        type: "object"
-        object: ob
+      @add({type: "object", object: ob}, before)
       @
 
     ###*
      * Add a CommonJS module
-     * @memberof Piler.JSPile
+     *
+     * @function Piler.Main.JSPile#addExec
      * @param {Function} fn
      * @param {Boolean} [before=false]
-     * @instance
-     * @function addExec
-     * @returns {Piler.JSPile} `this`
+     * @returns {Piler.Main.JSPile} `this`
     ###
     addExec: (fn, before = false) ->
-      @code[if not before then 'push' else 'unshift'] classes.Serialize.codeObject.call
-        type: "fn"
-        object: fn
+      @add({type: "fn", object: fn}, before)
       @
 
-  class JSManager extends Piler.PileManager
+  class JSManager extends Piler.getManager('PileManager')
+    ###*
+     * @member {Piler.Main.JSPile} Piler.Main.JSManager#type
+    ###
     type: JSPile
+    ###*
+     * @member {String} Piler.Main.JSManager#contentType
+    ###
     contentType: "application/javascript"
 
     ###*
-     * @constructor Piler.JSManager
-     * @augments Piler.PileManager
+     * @constructor Piler.Main.JSManager
+     * @augments Piler.Main.PileManager
     ###
     constructor: ->
       super
@@ -102,78 +100,66 @@ module.exports = (Piler) ->
       return
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
-     * @function wrapInTag
+     * @function Piler.Main.JSManager#wrapInTag
      * @returns {String}
     ###
-    wrapInTag: (uri, extra="") ->
+    wrapInTag: (uri, extra = "") ->
       "<script type=\"text/javascript\"  src=\"#{ uri }\" #{ extra } ></script>"
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
+     * @function Piler.Main.JSManager#_isReserved
      * @private
      * @param {String} ns
-     * @function _isReserved
      * @throws Error
     ###
     _isReserved: (ns) ->
-      if classes.utils.reserved.indexOf(ns) isnt -1
+      if Piler.utils.reserved.indexOf(ns) isnt -1
         throw new Error("#{ns} is a reserved word and can't be used")
 
       return
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
+     * @function Piler.Main.JSManager#addModule
      * @param {String} ns
      * @param {String} path
      * @param {Boolean} [before=false]
-     * @function addModule
-     * @returns {Piler.JSManager} `this`
+     * @returns {Piler.Main.JSManager} `this`
     ###
-    addModule: defNs (ns, path, before = false) ->
+    addModule: (ns, path, before = false) ->
       @_isReserved(ns)
       pile = @getPile ns
       pile.addModule path, before
       @
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
+     * @function Piler.Main.JSManager#addOb
      * @param {String} ns
      * @param {String} ob
      * @param {Boolean} [before=false]
-     * @function addOb
-     * @returns {Piler.JSManager} `this`
+     * @returns {Piler.Main.JSManager} `this`
     ###
-    addOb: defNs (ns, ob, before = false) ->
+    addOb:  (ns, ob, before = false) ->
       @_isReserved(ns)
       pile = @getPile ns
       pile.addOb ob, before
       @
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
-     * @function addExec
+     * @function Piler.Main.JSManager#addExec
      * @param {String} ns
      * @param {String} fn
      * @param {Boolean} [before=false]
-     * @returns {Piler.JSManager} `this`
+     * @returns {Piler.Main.JSManager} `this`
     ###
-    addExec: defNs (ns, fn, before = false) ->
+    addExec:  (ns, fn, before = false) ->
       @_isReserved(ns)
       pile = @getPile ns
       pile.addExec fn, before
       @
 
     ###*
-     * @memberof Piler.JSManager
-     * @instance
-     * @function setMiddleware
-     * @returns {Piler.JSManager} `this`
+     * @function Piler.Main.JSManager#setMiddleware
+     * @returns {Piler.Main.JSManager} `this`
     ###
     setMiddleware: (app) ->
       debug('setting JSManager middleware')
@@ -197,3 +183,13 @@ module.exports = (Piler) ->
         return
 
       @
+
+  Piler.addManager('js', ->
+    JSManager
+  )
+
+  Piler.addPile('js', ->
+    JSPile
+  )
+
+  return

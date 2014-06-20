@@ -1,16 +1,16 @@
 module.exports = (Piler) ->
 
-  class CSSPile extends Piler.BasePile
+  class CSSPile extends Piler.getPile('BasePile')
     ###*
      * @member {String} ext
-     * @memberof Piler.CSSPile
+     * @memberof Piler.Main.CSSPile
      * @instance
     ###
     ext: "css"
 
     ###*
-     * @constructor Piler.CSSPile
-     * @augments Piler.BasePile
+     * @constructor Piler.Main.CSSPile
+     * @augments Piler.Main.BasePile
     ###
     constructor: ->
       super
@@ -18,33 +18,33 @@ module.exports = (Piler) ->
     ###*
      * Add a line comment to CSS
      *
-     * @memberof Piler.CSSPile
+     * @memberof Piler.Main.CSSPile
      * @param {String} line
      * @instance
      * @function commentLine
-     * @returns {Piler.CSSPile} `this`
+     * @returns {Piler.Main.CSSPile} `this`
     ###
     commentLine: (line) ->
       return "/* #{ line.trim() } */"
 
 
-  class CSSManager extends Piler.PileManager
+  class CSSManager extends Piler.getManager('PileManager')
     ###*
-     * @member {CSSPile} Type
-     * @memberof Piler.CSSManager
+     * @member {Piler.Main.CSSPile} Type
+     * @memberof Piler.Main.CSSManager
      * @instance
     ###
     type: CSSPile
     ###*
      * @member {String} contentType
-     * @memberof Piler.CSSManager
+     * @memberof Piler.Main.CSSManager
      * @instance
     ###
     contentType: "text/css"
 
     ###*
-     * @constructor Piler.CSSManager
-     * @augments Piler.PileManager
+     * @constructor Piler.Main.CSSManager
+     * @augments Piler.Main.PileManager
     ###
     constructor: ->
       super
@@ -57,7 +57,7 @@ module.exports = (Piler) ->
      * @instance
      * @returns {String}
     ###
-    wrapInTag: (uri, extra="") ->
+    wrapInTag: (uri, extra = "") ->
       "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra } />"
 
     ###*
@@ -83,3 +83,13 @@ module.exports = (Piler) ->
         return
 
       return
+
+  Piler.addManager('css', ->
+    CSSManager
+  )
+
+  Piler.addPile('css', ->
+    CSSPile
+  )
+
+  return

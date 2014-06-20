@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Awesome Asset Manager for Node.js | Piler Namespace: Main</title>
+	<title>Awesome Asset Manager for Node.js | Piler Class: BasePile</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -118,14 +118,14 @@
 					
 
 
-	<h1 class="page-title">Namespace: Main</h1>
+	<h1 class="page-title">Class: BasePile</h1>
 <section>
 
 <header>
     <h2>
-        <span class="ancestors"><a href="Piler.html">Piler</a>.</span>
+        <span class="ancestors"><a href="Piler.html">Piler</a><a href="Piler.Main.html">.Main</a>.</span>
     
-    Main
+    BasePile
     </h2>
     
 </header>
@@ -136,8 +136,126 @@
 
     
         
+<dt>
+    <h4 class="name" id="BasePile"><span class="type-signature"></span>new BasePile<span class="signature">(name, <span class="optional">options</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
 
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
         
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.Main.html#PileConfig">Piler.Main.PileConfig</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
 <dl class="details">
 	
 
@@ -168,8 +286,20 @@
 	
 </dl>
 
+    
+    
 
-        
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
     
     </div>
 
@@ -179,28 +309,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Piler.Main.BasePile.html">BasePile</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Piler.Main.CSSManager.html">CSSManager</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Piler.Main.CSSPile.html">CSSPile</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Piler.Main.JSManager.html">JSManager</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Piler.Main.JSPile.html">JSPile</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Piler.Main.PileManager.html">PileManager</a></dt>
-            <dd></dd>
-        </dl>
     
 
     
@@ -213,94 +321,18 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="addManager"><span class="type-signature">&lt;static> </span>addManager<span class="signature">(name, factoryFn)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_computeHash"><span class="type-signature">&lt;private> </span>_computeHash<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        <p>Adds a manager to Piler</p>
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>factoryFn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Piler.html#FactoryFn">Piler.FactoryFn</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -344,6 +376,25 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -351,7 +402,7 @@
         
             
 <dt>
-    <h4 class="name" id="addPile"><span class="type-signature">&lt;static> </span>addPile<span class="signature">(name, factoryFn)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -359,7 +410,8 @@
     
     
     <div class="description">
-        <p>Adds a pile to Piler</p>
+        <p>All add* calls ends here. Add an asset and mutate extend the passed
+configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></p>
     </div>
     
 
@@ -381,7 +433,11 @@
 		<th>Type</th>
 
 		
+		<th>Argument</th>
+		
 
+		
+		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -393,20 +449,32 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>config</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"></td>
@@ -416,20 +484,36 @@
 
         <tr>
             
-                <td class="name"><code>factoryFn</code></td>
+                <td class="name"><code>before</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="Piler.html#FactoryFn">Piler.FactoryFn</a></span>
+<span class="param-type">Boolean</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
             
 
             <td class="description last"></td>
@@ -482,6 +566,29 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -489,7 +596,7 @@
         
             
 <dt>
-    <h4 class="name" id="createManager"><span class="type-signature">&lt;static> </span>createManager<span class="signature">(name, name)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(filePath, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -497,7 +604,7 @@
     
     
     <div class="description">
-        <p>Create a new manager</p>
+        <p>Add an array of files at once</p>
     </div>
     
 
@@ -519,7 +626,11 @@
 		<th>Type</th>
 
 		
+		<th>Argument</th>
+		
 
+		
+		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -531,7 +642,7 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>filePath</code></td>
             
 
             <td class="type">
@@ -544,214 +655,61 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>Name of the manager</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Absolute path to the file</p></td>
         </tr>
 
 	
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>before</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Piler.Main.Add</span>
+<span class="param-type">Boolean</span>
 
 
             
             </td>
 
             
-
-            
-
-            <td class="description last"><p>Name of the manager</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="debug"><span class="type-signature">&lt;static> </span>debug<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Output debug messages as if it was from <a href="Piler.Main.html">Piler.Main</a></p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getManager"><span class="type-signature">&lt;static> </span>getManager<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Get a manager from Piler</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
+                <td class="attributes">
                 
-<span class="param-type">String</span>
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
 
             
-            </td>
-
+                <td class="default">
+                
+                    false
+                
+                </td>
             
 
-            
-
-            <td class="description last"><p>Name of the manager</p></td>
+            <td class="description last"><p>Prepend this file instead of adding to the end of the pile</p></td>
         </tr>
 
 	
@@ -801,23 +759,48 @@
     
     
     
+    <h5>Returns:</h5>
     
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">Pile.addFile(&quot;/path/to/file&quot;)</pre>
+
+
     
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="getPile"><span class="type-signature">&lt;static> </span>getPile<span class="signature">(name, factoryFn)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
 <dd>
     
-    
-    <div class="description">
-        <p>Get a pile from Piler</p>
-    </div>
     
 
     
@@ -838,7 +821,11 @@
 		<th>Type</th>
 
 		
+		<th>Argument</th>
+		
 
+		
+		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -850,20 +837,32 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>raw</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">*</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"></td>
@@ -873,20 +872,36 @@
 
         <tr>
             
-                <td class="name"><code>factoryFn</code></td>
+                <td class="name"><code>before</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="Piler.html#FactoryFn">Piler.FactoryFn</a></span>
+<span class="param-type">Boolean</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
             
 
             <td class="description last"></td>
@@ -939,6 +954,29 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -946,16 +984,12 @@
         
             
 <dt>
-    <h4 class="name" id="removeManager"><span class="type-signature">&lt;static> </span>removeManager<span class="signature">(name)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
 <dd>
     
-    
-    <div class="description">
-        <p>Removes a manager from Piler</p>
-    </div>
     
 
     
@@ -976,7 +1010,11 @@
 		<th>Type</th>
 
 		
+		<th>Argument</th>
+		
 
+		
+		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -988,7 +1026,7 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>url</code></td>
             
 
             <td class="type">
@@ -1001,10 +1039,61 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>Name of the manager</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>before</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
         </tr>
 
 	
@@ -1054,6 +1143,29 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -1061,16 +1173,12 @@
         
             
 <dt>
-    <h4 class="name" id="removePile"><span class="type-signature">&lt;static> </span>removePile<span class="signature">(name)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="findAssetBy"><span class="type-signature"></span>findAssetBy<span class="signature">(member, search)</span><span class="type-signature"> &rarr; {undefined|<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
 <dd>
     
-    
-    <div class="description">
-        <p>Removes a pile from Piler</p>
-    </div>
     
 
     
@@ -1103,7 +1211,7 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>member</code></td>
             
 
             <td class="type">
@@ -1119,7 +1227,30 @@
 
             
 
-            <td class="description last"><p>Name of the pile</p></td>
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>search</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
         </tr>
 
 	
@@ -1169,6 +1300,336 @@
     
     
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getObjects"><span class="type-signature"></span>getObjects<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;String>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Array of sources</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array.&lt;String></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="pileUp"><span class="type-signature"></span>pileUp<span class="signature">(<span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -1176,371 +1637,6 @@
         </dl>
     
 
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        <dl>
-                
-<dt>
-    <h4 class="name" id="AddConfig">AddConfig</h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Config object for <a href="Piler.Main.BasePile.html#add">Piler.Main.BasePile#add</a></p>
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
-            
-                
-<dt>
-    <h4 class="name" id="ManagerConfig">ManagerConfig</h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Config object for <a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></p>
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
-            
-                
-<dt>
-    <h4 class="name" id="PileConfig">PileConfig</h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Config object for <a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></p>
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
-            
-                
-<dt>
-    <h4 class="name" id="PileSettings">PileSettings</h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-	
-
-	<h5 class="subsection-title">Properties:</h5>
-
-	<dl>
-
-<table class="props table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>cacheKeys</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>volatile</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>urlRoot</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>logger</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-</dl>
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-</dd>
-
-            </dl>
     
 
     
