@@ -15,7 +15,7 @@
   "templates": {
     "cleverLinks"      : false,
     "monospaceLinks"   : false,
-    "dateFormat"       : "DD / MM / YYYY",
+    "dateFormat"       : "MMM DDD YYYY",
     "outputSourceFiles": false,
     "outputSourcePath" : false,
     "systemName"       : "Awesome Asset Manager for Node.js | Piler",
