@@ -71,14 +71,13 @@ module.exports = (classes, options) ->
 
       jsmanager.addUrl "/socket.io/socket.io.js"
 
-      jsmanager.addOb PILE:
-        incUrlSeq: incUrlSeq
+      jsmanager.addOb PILE: incUrlSeq: incUrlSeq
 
       jsmanager.addExec clientUpdater
 
       io ?= socketio.listen server
 
-      io.of "/pile"
+      namespace = io.of "/pile"
 
       logger = jsmanager.options.logger
 
@@ -89,7 +88,7 @@ module.exports = (classes, options) ->
         classes.utils.fs.watch codeOb.object(), (type) ->
           if type is 'change'
             logger.info 'updated', codeOb.object()
-            io.emit 'update', codeOb.id()
+            namespace.emit 'update', codeOb.id()
 
           return
 
@@ -98,7 +97,7 @@ module.exports = (classes, options) ->
 
         for k, pile of cssmanager.piles
           for codeOb in pile.assets
-            if codeOb.type is 'file'
+            if codeOb.type() is 'file'
               _watch pile, codeOb
 
         return

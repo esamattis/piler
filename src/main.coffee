@@ -60,7 +60,7 @@ module.exports = (classes, mainExports) ->
      *
      * @function Piler.Main.BasePile#add
      * @param {Piler.Main.AddConfig} config
-     * @returns {Piler.Main.BasePile} `this`
+     * @returns {Promise}
     ###
     add: (config) ->
       throw new Error('add expects an object as parameter') if not classes.utils._.isObject(config)
@@ -81,17 +81,16 @@ module.exports = (classes, mainExports) ->
         object: config.object
         options: config.options
 
-      object
+      classes.utils.Q.resolve(object)
 
     ###*
      * Adds a multiline that will be converted to a string later (or can be compiled to any code)
      *
      * @function Piler.Main.BasePile#addMultiline
-     * @returns {Piler.Main.BasePile}
+     * @returns {Promise}
     ###
     addMultiline: (fn, options = {}) ->
       @add({type: "multiline", object: fn, options})
-      @
 
     ###*
      * Add an array of files at once
@@ -107,11 +106,10 @@ module.exports = (classes, mainExports) ->
     ###
     addFile: (filePath, options = {}) ->
       filePath = classes.utils.path.normalize filePath
-      if filePath not in @getObjects('file')
-        options = classes.utils._.defaults(options, {noSumContent: true, filePath: true})
-        @add({type: "file", object: filePath, options})
-
-      @
+      @filterObjects('file').then (files) =>
+        if filePath not in files
+          options = classes.utils._.defaults(options, {noSumContent: true, filePath: true})
+          @add({type: "file", object: filePath, options})
 
     ###*
      * @function  Piler.Main.BasePile#addUrl
@@ -120,12 +118,10 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.Main.BasePile} `this`
     ###
     addUrl: (url, options = {}) ->
-      @getObjects('url').then (urls) ->
+      @filterObjects('url').then (urls) =>
         if url not in urls
           options = classes.utils._.defaults(options, {asIs: true})
           @add({type: 'url', object: url, options})
-
-      @
 
     ###*
      * @function Piler.Main.BasePile#addRaw
@@ -135,14 +131,13 @@ module.exports = (classes, mainExports) ->
     ###
     addRaw: (raw, options = {}) ->
       @add({type: "raw", object: raw, options})
-      @
 
     ###*
-     * @function Piler.Main.BasePile#getObjects
+     * @function Piler.Main.BasePile#filterObjects
      *
-     * @returns {Promise} The result of the promise will be an array of the desired
+     * @returns {Promise} The result of the promise will be an array
     ###
-    getObjects: (filter, member = 'object') ->
+    filterObjects: (filter, member = 'object') ->
       if filter
         classes.utils.Q.all (ob[member]() for ob in @assets when ob.type() is filter)
       else
@@ -157,6 +152,7 @@ module.exports = (classes, mainExports) ->
     clear: ->
       @assets.length = 0
       @rawPile = null
+      @pileHash = ''
       @
 
     ###*
@@ -175,19 +171,36 @@ module.exports = (classes, mainExports) ->
           devCacheKey = "?v=#{Date.now()}"
 
         for ob in @assets when ob.options.asIs is false
-          sources.push ["#{ @options.urlRoot }dev/#{ @name }.#{ ob.type() }-#{ ob.id() }.#{ @ext }#{devCacheKey}", "id=\"pile-#{ ob.id() }\""]
+          sources.push ["#{ @options.urlRoot }dev/#{ @name }.#{ ob.type() }-#{ ob.id() }.#{ @ext }#{devCacheKey}", {id: "pile-#{ ob.id() }"}]
 
-      return sources
+      sources
 
     ###*
      * @function Piler.Main.BasePile#findAssetBy
      * @param {String} member
      * @param {*} search
-     * @returns {Promise}
+     * @returns {Promise} Array of values or single value
     ###
-    findAssetBy: (member, search) ->
-      @getObjects(member).filter () ->
-        (obj for obj in @assets when obj[member]() is search)[0]
+    findAssetBy: (member, search, one = true) ->
+      reduced = classes.utils.Q.reduce(
+        (asset for asset in @assets)
+        (total, asset) ->
+          classes.utils.Q.try(->
+            asset[member]()
+          ).then((value)->
+            if value is search
+              total.push asset
+          ).then(->
+            total
+          )
+        []
+      )
+
+      if one
+        reduced.then (values) ->
+          values[0]
+      else
+        reduced
 
     ###*
      * @function Piler.Main.BasePile#_computeHash
@@ -221,6 +234,8 @@ module.exports = (classes, mainExports) ->
       self = @
 
       classes.utils.Q.map(@assets, (codeOb) ->
+
+        debug('Piling up', codeOb)
 
         codeOb.contents().then (code) ->
           self.commentLine("#{ codeOb.type() }: #{ codeOb.id() }") + "\n#{ code }"
@@ -311,7 +326,11 @@ module.exports = (classes, mainExports) ->
     ###*
      * Low level function that actually adds stuff to the pile, deals with
      * normalizing arguments
-     *
+     * @function Piler.Main.PileManager#add
+     * @param {String} type BasePile method name
+     * @param {*} data Any type of data that should be piled
+     * @param {Piler.Main.AddConfig} [options={}]
+     * @returns {Promise}
     ###
     add: (type, data, options = {}) ->
       @_defaultArguments(options)
@@ -331,13 +350,12 @@ module.exports = (classes, mainExports) ->
      *
      * @param {Array} arr
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addFiles:  (arr, options) ->
       arr = classes.utils.ensureArray([], arr)
 
-      @addFile(file, options) for file in arr
-      @
+      classes.utils.Q.all (@addFile(file, options) for file in arr)
 
     ###*
      * Add a directory
@@ -349,54 +367,49 @@ module.exports = (classes, mainExports) ->
      *
      * @param {String|Array} paths You can give a glob string or an array of glob strings
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addDir:  (arr, options) ->
       arr = classes.utils.ensureArray(arr)
 
-      @addFile(file, options) for file in arr
-      @
+      classes.utils.Q.all (@addFile(file, options) for file in arr)
 
     ###*
      * @function Piler.Main.PileManager#addFile
      * @param {String} path
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addFile: (path, options) ->
       @add("addFile", path, options)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addMultiline
      * @param {Function} path
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addMultiline: (fn, options) ->
       @add("addMultiline", fn, options)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addRaw
      * @param {String} raw
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addRaw: (raw, options) ->
       @add('addRaw', raw, options)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addUrl
      *
      * @param {String} url
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @returns {Promise}
     ###
     addUrl: (url, options) ->
       @add('addUrl', url, options)
-      @
 
     ###*
      * @function Piler.Main.PileManager#pileUp
@@ -456,6 +469,17 @@ module.exports = (classes, mainExports) ->
 
       sources
 
+    _objectToAttr: (obj)->
+      if classes.utils._.isArray(obj)
+        obj.join(' ')
+      else
+        code = []
+
+        for k of obj
+          code.push "#{k}=#{classes.Serialize.stringify obj[k]}"
+
+        code.join(' ')
+
     wrapInTag: (data) ->
       "#{data}"
 
@@ -466,8 +490,8 @@ module.exports = (classes, mainExports) ->
     ###
     render: (namespaces...) ->
 
-      classes.utils.Q.reduce(@getSources namespaces..., (tags, source) =>
-          tags += "#{@wrapInTag(source[0], source[1])}\n"
+      classes.utils.Q.reduce(@getSources(namespaces...), (tags, source) =>
+          tags += "#{@wrapInTag(source[0], @_objectToAttr(source[1]))}\n"
       , "")
 
     ###*
@@ -478,7 +502,7 @@ module.exports = (classes, mainExports) ->
     ###
     _render: (response) ->
       (name, locals, callback) ->
-        if not classes.utils.isObject locals
+        if not classes.utils._.isObject locals
           _locals = {}
         else
           _locals = locals
@@ -496,6 +520,26 @@ module.exports = (classes, mainExports) ->
     locals: (response) ->
       classes.utils.objectPath.ensureExists(response, 'piler', {render: @_render(response)})
       @
+
+    ###*
+     * Stream the contents of the piles in this manager
+     * @function Piler.Main.PileManager#stream
+     * @returns {Stream}
+    ###
+    stream: (namespaces...) ->
+      stream = classes.utils.through()
+      promises = (@piles[namespace].pileUp() for namespace in namespaces when @piles[namespace])
+      if promises.length
+        classes.utils.Q.each(promises,
+          (value) ->
+            stream.write(value)
+        ).done(->
+          stream.end()
+          return
+        )
+      else
+        stream.end()
+      stream
 
     ###*
      * Find an asset from a namespace
@@ -522,13 +566,18 @@ module.exports = (classes, mainExports) ->
       self = @
 
       (req, res, next) ->
+        return next() if not req
+
         self.locals(res)
 
         if not classes.utils._.startsWith req.url, self.options.urlRoot
           return next()
 
-        res.setHeader "Content-type", self.contentType
         asset = classes.AssetUrlParse.parse req.url
+
+        if not asset
+          debug('not an asset, skipping', req.url)
+          return next()
 
         debug('request url', req.url, 'asset', asset)
 
@@ -544,6 +593,8 @@ module.exports = (classes, mainExports) ->
           res.send "Cannot find pile #{ asset.name }", 404
           return
 
+        res.setHeader "Content-type", self.contentType
+
         if asset.min
           if pile.options.volatile is true
             debug('prod code volatile object', asset.name, asset.ext)
@@ -557,11 +608,12 @@ module.exports = (classes, mainExports) ->
             )
 
           else
-            res.set(
-              'Cache-Control': 'max-age=31556900'
-            )
-            res.send pile.rawPile
-            res.end()
+            pile.pileUp().then (code) ->
+              res.set(
+                'Cache-Control': 'max-age=31556900'
+              )
+              res.send code
+              res.end()
 
           return
 
@@ -608,7 +660,7 @@ module.exports = (classes, mainExports) ->
    * @param {Piler.FactoryFn} factoryFn
   ###
   out.addManager = mainExports.addManager = (name, factoryFn) ->
-    oldFn = if managers[name] then managers[name] else nul
+    oldFn = if managers[name] then managers[name] else null
     debug("Added manager '#{name}'")
     managers[name] = factoryFn(classes)
     oldFn
@@ -654,6 +706,9 @@ module.exports = (classes, mainExports) ->
     if classes.utils._.isObject(name)
       options = name
       name = null
+
+    if not name
+      name = type
 
     new managers[type](name, options)
 

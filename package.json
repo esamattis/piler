@@ -61,6 +61,7 @@
     "uglify-js": "2.x.x",
     "csso": "1.x.x",
     "debug": "*",
+    "through": "*",
     "reserved": "*",
     "bluebird":"2.x",
     "object-path": "0.x",

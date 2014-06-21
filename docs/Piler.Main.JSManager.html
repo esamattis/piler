@@ -543,7 +543,335 @@
         
             
 <dt>
-    <h4 class="name" id="addDir"><span class="type-signature"></span>addDir<span class="signature">(paths, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="_render"><span class="type-signature">&lt;protected> </span>_render<span class="signature">()</span><span class="type-signature"> &rarr; {function}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add our version of render, we need to support promise locals</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.PileManager.html#_render">Piler.Main.PileManager#_render</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">function</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(type, data, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Low level function that actually adds stuff to the pile, deals with
+normalizing arguments</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>BasePile method name</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Any type of data that should be piled</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.PileManager.html#add">Piler.Main.PileManager#add</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addDir"><span class="type-signature"></span>addDir<span class="signature">(paths, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -721,10 +1049,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -733,7 +1057,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -754,7 +1078,7 @@
         
             
 <dt>
-    <h4 class="name" id="addExec"><span class="type-signature"></span>addExec<span class="signature">(fn, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>}</span></h4>
+    <h4 class="name" id="addExec"><span class="type-signature"></span>addExec<span class="signature">(fn, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -904,10 +1228,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -916,7 +1236,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -931,7 +1251,7 @@
         
             
 <dt>
-    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1102,10 +1422,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -1114,7 +1430,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1129,7 +1445,7 @@
         
             
 <dt>
-    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1304,10 +1620,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -1316,7 +1628,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1337,7 +1649,7 @@
         
             
 <dt>
-    <h4 class="name" id="addModule"><span class="type-signature"></span>addModule<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>}</span></h4>
+    <h4 class="name" id="addModule"><span class="type-signature"></span>addModule<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1487,10 +1799,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -1499,7 +1807,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1514,7 +1822,7 @@
         
             
 <dt>
-    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1685,10 +1993,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -1697,7 +2001,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1712,7 +2016,7 @@
         
             
 <dt>
-    <h4 class="name" id="addOb"><span class="type-signature"></span>addOb<span class="signature">(ob, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>}</span></h4>
+    <h4 class="name" id="addOb"><span class="type-signature"></span>addOb<span class="signature">(ob, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1862,10 +2166,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -1874,7 +2174,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1889,7 +2189,7 @@
         
             
 <dt>
-    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -2060,10 +2360,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -2072,7 +2368,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -2087,7 +2383,7 @@
         
             
 <dt>
-    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -2258,10 +2554,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -2270,7 +2562,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -3231,7 +3523,7 @@
         
             
 <dt>
-    <h4 class="name" id="renderTags"><span class="type-signature"></span>renderTags<span class="signature">(<span class="optional">namespaces</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">(<span class="optional">namespaces</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -3321,7 +3613,7 @@
 	<dd class="inherited-from">
 		<ul class="dummy">
 			<li>
-				<a href="Piler.Main.PileManager.html#renderTags">Piler.Main.PileManager#renderTags</a>
+				<a href="Piler.Main.PileManager.html#render">Piler.Main.PileManager#render</a>
 			</li>
 		</ul>
 	</dd>
@@ -3362,7 +3654,7 @@
     
             
 <div class="param-desc">
-    <p>Rendered tags</p>
+    <p>Returns the rendered tags</p>
 </div>
 
 
@@ -3373,7 +3665,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">String</span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -3388,7 +3680,7 @@
         
             
 <dt>
-    <h4 class="name" id="setMiddleware"><span class="type-signature"></span>setMiddleware<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>}</span></h4>
+    <h4 class="name" id="setMiddleware"><span class="type-signature"></span>setMiddleware<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -3446,10 +3738,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -3458,7 +3746,101 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a></span>
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stream"><span class="type-signature"></span>stream<span class="signature">()</span><span class="type-signature"> &rarr; {Stream}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Stream the contents of the piles in this manager</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+	<dt class="inherited-from">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="Piler.Main.PileManager.html#stream">Piler.Main.PileManager#stream</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Stream</span>
 
 
 	</dd>

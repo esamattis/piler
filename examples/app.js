@@ -80,33 +80,40 @@ js.addMultiline(function(){/*
   console.log 'Awesomesauce,
       multiline string in
     livescript'
-*/}, {options: {compilers: ['livescript']}});
+*/}, {compilers: ['livescript']});
 
 // Same as above, ask Piler to treat it as coffeescript
 js.addMultiline(function(){/*
   console.log """
     Awesomesauce, template string coffescript
   """
-*/}, {options: {compilers: ['coffeescript']}});
+*/}, {compilers: ['coffeescript']});
 
 // Urls are passed to the browser as-is, wrapped in their respective tags
 // in this case,
 // <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js" type="text/javascript" defer="defer"></script>
-js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js", {tag: {'defer':'defer'}});
+js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js", {attrs: {'defer':'defer'}});
 
 // Add some files
-js.addFile(__dirname + "/client/underscore.js");
-js.addFile(__dirname + "/client/backbone.js", {before: true});
+js.addFile(__dirname + "/client/backbone.js");
 js.addFile(__dirname + "/client/hello.js");
 js.addFile(__dirname + "/client/hello.coffee");
 js.addFile(__dirname + "/client/hello.ls");
 js.addFile(__dirname + "/client/foo.coffee", {namespace: 'foo'});
 js.addFile(__dirname + "/client/bar.coffee", {namespace: 'bar'});
 js.addFile(__dirname + "/share.js");
+js.addFile(__dirname + "/client/underscore.js",{before: true}); // goes before all of those
 
 // You can optionally add a directory, the only drawback
 // is that you can't set per file options
 // js.addDir(__dirname + "/client/*.js");
+
+html.addMultiline(function(){/*
+<div>
+  <h3>Inline HTML ftw</h3>
+</div>
+<!-- Im hidden -->
+*/});
 
 app.get('/', function (req, res){
 

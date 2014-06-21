@@ -30,14 +30,14 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addModule
      * @param {String} filePath
      * @param {Object} [options={}]
-     * @returns {Piler.Main.JSPile} `this`
+     * @returns {Promise}
     ###
     addModule: (filePath, options = {}) ->
       filePath = Piler.utils.path.normalize filePath
-      if filePath not in @getObjects('file')
-        @add({type: "module", object: filePath, options: options})
 
-      @
+      @filterObjects('file').then (files) =>
+        if filePath not in files
+          @add({type: "module", object: filePath, options})
 
     ###*
      * Add a object
@@ -45,11 +45,10 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addOb
      * @param {Object} ob
      * @param {Boolean} [options={}]
-     * @returns {Piler.Main.JSPile} `this`
+     * @returns {Promise}
     ###
     addOb: (ob, options = {}) ->
-      @add({type: "obj", object: ob, options: options})
-      @
+      @add({type: "obj", object: ob, options})
 
     ###*
      * Add a CommonJS module
@@ -57,11 +56,10 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addExec
      * @param {Function} fn
      * @param {Boolean} [options={}]
-     * @returns {Piler.Main.JSPile} `this`
+     * @returns {Promise}
     ###
     addExec: (fn, options = {}) ->
-      @add({type: "fn", object: fn, options: options})
-      @
+      @add({type: "fn", object: fn, options})
 
   class JSManager extends Piler.getManager('PileManager')
     ###*
@@ -126,38 +124,35 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSManager#addModule
      * @param {String} path
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager} `this`
+     * @returns {Promise}
     ###
     addModule: (path, options) ->
       @_isReserved(options)
       @add('addModule', path, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#addOb
      * @param {String} ob
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager} `this`
+     * @returns {Promise}
     ###
     addOb: (ob, options) ->
       @_isReserved(options)
       @add('addOb', ob, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#addExec
      * @param {String} fn
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager} `this`
+     * @returns {Promise}
     ###
     addExec: (fn, options) ->
       @_isReserved(options)
       @add('addExec', fn, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#setMiddleware
-     * @returns {Piler.Main.JSManager} `this`
+     * @returns {Promise}
     ###
     locals: (response) ->
       super(response)
@@ -194,7 +189,7 @@ module.exports = (Piler) ->
     toGlobals = (globals) ->
       code = []
       for nsString, v of globals
-        code.push "piler.set(window, #{ JSON.stringify nsString }, #{ Piler.Serialize.stringify v });"
+        code.push "piler.set(#{ JSON.stringify nsString }, #{ Piler.Serialize.stringify v });"
       code.join('\n')
 
     (ob) ->

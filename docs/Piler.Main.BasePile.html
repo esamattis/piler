@@ -410,7 +410,7 @@
         
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -522,10 +522,6 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -534,7 +530,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -748,7 +744,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
         
             
 <dt>
-    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -807,6 +803,25 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
     
     
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
     
     
 </dd>
@@ -1277,7 +1292,92 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
         
             
 <dt>
-    <h4 class="name" id="findAssetBy"><span class="type-signature"></span>findAssetBy<span class="signature">(member, search)</span><span class="type-signature"> &rarr; {undefined|<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="filterObjects"><span class="type-signature"></span>filterObjects<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The result of the promise will be an array</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="findAssetBy"><span class="type-signature"></span>findAssetBy<span class="signature">(member, search)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1407,6 +1507,10 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Array of values or single value</p>
+</div>
+
 
 
 <dl>
@@ -1415,10 +1519,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
 	</dt>
 	<dd>
 		
-<span class="param-type">undefined</span>
-|
-
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1433,88 +1534,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
         
             
 <dt>
-    <h4 class="name" id="getObjects"><span class="type-signature"></span>getObjects<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Array</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;String>}</span></h4>
+    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1573,7 +1593,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
     
             
 <div class="param-desc">
-    <p>Array of sources</p>
+    <p>Return an array of strings</p>
 </div>
 
 
@@ -1584,7 +1604,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>P
 	</dt>
 	<dd>
 		
-<span class="param-type">Array.&lt;String></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>

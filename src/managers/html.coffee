@@ -53,12 +53,9 @@ module.exports = (Piler) ->
       Piler.Main.debug('setting HTMLManager locals')
 
       response.piler.html =
-        addExec: @bindToPile('addExec')
+        addMultiline: @bindToPile('addMultiline')
         addRaw: @bindToPile('addRaw')
-        addOb: @bindToPile('addOb')
-        addModule: @bindToPile('addModule')
         addFile: @bindToPile('addFile')
-        addUrl: @bindToPile('addUrl')
 
       @
 

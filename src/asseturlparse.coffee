@@ -28,16 +28,21 @@ module.exports = (Piler) ->
    * @returns {Piler.AssetUrlParse.ParseObject}
   ###
   parse: (url) ->
+    return if not url
+
     ob = {}
 
     # remove qs
     url = Piler.utils._.first url.split "?"
     [__..., mode, filename] = url.split "/"
 
+    return if not mode or not filename
+
     debug('asset', url, mode, filename)
 
     if mode is "dev"
       [__..., name, devopt, ext] = filename.split "."
+      return if not name or not devopt or not ext
       [type, uid] = devopt.split "-"
       debug('parsing in dev mode', url, type, uid)
       ob.dev =
@@ -45,6 +50,7 @@ module.exports = (Piler) ->
          type: type
     else
       [__..., name, ext] = filename.split "."
+      return if not name or not ext
       debug('parsing in prod mode', url, name, ext)
       ob.min = true
 

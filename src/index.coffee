@@ -7,6 +7,7 @@ files =
    * @namespace Piler.utils
    * @property {Object} _ Lodash
    * @property {Object} path Node.js Path
+   * @property {Object} through {@link http://npmjs.org/package/through through} library
    * @property {Object} fs {@link http://npmjs.org/package/graceful-fs Graceful-fs}
    * @property {Object} Q {@link http://npmjs.org/package/bluebird Bluebird} promise library
    * @property {Object} objectPath {@link http://npmjs.org/package/object-path objectPath} library
@@ -19,6 +20,7 @@ files =
   ###
   utils:
     _: require 'lodash'
+    through: require 'through'
     path: require 'path'
     fs: require 'graceful-fs'
     Q: require 'bluebird'
@@ -63,6 +65,22 @@ for file of files when file isnt 'utils'
 ###
 module.exports.require = pilerRequire = (path, options = {}) ->
   require("#{path}")(files, options)
+
+###*
+ * Render all managers as a single chunk of data
+ *
+ * @param {...Piler.Main.PileManager} managers
+ * @function Piler.all
+ * @returns {String}
+###
+module.exports.all = (managers...) ->
+  files.utils.Q.reduce(
+    managers...,
+    (out, manager) ->
+      manager.render().then (rendered) ->
+        out += rendered
+    ""
+  )
 
 ###*
  * Use a function to add functionality to Piler. All this does is to inject Piler classes and options

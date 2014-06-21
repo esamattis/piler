@@ -33,7 +33,7 @@ module.exports = (classes, mainExports) ->
       ob.object()
 
     multiline: (ob)->
-      ob.object()
+      classes.utils.multiline ob.object()
 
     file: (ob) ->
       classes.utils.fs.readFileAsync(ob.object())
@@ -53,16 +53,14 @@ module.exports = (classes, mainExports) ->
       # typeof reports array as object
       return @_array obj if Array.isArray obj
 
-      code = "{"
       arr = []
       arr.push "#{ JSON.stringify k }: #{ codeFrom v }" for k, v of obj
-      arr.join(',') + code + "}"
+      "{" + arr.join(',') + "}"
 
     _array: (array) ->
-      code = "["
       arr = []
       arr.push "#{ codeFrom v }" for v in array
-      arr.join(', ') + code + "]"
+      "[" + arr.join(', ') + "]"
 
   ###*
    * Output debug messages as if it was from {@link Piler.Serialize}
@@ -81,7 +79,7 @@ module.exports = (classes, mainExports) ->
       else
         # If there is no file for code code. We need to generate id from the code
         # itself.
-        sum.update codeFrom @
+        sum.update codeFrom [@object(), @options, @type()]
 
       hash = sum.digest('hex').substring 10, 0
 
@@ -100,10 +98,8 @@ module.exports = (classes, mainExports) ->
 
       @id = getId
 
-      @object = (cb) ->
-        classes.utils.Q.try(->
-          obj
-        ).nodeify(cb)
+      @object = ->
+        obj
 
       @type = ->
         type
@@ -142,6 +138,7 @@ module.exports = (classes, mainExports) ->
   ###
   addSerializable: mainExports.addSerializable = (name, factoryFn)->
     oldFn = if pilers[name] then pilers[name] else ->
+    debug('Added', name)
     pilers[name] = factoryFn(classes)
     oldFn
 
