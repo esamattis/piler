@@ -58,7 +58,7 @@ module.exports = (Piler) ->
      * @returns {String}
     ###
     wrapInTag: (uri, extra = "") ->
-      "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra } />"
+      "<link rel=\"stylesheet\" href=\"#{ uri }\"#{ extra }/>"
 
     ###*
      * @function Piler.Main.CSSManager#locals

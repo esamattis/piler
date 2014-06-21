@@ -15,7 +15,7 @@ module.exports = (Piler) ->
      * @instance
     ###
     commentLine: (line) ->
-      "// #{ line.trim() }"
+      "/* #{ line.trim() } */"
 
     ###*
      * @augments Piler.Main.BasePile
@@ -106,7 +106,7 @@ module.exports = (Piler) ->
      * @returns {String}
     ###
     wrapInTag: (uri, extra = "") ->
-      "<script type=\"text/javascript\"  src=\"#{ uri }\" #{ extra } ></script>"
+      "<script type=\"text/javascript\"  src=\"#{ uri }\"#{ extra }></script>"
 
     ###*
      * @function Piler.Main.JSManager#_isReserved

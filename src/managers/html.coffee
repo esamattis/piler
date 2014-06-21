@@ -59,6 +59,14 @@ module.exports = (Piler) ->
 
       @
 
+    render: (namespaces...) ->
+      @_prepareNamespaces(namespaces)
+
+      Piler.utils.Q.reduce((pile for id,pile of @piles when id in namespaces), (tags, source) =>
+          source.pileUp().then (code) ->
+            tags += "#{code}\n"
+      , "")
+
     middleware: ->
       super
 

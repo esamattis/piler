@@ -65,6 +65,8 @@ module.exports = (classes, options) ->
         throw new Error 'LiveCSS must be bind to a http server (Express app)
           before it can live update CSS'
 
+      logger = jsmanager.options.logger
+
       if jsmanager.options.production
         logger.info 'Not activating live update in production'
         return
@@ -78,8 +80,6 @@ module.exports = (classes, options) ->
       io ?= socketio.listen server
 
       namespace = io.of "/pile"
-
-      logger = jsmanager.options.logger
 
       _watch = (pile, codeOb) ->
 

@@ -215,13 +215,15 @@ module.exports = (classes, mainExports) ->
      * Perform a compilation on the given object
     ###
     compile: (code) ->
+      return code
       classes.Compilers.compile(classes.utils.extension(ob.object()), ob.object(), code.toString())
 
     minify: (code, options = {}) ->
+      return code
       return code if not @ext
 
       if @options.production
-        classes.Minify.minify @ext, code, classes.utils._.merge({noCache: @options.volatile}, options)
+        classes.Minifiers.minify @ext, code, classes.utils._.merge({noCache: @options.volatile}, options)
       else
         code
 
@@ -235,10 +237,8 @@ module.exports = (classes, mainExports) ->
 
       classes.utils.Q.map(@assets, (codeOb) ->
 
-        debug('Piling up', codeOb)
-
         codeOb.contents().then (code) ->
-          self.commentLine("#{ codeOb.type() }: #{ codeOb.id() }") + "\n#{ code }"
+          "#{self.commentLine("#{ self.name }.#{ codeOb.type() }-#{ codeOb.id() }.#{self.ext}")}\n#{ code }"
 
       ).then(
         (result) ->
@@ -310,7 +310,7 @@ module.exports = (classes, mainExports) ->
     getPile: (ns, settings = {}) ->
       pile = @piles[ns]
       if not pile
-        return @piles[ns] = new @type ns, settings
+        return @piles[ns] = new @type ns, classes.utils._.merge({}, @options, settings)
       pile
 
     ###*
@@ -338,7 +338,11 @@ module.exports = (classes, mainExports) ->
       debug('Adding:', type, data, options)
 
       pile = @getPile options.namespace
-      pile["#{type}"](data, options)
+      pile["#{type}"](data, options).then((value) =>
+        pile.pileUp().then(->
+          value
+        )
+      )
 
     ###*
      * Add an array of files at once
@@ -423,7 +427,7 @@ module.exports = (classes, mainExports) ->
 
       options.logger.notice "Generating assets for '#{ @type::ext }'"
 
-      classes.utils.Q.map(Object.keys(piles), (name) ->
+      classes.utils.Q.each(Object.keys(piles), (name) ->
         pile = piles[name]
 
         pile.pileUp().then(
@@ -444,12 +448,7 @@ module.exports = (classes, mainExports) ->
         )
       ).nodeify(cb)
 
-    ###*
-     * @function Piler.Main.PileManager#getSources
-     * @param {...*} [namespaces]
-     * @returns {Promise}
-    ###
-    getSources: classes.utils.Q.method (namespaces...) ->
+    _prepareNamespaces: (namespaces) ->
       if typeof classes.utils._.last(namespaces) is "object"
         opts = namespaces.pop()
       else
@@ -460,6 +459,16 @@ module.exports = (classes, mainExports) ->
 
       if not opts.disableTemp
         namespaces.push "__temp"
+
+      namespaces
+
+    ###*
+     * @function Piler.Main.PileManager#getSources
+     * @param {...*} [namespaces]
+     * @returns {Promise}
+    ###
+    getSources: (namespaces...) ->
+      @_prepareNamespaces(namespaces)
 
       sources = []
 
@@ -472,13 +481,15 @@ module.exports = (classes, mainExports) ->
     _objectToAttr: (obj)->
       if classes.utils._.isArray(obj)
         obj.join(' ')
-      else
+      else if obj
         code = []
 
         for k of obj
           code.push "#{k}=#{classes.Serialize.stringify obj[k]}"
 
         code.join(' ')
+      else
+        ''
 
     wrapInTag: (data) ->
       "#{data}"
@@ -585,6 +596,8 @@ module.exports = (classes, mainExports) ->
         if asset.ext isnt self.type::ext
           return next()
 
+        res.setHeader "Content-Type", self.contentType
+
         pile = self.piles[asset.name]
 
         if not pile
@@ -593,27 +606,19 @@ module.exports = (classes, mainExports) ->
           res.send "Cannot find pile #{ asset.name }", 404
           return
 
-        res.setHeader "Content-type", self.contentType
-
         if asset.min
           if pile.options.volatile is true
             debug('prod code volatile object', asset.name, asset.ext)
 
-            pile.pileUp().then(
-              (code) ->
-                res.send code
-                pile.clear()
-                res.end()
-                return
-            )
+            pile.pileUp().then (code) ->
+              res.send code
+              pile.clear()
+              res.end()
 
           else
-            pile.pileUp().then (code) ->
-              res.set(
-                'Cache-Control': 'max-age=31556900'
-              )
-              res.send code
-              res.end()
+            res.setHeader('Cache-Control', 'max-age=31556900')
+            res.send pile.rawPile
+            res.end()
 
           return
 
@@ -709,6 +714,8 @@ module.exports = (classes, mainExports) ->
 
     if not name
       name = type
+
+    classes.utils.objectPath.ensureExists(options, 'production', production)
 
     new managers[type](name, options)
 
