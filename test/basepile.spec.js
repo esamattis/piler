@@ -2,7 +2,7 @@
 
 var _fn, _i, _len, piles;
 
-piles = [Piler.JSPile, Piler.CSSPile];
+piles = [Piler.getPile('js'), Piler.getPile('css')];
 
 _fn = function (Pile){
 
@@ -57,16 +57,5 @@ describe('basepile', function(){
   for (_i = 0, _len = piles.length; _i < _len; _i++) {
     _fn(piles[_i]);
   }
-
-  describe('Exceptions', function(){
-
-    it('throws on reserved word', function(){
-      var manager = Piler.createJSManager();
-
-      expect(function(){
-        manager.addOb('Array', '');
-      }).to.throwException(/reserved/);
-    });
-  });
 
 });

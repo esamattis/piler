@@ -13,7 +13,7 @@
     "template"   : "./node_modules/ink-docstrap/template"
   },
   "templates": {
-    "cleverLinks"      : false,
+    "cleverLinks"      : true,
     "monospaceLinks"   : false,
     "dateFormat"       : "MMM DD YYYY",
     "outputSourceFiles": false,

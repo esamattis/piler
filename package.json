@@ -5,7 +5,7 @@
   "license": "MIT",
   "maintainers": [
     "Alexander Pirsig <self@pirsig.net>",
-    "Paulo Cesar <email@pocesar.e4ward.com>"
+    "Paulo Cesar <email@pocesar.e4ward.com> (https://github.com/pocesar)"
   ],
   "homepage": "http://epeli.github.io/piler/",
   "description": "Awesome Asset Manager for Node.js",
@@ -13,7 +13,8 @@
     "url": "https://github.com/epeli/piler/issues/"
   },
   "contributors": [
-    "Francois-Guillaume Ribreau <npm@fgribreau.com> (http://fgribreau.com)"
+    "Francois-Guillaume Ribreau <npm@fgribreau.com> (http://fgribreau.com)",
+    "Andrew Nichols (https://github.com/tandrewnichols)"
   ],
   "engines":{
     "node":">=0.10"
@@ -37,6 +38,8 @@
     "url": "https://github.com/epeli/piler.git"
   },
   "scripts": {
+    "preexample": "npm run compile",
+    "example": "node examples/app",
     "pregendoc": "npm run compile",
     "gendoc": "jsdoc -c jsdoc.conf.json lib README.md",
     "compile": "coffee --bare --no-header -o lib -c src",
@@ -59,7 +62,10 @@
     "csso": "1.x.x",
     "debug": "*",
     "reserved": "*",
-    "bluebird":"2.x"
+    "bluebird":"2.x",
+    "object-path": "0.x",
+    "multiline":"*",
+    "glob": "4.x"
   },
   "devDependencies": {
     "sinon":"*",

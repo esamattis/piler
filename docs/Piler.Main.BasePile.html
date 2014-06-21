@@ -90,6 +90,14 @@
 						</li>
 						
 						<li>
+							<a href="Piler.Main.HTMLManager.html">HTMLManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLPile.html">HTMLPile</a>
+						</li>
+						
+						<li>
 							<a href="Piler.Main.JSManager.html">JSManager</a>
 						</li>
 						
@@ -220,7 +228,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="Piler.Main.html#PileConfig">Piler.Main.PileConfig</a></span>
+<span class="param-type"><a href="Piler.Main.html#Config">Piler.Main.Config</a></span>
 
 
             
@@ -402,7 +410,7 @@
         
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(config)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -411,7 +419,7 @@
     
     <div class="description">
         <p>All add* calls ends here. Add an asset and mutate extend the passed
-configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></p>
+configuration with mixins from <a href="Piler.Serialize.html#CodeObject"><code>Piler.Serialize.CodeObject</code></a></p>
     </div>
     
 
@@ -433,11 +441,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
 		<th>Type</th>
 
 		
-		<th>Argument</th>
-		
 
-		
-		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -462,58 +466,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
             </td>
 
             
-                <td class="attributes">
-                
 
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>before</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
             
 
             <td class="description last"></td>
@@ -596,7 +549,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
         
             
 <dt>
-    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(filePath, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(filePath, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -677,13 +630,13 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
 
         <tr>
             
-                <td class="name"><code>before</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
 
 
             
@@ -704,12 +657,12 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
             
                 <td class="default">
                 
-                    false
+                    {}
                 
                 </td>
             
 
-            <td class="description last"><p>Prepend this file instead of adding to the end of the pile</p></td>
+            <td class="description last"><p>Options to assign to this object</p></td>
         </tr>
 
 	
@@ -795,7 +748,73 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
         
             
 <dt>
-    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Adds a multiline that will be converted to a string later (or can be compiled to any code)</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -872,13 +891,13 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
 
         <tr>
             
-                <td class="name"><code>before</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
 
 
             
@@ -899,7 +918,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
             
                 <td class="default">
                 
-                    false
+                    {}
                 
                 </td>
             
@@ -984,7 +1003,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
         
             
 <dt>
-    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">before</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -1061,13 +1080,13 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
 
         <tr>
             
-                <td class="name"><code>before</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type"><a href="Piler.Main.html#AddConfig">Piler.Main.AddConfig</a></span>
 
 
             
@@ -1088,7 +1107,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
             
                 <td class="default">
                 
-                    false
+                    {}
                 
                 </td>
             
@@ -1150,6 +1169,91 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
     <p><code>this</code></p>
 </div>
 
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="clear"><span class="type-signature"></span>clear<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Clear all the assets in this pile</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
 
 
 <dl>
@@ -1655,7 +1759,7 @@ configuration with mixins from <a href="Piler.Serialize.html#CodeObject">Piler.S
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a>
-		on Jun 20 2014 using the <a
+		on Jun 21 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

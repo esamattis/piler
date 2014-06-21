@@ -8,12 +8,13 @@
 
 ## Feature highlights
 
-  * Promise based interface
+  * Promise based interface, dealing with assets is asynchronous by nature (serving, compiling, reading, writing), 
+  so you need to tame it properly
   * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering, for example, `<script type="text/javascript">`, `<link>`, `<script type="text/ng-template">`, etc
-  * Namespaces
+  * Namespace your assets, serve them only when needed 
   * Flexible and distributed cache
-  * Transparent preprocessor (`.coffee -> .js` without a hassle)
+  * Transparent preprocessor (for example, `.coffee -> .js` without a hassle)
   * Push CSS changes to the browser using Socket.IO 1.x.x in development mode
   * Reuse server code in the browser and vice-versa
   * API consistency and generic interface for all your needs
@@ -89,25 +90,24 @@ browser using Socket.IO.
 ```javascript
 var app = require('express')(),
     http = require('http'),
-    piler = require("piler");
+    Piler = require("piler"),
+    livecss = Piler.require('piler/modules/livecss');
 
-var clientjs = piler.createJSManager();
-var clientcss = piler.createCSSManager();
+var clientjs = piler.createManager('js');
+var clientcss = piler.createManager('css');
 
 var srv = http.createServer(app);
 
 app
-    .use(clientjs.middleware(srv))
-    .use(clientcss.middleware(srv));
+    .use(clientjs.middleware())
+    .use(clientcss.middleware());
 
 clientcss.addFile(__dirname + "/style.css");
 
 clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js");
 clientjs.addFile(__dirname + "/client/hello.js");
 
-if (process.env.NODE_ENV === 'development') {
-    clientjs.liveUpdate(clientcss, require('socket.io')(srv));
-}
+livecss.init(clientjs, clientcss, srv, require('socket.io')(srv));
 
 clientjs.addOb({ VERSION: "1.0.0" });
 
@@ -338,7 +338,7 @@ export DEBUG=piler:*
 So that you can see development messages. You can filter out specific debug messages by using:
 
 ```bash
-export DEBUG=piler:minify
+export DEBUG=piler:minifier
 ```
 
 ## Example

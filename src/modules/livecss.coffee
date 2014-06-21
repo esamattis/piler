@@ -1,4 +1,4 @@
-module.exports = (classes, mainExports) ->
+module.exports = (classes, options) ->
   'use strict'
 
   socketio = null
@@ -55,74 +55,60 @@ module.exports = (classes, mainExports) ->
 
     return
 
-  class LiveUpdateMixin
+  # For testing
+  out.incUrlSeq = incUrlSeq
 
-    installSocketIo: (userio) ->
-
-      @addUrl "/socket.io/socket.io.js"
-
-      @addOb PILE:
-        incUrlSeq: incUrlSeq
-
-      @addExec clientUpdater
-
-      if not userio
-        io = socketio.listen @server
-      else
-        io = userio
-
-      @io = io.of "/pile"
-
-
-    liveUpdate: (cssmanager, userio) ->
-      if @production
-        @logger.info "Not activating live update in production"
-        return
-
-      if not @server
-        throw new Error 'JSManager must be bind to a http server (Express app)
+  ###istanbul ignore else###
+  if socketio?
+    out.init = (jsmanager, cssmanager, server, io) ->
+      if not server
+        throw new Error 'LiveCSS must be bind to a http server (Express app)
           before it can live update CSS'
 
-      @installSocketIo userio
+      if jsmanager.options.production
+        logger.info 'Not activating live update in production'
+        return
 
-      logger = @logger
+      jsmanager.addUrl "/socket.io/socket.io.js"
 
-      @server.on "listening", =>
+      jsmanager.addOb PILE:
+        incUrlSeq: incUrlSeq
+
+      jsmanager.addExec clientUpdater
+
+      io ?= socketio.listen server
+
+      io.of "/pile"
+
+      logger = jsmanager.options.logger
+
+      _watch = (pile, codeOb) ->
+
+        logger.info "Watching #{codeOb.object()} for changes"
+
+        classes.utils.fs.watch codeOb.object(), (type) ->
+          if type is 'change'
+            logger.info 'updated', codeOb.object()
+            io.emit 'update', codeOb.id()
+
+          return
+
+      server.on "listening", ->
         logger.info "Activating CSS updater"
 
         for k, pile of cssmanager.piles
           for codeOb in pile.code
             if codeOb.type is 'file'
-              @_watch pile, codeOb
-
-        return
-
-
-    _watch: (pile, codeOb) ->
-      logger = @logger
-      io = @io
-
-      logger.info "Watching #{codeOb.filePath} for changes"
-
-      classes.utils.fs.watch codeOb.filePath, (type) ->
-        if type is 'change'
-          logger.info "updated", codeOb.filePath
-          io.emit "update", codeOb.getId()
+              _watch pile, codeOb
 
         return
 
       return
-
-  # For testing
-  out.incUrlSeq = incUrlSeq
-  if socketio?
-    out.LiveUpdateMixin = LiveUpdateMixin
   else
     ###istanbul ignore next###
-    out.LiveUpdateMixin = class LiveUpdateDisabled
-      liveUpdate: ->
-        @logger.error "No socket.io installed. Live update won't work."
-        return
+    out.init = (jsmanager) ->
+      jsmanager.options.logger.error "No socket.io installed. Live update won't work."
+      return
 
   out
 

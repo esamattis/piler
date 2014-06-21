@@ -61,28 +61,22 @@ module.exports = (Piler) ->
       "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra } />"
 
     ###*
-     * @memberof Piler.CSSManager
-     * @function setMiddleware
-     * @instance
+     * @function Piler.Main.CSSManager#locals
     ###
-    setMiddleware: (app) ->
-      debug('setting CSSManager middleware')
-      _this = @
+    locals: (response) ->
+      super(response)
 
-      # Middleware that adds add & exec methods to response objects.
-      app.use (req, res, next) ->
-        res.piler ?= {}
-        res.piler.css ?= {}
+      Piler.Main.debug('setting CSSManager locals')
 
-        res.piler.css.addRaw = bindFn(_this, 'addRaw')
-        res.piler.css.addFile = bindFn(_this, 'addFile')
-        res.piler.css.addUrl = bindFn(_this, 'addUrl')
-
-        next()
-
-        return
+      response.piler.css =
+        addRaw: @bindTemp('addRaw')
+        addFile: @bindTemp('addFile')
+        addUrl: @bindTemp('addUrl')
 
       return
+
+    middleware: ->
+      super
 
   Piler.addManager('css', ->
     CSSManager

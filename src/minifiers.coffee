@@ -22,14 +22,18 @@ module.exports = (classes, mainExports) ->
    * Minify code on demand
    *
    * @function Piler.Minifiers.minify
-   * @returns {String}
+   * @param {Function} name
+   * @param {Function} code
+   * @param {Function} [options]
+   * @param {Function} [cb]
+   * @returns {Promise}
   ###
-  out.minify = mainExports.minify = (ext, code, options, cb) ->
-    throw new Error("Minify for '#{ext}' not found") if not ext or not minifiers[ext]
-    debug("Minifying code for '#{ext}'")
+  out.minify = mainExports.minify = (name, code, options, cb) ->
+    throw new Error("Minify '#{name}' not found") if not name or not minifiers[name]
+    debug("Minifying code '#{name}'")
 
     classes.utils.Q.try(->
-      minifiers[ext](code, options)
+      minifiers[name](code, options)
     ).nodeify(cb)
 
   ###*
@@ -39,13 +43,16 @@ module.exports = (classes, mainExports) ->
    * Add your own minifier
    *
    * @function Piler.Minifiers.addMinifier
-   * @param {String} ext Extension
+   * @param {String} name Name
    * @param {Piler.FactoryFn} factoryFn Function that returns a function
-   * @returns {Function} Returns the old minify function, if any
+   * @returns {Function|null} Returns the old minify function, if any
   ###
-  out.addMinifier = mainExports.addMinifier = (ext, factoryFn) ->
-    oldFn = if minifiers[ext] then minifiers[ext] else ->
-    minifiers[ext] = factoryFn(classes)
+  out.addMinifier = mainExports.addMinifier = (name, factoryFn) ->
+    oldFn = if minifiers[name] then minifiers[name] else null
+
+    debug("Added minifier '#{name}'")
+
+    minifiers[name] = classes.utils.Q.method(factoryFn(classes))
     oldFn
 
   ###*

@@ -3,6 +3,7 @@ module.exports = (Piler) ->
 
   Piler.addMinifier('uglify', ->
     (code, options = {}) ->
+
       fnCompress = ->
         ast = UglifyJS.parse code
         ast.figure_out_scope()

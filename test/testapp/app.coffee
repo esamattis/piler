@@ -1,10 +1,10 @@
 http = require('http')
 serveStatic = require "serve-static"
 app = require("express")()
-pile = require("../../lib")
+Piler = require("../../lib")
 
-js = pile.manager('js')
-css = pile.manager('css')
+js = Piler.createManager('js')
+css = Piler.createManager('css')
 
 app.use serveStatic __dirname + '/clientscripts'
 

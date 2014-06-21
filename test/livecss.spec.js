@@ -1,6 +1,6 @@
 'use strict';
 
-var LiveCSS = Piler.LiveCSS;
+var LiveCSS = Piler.loadPilerModule('../lib/modules/livecss');
 
 describe('livecss', function(){
 

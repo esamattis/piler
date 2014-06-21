@@ -88,6 +88,6 @@ module.exports = (Piler, mainExports) ->
     throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
 
     options.useFS = false
-    options.cacheCallback = classes.utils.Q.method(cacheFn)
+    options.cacheCallback = Piler.utils.Q.method(cacheFn)
 
     return

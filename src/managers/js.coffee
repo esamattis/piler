@@ -29,13 +29,13 @@ module.exports = (Piler) ->
      *
      * @function Piler.Main.JSPile#addModule
      * @param {String} filePath
-     * @param {Boolean} [before=false]
+     * @param {Object} [options={}]
      * @returns {Piler.Main.JSPile} `this`
     ###
-    addModule: (filePath, before = false) ->
+    addModule: (filePath, options = {}) ->
       filePath = Piler.utils.path.normalize filePath
-      if filePath not in @getFilePaths()
-        @add({type: "module", object: filePath}, before)
+      if filePath not in @getObjects('file')
+        @add({type: "module", object: filePath, options: options})
 
       @
 
@@ -44,11 +44,11 @@ module.exports = (Piler) ->
      *
      * @function Piler.Main.JSPile#addOb
      * @param {Object} ob
-     * @param {Boolean} [before=false]
+     * @param {Boolean} [options={}]
      * @returns {Piler.Main.JSPile} `this`
     ###
-    addOb: (ob, before = false) ->
-      @add({type: "object", object: ob}, before)
+    addOb: (ob, options = {}) ->
+      @add({type: "obj", object: ob, options: options})
       @
 
     ###*
@@ -56,11 +56,11 @@ module.exports = (Piler) ->
      *
      * @function Piler.Main.JSPile#addExec
      * @param {Function} fn
-     * @param {Boolean} [before=false]
+     * @param {Boolean} [options={}]
      * @returns {Piler.Main.JSPile} `this`
     ###
-    addExec: (fn, before = false) ->
-      @add({type: "fn", object: fn}, before)
+    addExec: (fn, options = {}) ->
+      @add({type: "fn", object: fn, options: options})
       @
 
   class JSManager extends Piler.getManager('PileManager')
@@ -81,21 +81,25 @@ module.exports = (Piler) ->
       super
 
       @piles.global.addExec ->
-        window._NS = (nsString) ->
+        window.piler ?= {}
+
+        window.piler.namespace = namespace = (nsString) ->
           parent = window
           for ns in nsString.split "."
             # Create new namespace if it is missing
             parent = parent[ns] ?= {}
           parent # return the asked namespace
 
-        window.__SET = (ns, ob) ->
+        window.piler.set = (ns, ob) ->
           parts = ns.split "."
           if parts.length is 1
             window[parts[0]] = ob
           else
-            nsOb = _NS(parts.slice(0, -1).join("."))
+            nsOb = namespace(parts.slice(0, -1).join("."))
             target = parts.slice(-1)[0]
             nsOb[target] = ob
+
+        return
 
       return
 
@@ -113,76 +117,99 @@ module.exports = (Piler) ->
      * @throws Error
     ###
     _isReserved: (ns) ->
-      if Piler.utils.reserved.indexOf(ns) isnt -1
+      if ns and ns.namespace and (Piler.utils.reserved.indexOf(ns.namespace) isnt -1)
         throw new Error("#{ns} is a reserved word and can't be used")
 
       return
 
     ###*
      * @function Piler.Main.JSManager#addModule
-     * @param {String} ns
      * @param {String} path
-     * @param {Boolean} [before=false]
+     * @param {Boolean} [options]
      * @returns {Piler.Main.JSManager} `this`
     ###
-    addModule: (ns, path, before = false) ->
-      @_isReserved(ns)
-      pile = @getPile ns
-      pile.addModule path, before
+    addModule: (path, options) ->
+      @_isReserved(options)
+      @add('addModule', path, options)
       @
 
     ###*
      * @function Piler.Main.JSManager#addOb
-     * @param {String} ns
      * @param {String} ob
-     * @param {Boolean} [before=false]
+     * @param {Boolean} [options]
      * @returns {Piler.Main.JSManager} `this`
     ###
-    addOb:  (ns, ob, before = false) ->
-      @_isReserved(ns)
-      pile = @getPile ns
-      pile.addOb ob, before
+    addOb: (ob, options) ->
+      @_isReserved(options)
+      @add('addOb', ob, options)
       @
 
     ###*
      * @function Piler.Main.JSManager#addExec
-     * @param {String} ns
      * @param {String} fn
-     * @param {Boolean} [before=false]
+     * @param {Boolean} [options]
      * @returns {Piler.Main.JSManager} `this`
     ###
-    addExec:  (ns, fn, before = false) ->
-      @_isReserved(ns)
-      pile = @getPile ns
-      pile.addExec fn, before
+    addExec: (fn, options) ->
+      @_isReserved(options)
+      @add('addExec', fn, options)
       @
 
     ###*
      * @function Piler.Main.JSManager#setMiddleware
      * @returns {Piler.Main.JSManager} `this`
     ###
-    setMiddleware: (app) ->
-      debug('setting JSManager middleware')
-      _this = @
+    locals: (response) ->
+      super(response)
 
-      # Middleware that adds add & exec methods to response objects.
-      app.use (req, res, next) ->
-        res.piler ?= {}
-        res.piler.js ?= {}
+      Piler.Main.debug('setting JSManager locals')
 
-        res.piler.js =
-          addExec: bindFn(_this, 'addExec')
-          addRaw: bindFn(_this, 'addRaw')
-          addOb: bindFn(_this, 'addOb')
-          addModule: bindFn(_this, 'addModule')
-          addFile: bindFn(_this, 'addFile')
-          addUrl: bindFn(_this, 'addUrl')
-
-        next()
-
-        return
+      response.piler.js =
+        addExec: @bindToPile('addExec')
+        addRaw: @bindToPile('addRaw')
+        addOb: @bindToPile('addOb')
+        addModule: @bindToPile('addModule')
+        addFile: @bindToPile('addFile')
+        addUrl: @bindToPile('addUrl')
 
       @
+
+    middleware: ->
+      super
+
+  # Add the function serializable
+  Piler.addSerializable('fn', ->
+    # Creates immediately executable string presentation of given function.
+    # context will be function's "this" if given.
+    executableFrom = (fn, context) ->
+      return "(#{ fn })();\n" unless context
+      return "(#{ fn }).call(#{ context });\n"
+
+    (ob) ->
+      executableFrom ob.object()
+  )
+
+  # Add the object serializable
+  Piler.addSerializable('obj', ->
+    toGlobals = (globals) ->
+      code = []
+      for nsString, v of globals
+        code.push "piler.set(window, #{ JSON.stringify nsString }, #{ Piler.Serialize.stringify v });"
+      code.join('\n')
+
+    (ob) ->
+      toGlobals ob.object()
+  )
+
+  # Add the module serializable
+  Piler.addSerializable('module', ->
+
+    (ob) ->
+      @file(ob).then (code) ->
+        """require.register("#{ Piler.utils.path.basename(ob.object()).split(".")[0] }", function(module, exports, require) {
+        #{ code }
+        });"""
+  )
 
   Piler.addManager('js', ->
     JSManager

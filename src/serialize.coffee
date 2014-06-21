@@ -9,38 +9,36 @@ module.exports = (classes, mainExports) ->
   debug = classes.utils.debug("piler:serialize")
 
   ###*
+   * Serializable callback
+   *
+   * @callback Piler.Serialize.Callback
+   * @param {Piler.Serialize.CodeObject} ob The current object
+   * @returns {Promise|String|Number|Boolean|Function}
+  ###
+  ###*
    * A code object
    *
    * @typedef {Object} Piler.Serialize.CodeObject
    * @property {Function} id Get the code id
-   * @property {Function} contents Get the contents itself
+   * @property {Piler.Serialize.Callback} contents Get the contents itself
+   * @property {Function} object Get the registered object
+   * @property {Function} type Get the registered type
   ###
 
   pilers =
     raw: (ob) ->
-      ob.object
+      ob.object()
 
     url: (ob) ->
-      ob.object
+      ob.object()
 
-    obj: (ob) ->
-      toGlobals ob.object
-
-    fn: (ob) ->
-      executableFrom ob.object
+    multiline: (ob)->
+      ob.object()
 
     file: (ob) ->
-      classes.utils.fs.readFileAsync(ob.object)
-      .then((data) ->
-        classes.Compilers.compile(classes.utils.extension(ob.object), ob.object, data.toString())
-      )
-
-    module: (ob) ->
-      @file(ob).then((code) ->
-        """require.register("#{ classes.utils.path.basename(ob.object).split(".")[0] }", function(module, exports, require) {
-        #{ code }
-        });"""
-      )
+      classes.utils.fs.readFileAsync(ob.object())
+      .then (data) ->
+        data.toString()
 
   # Map of functions that can convert various Javascript objects to strings.
   types =
@@ -66,18 +64,6 @@ module.exports = (classes, mainExports) ->
       arr.push "#{ codeFrom v }" for v in array
       arr.join(', ') + code + "]"
 
-  # Creates immediately executable string presentation of given function.
-  # context will be function's "this" if given.
-  executableFrom = (fn, context) ->
-    return "(#{ fn })();\n" unless context
-    return "(#{ fn }).call(#{ context });\n"
-
-  toGlobals = (globals) ->
-    code = ""
-    for nsString, v of globals
-      code += "__SET(#{ JSON.stringify nsString }, #{ codeFrom v });\n"
-    code
-
   ###*
    * Output debug messages as if it was from {@link Piler.Serialize}
    * @function Piler.Serialize.debug
@@ -88,7 +74,7 @@ module.exports = (classes, mainExports) ->
     getId = ->
       sum = crypto.createHash('sha1')
 
-      if @fromUrl
+      if @options.noSumContent
         # If code is on filesystem the url to the file should only change when
         # the path to it changes.
         sum.update @object()
@@ -99,8 +85,8 @@ module.exports = (classes, mainExports) ->
 
       hash = sum.digest('hex').substring 10, 0
 
-      if @adjustFilename and (obj = @object()) and (classes.utils._.isString(obj))
-        filename = classes.utils.path.basename obj
+      if @options.filePath
+        filename = classes.utils.path.basename @object()
         filename = filename.replace /\./g, "_"
         filename = filename.replace /\-/g, "_"
         hash = filename + "_" + hash
@@ -110,19 +96,33 @@ module.exports = (classes, mainExports) ->
     ->
       type = @type
       obj = @object
+      self = @
 
       @id = getId
-      @object = ->
-        obj
+
+      @object = (cb) ->
+        classes.utils.Q.try(->
+          obj
+        ).nodeify(cb)
+
       @type = ->
         type
+
       @contents = (cb) ->
         classes.utils.Q.try(->
-          pilers[type] @
+          pilers[type] self
         ).nodeify(cb)
 
       @
 
+  ###*
+   * Creates a SHA1 from string
+   *
+   * @function Piler.Serializable.sha1
+   * @param {String} code
+   * @param {String} [out] Digest
+   * @returns {crypto.Hash}
+  ###
   sha1: (code, out) ->
     sha1 = crypto.createHash('sha1')
     if code
@@ -132,8 +132,11 @@ module.exports = (classes, mainExports) ->
     sha1
 
   ###*
+   * @function Piler.addSerializable
+  ###
+  ###*
    * Add a new kind of serializable object, that should be treated differently from
-   * the built-in ones
+   * the built-in ones. Methods returned by the factory are bound to each {@link Piler.Serialize.CodeObject}
    *
    * @function Piler.Serialize.addSerializable
   ###
