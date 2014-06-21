@@ -74,20 +74,20 @@ module.exports = (classes, mainExports) ->
         before: false
       })
 
-      console.log config
-
       type = if not config.options.before then 'push' else 'unshift'
 
-      @assets[type] classes.Serialize.serialize.call
+      @assets[type] object = classes.Serialize.serialize.call
         type: config.type
         object: config.object
         options: config.options
-      @
+
+      object
 
     ###*
      * Adds a multiline that will be converted to a string later (or can be compiled to any code)
      *
      * @function Piler.Main.BasePile#addMultiline
+     * @returns {Piler.Main.BasePile}
     ###
     addMultiline: (fn, options = {}) ->
       @add({type: "multiline", object: fn, options})
@@ -117,12 +117,13 @@ module.exports = (classes, mainExports) ->
      * @function  Piler.Main.BasePile#addUrl
      * @param {String} url
      * @param {Piler.Main.AddConfig} [options={}]
-     * @returns {Piler.Main.BasePile} `this`
+     * @returns {Promise}
     ###
     addUrl: (url, options = {}) ->
-      if url not in @getObjects('url')
-        options = classes.utils._.defaults(options, {asIs: true})
-        @add({type: 'url', object: url, options})
+      @getObjects('url').then (urls) ->
+        if url not in urls
+          options = classes.utils._.defaults(options, {asIs: true})
+          @add({type: 'url', object: url, options})
 
       @
 
@@ -141,9 +142,9 @@ module.exports = (classes, mainExports) ->
     ###
     getObjects: (filter, member = 'object') ->
       if filter
-        (ob[member]() for ob in @assets when ob.type() is filter)
+        classes.utils.Q.all (ob[member]() for ob in @assets when ob.type() is filter)
       else
-        (ob[member]() for ob in @assets)
+        classes.utils.Q.all (ob[member]() for ob in @assets)
 
     ###*
      * Clear all the assets in this pile
@@ -158,7 +159,7 @@ module.exports = (classes, mainExports) ->
 
     ###*
      * @function Piler.Main.BasePile#getSources
-     * @returns {Array.<String>} Array of sources
+     * @returns {Promise} Return an array of strings
     ###
     getSources: ->
       sources = ([u.object()] for u in @assets when u.options.asIs is true)
@@ -295,54 +296,61 @@ module.exports = (classes, mainExports) ->
       pile
 
     ###*
-     * @function Piler.Main.PileManager#_normalizeArguments
+     * @function Piler.Main.PileManager#_defaultArguments
      * @protected
     ###
     _defaultArguments: (options) ->
+      if not options.namespace
+        options.namespace = 'global'
 
-      {
-        namespace
-        data
-        options
-      }
+      return
 
+    ###*
+     * Low level function that actually adds stuff to the pile, deals with
+     * normalizing arguments
+     *
+    ###
     add: (type, data, options = {}) ->
-      {namespace, data, options} = @_normalizeArguments(data, options)
-      debug('adding', type, data, options)
-      pile = @getPile namespace
+      @_defaultArguments(options)
+
+      debug('Adding:', type, data, options)
+
+      pile = @getPile options.namespace
       pile["#{type}"](data, options)
 
     ###*
      * Add an array of files at once
      *
      * @example
-     *   PileManager.addFiles("namespace", ["/file/1","/file/2"])
+     *   PileManager.addFiles(["/file/1","/file/2"])
      *
      * @function Piler.Main.PileManager#addFiles
      *
      * @param {Array} arr
      * @param {Object} [options={}]
-     * @instance
      * @returns {Piler.Main.PileManager} `this`
     ###
     addFiles:  (arr, options) ->
+      arr = classes.utils.ensureArray([], arr)
+
       @addFile(file, options) for file in arr
       @
 
     ###*
-     * Add an array of files at once
+     * Add a directory
      *
      * @example
-     *   PileManager.addFiles("namespace", ["/file/1","/file/2"])
+     *   PileManager.addDir(["/file/1","/file/2"])
      *
-     * @function Piler.Main.PileManager#addFiles
+     * @function Piler.Main.PileManager#addDir
      *
-     * @param {Array} arr
+     * @param {String|Array} paths You can give a glob string or an array of glob strings
      * @param {Object} [options={}]
-     * @instance
      * @returns {Piler.Main.PileManager} `this`
     ###
-    addFiles:  (arr, options) ->
+    addDir:  (arr, options) ->
+      arr = classes.utils.ensureArray(arr)
+
       @addFile(file, options) for file in arr
       @
 

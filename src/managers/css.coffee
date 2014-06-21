@@ -69,9 +69,9 @@ module.exports = (Piler) ->
       Piler.Main.debug('setting CSSManager locals')
 
       response.piler.css =
-        addRaw: @bindTemp('addRaw')
-        addFile: @bindTemp('addFile')
-        addUrl: @bindTemp('addUrl')
+        addRaw: @bindToPile('addRaw')
+        addFile: @bindToPile('addFile')
+        addUrl: @bindToPile('addUrl')
 
       return
 

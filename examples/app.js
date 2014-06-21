@@ -9,6 +9,7 @@ var LiveCSS = Piler.require('../lib/modules/livecss');
 
 var js = Piler.createManager('js', {outputDirectory: __dirname + "/out"});
 var css = Piler.createManager('css', {outputDirectory: __dirname + "/out"});
+var html = Piler.createManager('html', {outputDirectory: __dirname + "/out"});
 
 /* adds the livescript preprocessor to it */
 Piler.addCompiler('livescript', function(){
@@ -46,7 +47,9 @@ function isEmail(s){
 
 app
   .use(js.middleware())
-  .use(css.middleware());
+  .use(css.middleware())
+  .use(html.middleware())
+;
 
 app.set('views', __dirname + "/views");
 
@@ -103,7 +106,7 @@ js.addFile(__dirname + "/share.js");
 
 // You can optionally add a directory, the only drawback
 // is that you can't set per file options
-js.addDir(__dirname + "/client/*.js");
+// js.addDir(__dirname + "/client/*.js");
 
 app.get('/', function (req, res){
 
@@ -121,7 +124,8 @@ app.get('/', function (req, res){
   res.render('index.jade', {
     layout: false,
     js    : js.renderTags('foo','bar'),
-    css   : css.renderTags()
+    css   : css.renderTags(),
+    html  : html.renderTags()
   });
 });
 

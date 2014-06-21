@@ -10,7 +10,7 @@ module.exports = (Piler, mainExports) ->
   TMPDIR = os.tmpDir()
 
   ###*
-   * Output debug messages as if it was from {@link Piler.Cache}
+   * Output debug messages as if it was from {@link Piler.Cache Cache}
    * @function Piler.Cache.debug
   ###
   debug: debug = Piler.utils.debug('piler:cache')

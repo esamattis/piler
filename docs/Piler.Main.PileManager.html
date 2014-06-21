@@ -419,7 +419,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="_normalizeArguments"><span class="type-signature">&lt;protected> </span>_normalizeArguments<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_defaultArguments"><span class="type-signature">&lt;protected> </span>_defaultArguments<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -475,6 +475,208 @@
     
     
     
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addDir"><span class="type-signature"></span>addDir<span class="signature">(paths, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add a directory</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>paths</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>You can give a glob string or an array of glob strings</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">PileManager.addDir([&quot;/file/1&quot;,&quot;/file/2&quot;])</pre>
+
+
     
 </dd>
 
@@ -860,7 +1062,7 @@
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">PileManager.addFiles(&quot;namespace&quot;, [&quot;/file/1&quot;,&quot;/file/2&quot;])</pre>
+    <pre class="sunlight-highlight-javascript">PileManager.addFiles([&quot;/file/1&quot;,&quot;/file/2&quot;])</pre>
 
 
     

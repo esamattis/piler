@@ -203,9 +203,6 @@
             <dt><a href="namespaces.html#Piler.LiveCSS"><a href="Piler.LiveCSS.html">LiveCSS</a></a></dt>
             <dd></dd>
         
-            <dt><a href="namespaces.html#Piler.LiveCSS"><a href="Piler.LiveCSS.html">LiveCSS</a></a></dt>
-            <dd></dd>
-        
             <dt><a href="namespaces.html#Piler.Logger"><a href="Piler.Logger.html">Logger</a></a></dt>
             <dd></dd>
         
@@ -789,82 +786,6 @@
         
             
 <dt>
-    <h4 class="name" id="loadPilerModule"><span class="type-signature">&lt;static> </span>loadPilerModule<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p><code>require</code> a Piler module, inject the classes repository to it and provide options for the module.
-It actually calls require automatically</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// piler module looks like this
-module.exports = function(Piler, options) {
-   // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
-}</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
     <h4 class="name" id="minify"><span class="type-signature">&lt;static> </span>minify<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
@@ -1169,6 +1090,82 @@ module.exports = function(Piler, options) {
     
     
     
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="require"><span class="type-signature">&lt;static> </span>require<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p><code>require</code> a Piler module, inject the classes repository to it and provide options for the module.
+It actually calls require automatically</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// piler module looks like this
+module.exports = function(Piler, options) {
+   // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
+}</pre>
+
+
     
 </dd>
 

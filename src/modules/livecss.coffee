@@ -97,7 +97,7 @@ module.exports = (classes, options) ->
         logger.info "Activating CSS updater"
 
         for k, pile of cssmanager.piles
-          for codeOb in pile.code
+          for codeOb in pile.assets
             if codeOb.type is 'file'
               _watch pile, codeOb
 

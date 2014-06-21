@@ -155,12 +155,13 @@
 <a href="https://david-dm.org/epeli/piler"><img src="https://david-dm.org/epeli/piler.svg" alt="Dependency Status"></a></p>
 <p><a href="https://nodei.co/npm/piler/"><img src="https://nodei.co/npm/piler.svg?downloads=true&amp;stars=true" alt="NPM"></a></p>
 <h2>Feature highlights</h2><ul>
-<li>Promise based interface</li>
+<li>Promise based interface, dealing with assets is asynchronous by nature (serving, compiling, reading, writing), 
+so you need to tame it properly</li>
 <li>Minify and concatenate JS and CSS for fast page loads</li>
 <li>Tag rendering, for example, <code>&lt;script type=&quot;text/javascript&quot;&gt;</code>, <code>&lt;link&gt;</code>, <code>&lt;script type=&quot;text/ng-template&quot;&gt;</code>, etc</li>
-<li>Namespaces</li>
+<li>Namespace your assets, serve them only when needed </li>
 <li>Flexible and distributed cache</li>
-<li>Transparent preprocessor (<code>.coffee -&gt; .js</code> without a hassle)</li>
+<li>Transparent preprocessor (for example, <code>.coffee -&gt; .js</code> without a hassle)</li>
 <li>Push CSS changes to the browser using Socket.IO 1.x.x in development mode</li>
 <li>Reuse server code in the browser and vice-versa</li>
 <li>API consistency and generic interface for all your needs</li>

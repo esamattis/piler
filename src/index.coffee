@@ -15,6 +15,7 @@ files =
    * @property {Object} multiline {@link http://npmjs.org/package/multiline multiline} library
    * @property {Object} glob {@link http://npmjs.org/package/glob glob} library
    * @property {Function} extension Extract file extension
+   * @property {Function} ensureArray Ensure that its an array
   ###
   utils:
     _: require 'lodash'
@@ -25,6 +26,9 @@ files =
     debug: require 'debug'
     reserved: require 'reserved'
     multiline: require 'multiline'
+    ensureArray: (args) ->
+      Array.prototype.concat.call([], args)
+
     extension: (filename) ->
       parts = filename.split "."
       parts[parts.length - 1]
@@ -50,7 +54,7 @@ for file of files when file isnt 'utils'
  * `require` a Piler module, inject the classes repository to it and provide options for the module.
  * It actually calls require automatically
  *
- * @function Piler.loadPilerModule
+ * @function Piler.require
  * @example
  *   // piler module looks like this
  *   module.exports = function(Piler, options) {
