@@ -117,7 +117,7 @@ module.exports = (classes, mainExports) ->
      * @function  Piler.Main.BasePile#addUrl
      * @param {String} url
      * @param {Piler.Main.AddConfig} [options={}]
-     * @returns {Promise}
+     * @returns {Piler.Main.BasePile} `this`
     ###
     addUrl: (url, options = {}) ->
       @getObjects('url').then (urls) ->
@@ -135,10 +135,12 @@ module.exports = (classes, mainExports) ->
     ###
     addRaw: (raw, options = {}) ->
       @add({type: "raw", object: raw, options})
+      @
 
     ###*
      * @function Piler.Main.BasePile#getObjects
-     * @returns {Array}
+     *
+     * @returns {Promise} The result of the promise will be an array of the desired
     ###
     getObjects: (filter, member = 'object') ->
       if filter
@@ -181,10 +183,11 @@ module.exports = (classes, mainExports) ->
      * @function Piler.Main.BasePile#findAssetBy
      * @param {String} member
      * @param {*} search
-     * @returns {undefined|Piler.Serialize.CodeObject}
+     * @returns {Promise}
     ###
     findAssetBy: (member, search) ->
-      (obj for obj in @assets when obj[member]() is search)[0]
+      @getObjects(member).filter () ->
+        (obj for obj in @assets when obj[member]() is search)[0]
 
     ###*
      * @function Piler.Main.BasePile#_computeHash
@@ -433,7 +436,7 @@ module.exports = (classes, mainExports) ->
      * @param {...*} [namespaces]
      * @returns {Promise}
     ###
-    getSources: (namespaces...) ->
+    getSources: classes.utils.Q.method (namespaces...) ->
       if typeof classes.utils._.last(namespaces) is "object"
         opts = namespaces.pop()
       else
@@ -457,19 +460,33 @@ module.exports = (classes, mainExports) ->
       "#{data}"
 
     ###*
-     * @function Piler.Main.PileManager#renderTags
+     * @function Piler.Main.PileManager#render
      * @param {...*} [namespaces]
-     * @returns {String} Rendered tags
+     * @returns {Promise} Returns the rendered tags
     ###
-    renderTags: (namespaces...) ->
+    render: (namespaces...) ->
 
-      tags = ""
+      classes.utils.Q.reduce(@getSources namespaces..., (tags, source) =>
+          tags += "#{@wrapInTag(source[0], source[1])}\n"
+      , "")
 
-      for src in @getSources namespaces...
-        tags += @wrapInTag src[0], src[1]
-        tags += "\n"
+    ###*
+     * Add our version of render, we need to support promise locals
+     * @function Piler.Main.PileManager#_render
+     * @protected
+     * @returns {Function}
+    ###
+    _render: (response) ->
+      (name, locals, callback) ->
+        if not classes.utils.isObject locals
+          _locals = {}
+        else
+          _locals = locals
 
-      tags
+        classes.utils.Q.props(_locals).then (locals) ->
+          response.render(name, locals, callback)
+
+          locals
 
     ###*
      * Assign the piler namespace on the response object
@@ -477,8 +494,19 @@ module.exports = (classes, mainExports) ->
      * @function Piler.Main.PileManager#locals
     ###
     locals: (response) ->
-      classes.utils.objectPath.ensureExists(response, 'piler', {})
+      classes.utils.objectPath.ensureExists(response, 'piler', {render: @_render(response)})
       @
+
+    ###*
+     * Find an asset from a namespace
+     * @returns {Promise}
+    ###
+    findAssetBy: classes.utils.Q.method (member, search, namespace = 'global') ->
+      pile = @piles[namespace]
+
+      throw new Error("namespace '#{namespace}' not found") if not pile
+
+      pile.findAssetBy(member, search)
 
     ###*
      * Exposes a middleware for serving your assets
@@ -537,19 +565,22 @@ module.exports = (classes, mainExports) ->
 
           return
 
-        codeOb = pile.findAssetBy 'id', asset.dev.uid
+        pile.findAssetBy('id', asset.dev.uid).then (codeOb) ->
 
-        if codeOb
-          debug('dev code object', codeOb)
+          if codeOb
+            debug('dev code object', codeOb)
 
-          codeOb.contents().then (code) ->
-            res.end code
-            return
-        else
-          res.send "Cannot find codeOb #{ asset.dev.uid }", 404
+            codeOb.contents().then (code) ->
+              res.end code
+              return
+          else
+            res.send "Cannot find codeOb #{ asset.dev.uid }", 404
+            res.end()
 
-        if pile.options.volatile is true
-          pile.clear()
+          if pile.options.volatile is true
+            pile.clear()
+
+          return
 
         return
 
@@ -577,7 +608,7 @@ module.exports = (classes, mainExports) ->
    * @param {Piler.FactoryFn} factoryFn
   ###
   out.addManager = mainExports.addManager = (name, factoryFn) ->
-    oldFn = if managers[name] then managers[name] else ->
+    oldFn = if managers[name] then managers[name] else nul
     debug("Added manager '#{name}'")
     managers[name] = factoryFn(classes)
     oldFn

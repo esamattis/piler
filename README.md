@@ -8,8 +8,9 @@
 
 ## Feature highlights
 
-  * Promise based interface, dealing with assets is asynchronous by nature (serving, compiling, reading, writing), 
-  so you need to tame it properly
+  * Promise based interface, dealing with assets is asynchronous by nature (serving, compiling, reading, writing, 
+  caching), so you need to tame it properly. A lot of preprocessors and template engines are asynchronous, and 
+  Piler need to comply with that 
   * Minify and concatenate JS and CSS for fast page loads
   * Tag rendering, for example, `<script type="text/javascript">`, `<link>`, `<script type="text/ng-template">`, etc
   * Namespace your assets, serve them only when needed 
@@ -18,20 +19,23 @@
   * Push CSS changes to the browser using Socket.IO 1.x.x in development mode
   * Reuse server code in the browser and vice-versa
   * API consistency and generic interface for all your needs
+  * [Check the documentation](https://epeli.github.io/piler) 
   
 ## Whats new in 1.0.0
 
 Version 1.x is almost a complete rewrite from the 0.x versions. A lot changed since Node.js community
 and some 'best practices' have emerged, a lot of great tools and of course, with great power, 
-comes great responsibility. 
+comes great responsibility. On the verge of generators and an avalanche of functional code (namely Promises)
+it needed to be done.
 
 Piler 1.x aims to be completely flexible and expose as many API possible to ensure
 community modules can be quickly used along with Piler. By modularizing the asset management 'inner' 
-workings, we can achieve more testable and maintainable code. With the module interface, modules
-can set minifiers, managers, compilers, all in one export. Also, the code is well tested and 
-commented, so it's not a blackbox. 
+workings, it can achieve more testable and maintainable code. With the module interface, modules
+can set minifiers, managers, compilers, serializable objects, all in one package. 
 
-This is a big change, and it's almost completely not backward compatible with 0.x. 
+Also, the new code is well tested and commented, so it's not a blackbox. 
+
+This is a big change, and it's __completely__ not backward compatible with 0.x. 
 
 ## Awesome Asset Manager for Node.js
 
@@ -67,6 +71,26 @@ clientjs.addExec(function() {
     BROWSER_GLOBAL.aFunction();
     alert("Hello" + window.navigator.appVersion);
 });
+```
+
+You can even add custom language names by signaling a compiler, and it will be served
+as Javascript, plus it can be reused in Node.js as well
+
+```javascript
+clientjs.addMultiline(function() {/*
+    coffee = 'very versatile library'
+    console.log "I'm a #{coffee}"
+    coffee
+*/}, {options:{compilers:'coffeescript'}, name:'coffeestuff', namespace:'usefulstuff'});
+
+clientjs
+.findAssetBy('name', 'coffeestuff', 'usefulstuff')
+.then(function(object){
+    return object.contents();
+})
+.then(function(fn){
+    fn();
+}); 
 ```
 
 *Piler* is written following principles in mind:
@@ -116,10 +140,10 @@ clientjs.addExec(function() {
 });
 
 app.get("/", function(req, res){
-    res.render("index.jade", {
+    res.piler.render("index.jade", {
         layout: false,
-        js: clientjs.renderTags(),
-        css: clientcss.renderTags()
+        js: clientjs.render(),
+        css: clientcss.render()
     });
 });
 

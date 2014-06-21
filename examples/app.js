@@ -121,11 +121,13 @@ app.get('/', function (req, res){
 
   res.piler.css.addUrl('//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', {before: true});
 
-  res.render('index.jade', {
+  res.piler.render('index.jade', {
     layout: false,
-    js    : js.renderTags('foo','bar'),
-    css   : css.renderTags(),
-    html  : html.renderTags()
+    js    : js.render('foo','bar'),
+    css   : css.render(),
+    html  : html.render()
+  }).done(function(){
+
   });
 });
 
