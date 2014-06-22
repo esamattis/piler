@@ -2,12 +2,16 @@ module.exports = (Piler) ->
   coffeescript = require 'coffee-script'
 
   Piler.addCompiler('coffeescript', ->
+
     # We always have coffee-script compiler ;)
-    render: (filename, code, options) ->
+    execute: (code, filename, options) ->
       coffeescript.compile code, options
 
-    targetExt: ['coffee']
-    outputExt: 'js'
+    on:
+      file:
+        object: ['coffee']
+
+    targetExt: 'js'
   )
 
   return

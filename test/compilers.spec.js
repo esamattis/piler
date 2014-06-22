@@ -5,77 +5,111 @@ var
 
 describe('built-in compilers', function(){
 
-  it('must return unchanged plain css and js', function(done){
-    c('js', null, 'asdf', function(err, code){
-      expect(err).to.be(null);
-      expect(code).to.be('asdf');
+  before(function(){
+    Compilers.addCompiler('js', function(){
+      return {
+        execute: function(passthrough){
+          return passthrough;
+        },
+        on: {}
+      };
+    });
+    Compilers.addCompiler('css', function(){
+      return {
+        execute:function(passthrough){
+          return passthrough;
+        },
+        on: {}
+      };
+    });
+  });
+  after(function(){
+    Compilers.removeCompiler('css');
+    Compilers.removeCompiler('js');
+  });
 
-      c('css', null, 'dsa', function(err, code){
-        expect(err).to.be(null);
+  describe('compile', function(){
+    it('throws when no compiler is found', function(){
+      expect(function(){
+        c('dont', '');
+      }).to.throwException();
+    });
+
+    it('must return unchanged plain css and js', function(done){
+      c('js', 'asdf').then(function(code){
+        expect(code).to.be('asdf');
+        return c('css', 'dsa');
+      }).done(function(code){
         expect(code).to.be('dsa');
         done();
       });
     });
-  });
 
-  it('compiles coffee-script', function(done){
-    c('coffee', null, '@', function(err, code) {
-      expect(err).to.be(null);
-      expect(code).to.be('(function() {\n  this;\n\n\n}).call(this);\n');
-      c('coffee', null, '~', function(err){
+    it('has dual API', function(done){
+      c('js','asdf', null, {}, function(err, code){
+        expect(err).to.be(null);
+        expect(code).to.be('asdf');
+        done();
+      });
+    });
+
+    it('compiles coffee-script', function(done){
+      c('coffeescript', '@').then(function(code){
+        expect(code).to.be('(function() {\n  this;\n\n\n}).call(this);\n');
+        return c('coffee', '~');
+      }).catch(function(err){
         expect(err).to.be.ok();
-        done();
-      });
-    });
-  });
-
-  describe('stylus', function(){
-    it('compiles', function(done){
-      c('styl', 'file.styl', 'body\n  color #000\n', function(err, code){
-        expect(err).to.be(null);
-        expect(code).to.be('body {\n  color: #000;\n}\n');
-        done();
-      });
+      }).done(done);
     });
 
-    it('uses nib', function(done){
-      c('styl', 'file.styl', '@import "nib"\nbody\n  clearfix()', function(err, code){
-        expect(err).to.be(null);
-        expect(code).to.match(/:before/);
-        done();
+    describe('stylus', function(){
+      it('compiles', function(done){
+        c('stylus', 'body\n  color #000\n', 'file.styl').then(function(code){
+          expect(code).to.be('body {\n  color: #000;\n}\n');
+        }).done(done);
+      });
+
+      it('uses nib', function(done){
+        c('stylus', '@import "nib"\nbody\n  clearfix()','file.styl').then(function(code){
+          expect(code).to.match(/:before/);
+        }).done(done);
       });
     });
-  });
 
-  it('compiles less', function(done){
-    c('less', 'file.less', '@base: #f938ab;\nbody { color: @base; } ', function(err, code){
-      expect(err).to.be(null);
-      expect(code).to.be('body {\n  color: #f938ab;\n}\n');
-      done();
+    it('compiles less', function(done){
+      c('less', '@base: #f938ab;\nbody { color: @base; } ','file.less').then(function(code){
+        expect(code).to.be('body {\n  color: #f938ab;\n}\n');
+      }).done(done);
     });
   });
 
   describe('addCompiler', function(){
 
     it('can add custom compilers', function(done){
-      Compilers.addCompiler('dummy', function(){
+      var opts = {'lalala': true};
+
+      Compilers.addCompiler('dummy', function(classes){
+        expect(classes).to.be(Piler);
+
         function f(d){
           return 'dummy(' + d + ')';
         }
         return {
-          render: function(filename, code, cb){
-            cb(null, f(code));
+          execute: function(code, filename, options){
+            expect(code).to.be('test');
+            expect(filename).to.be('file.dummy');
+            expect(options).to.be(opts);
+            return f(code);
           },
+          on: {},
           targetExt: 'dummy'
         };
       });
 
-      c('dummy', 'file.dummy', 'test', function(err, code){
-        expect(err).to.be(null);
+      c('dummy', 'test', 'file.dummy', opts).then(function(code){
         expect(code).to.be('dummy(test)');
         Compilers.removeCompiler('dummy');
-        done();
-      });
+      }).done(done);
     });
 
     it('throws', function(){

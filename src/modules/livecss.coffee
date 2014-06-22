@@ -1,4 +1,4 @@
-module.exports = (classes, options) ->
+module.exports = (Piler, options) ->
   'use strict'
 
   socketio = null
@@ -8,7 +8,7 @@ module.exports = (classes, options) ->
   ###
 
   out = {
-    debug: debug = classes.utils.debug('piler:livecss')
+    debug: debug = Piler.utils.debug('piler:livecss')
   }
 
   ###istanbul ignore catch ###
@@ -85,7 +85,7 @@ module.exports = (classes, options) ->
 
         logger.info "Watching #{codeOb.object()} for changes"
 
-        classes.utils.fs.watch codeOb.object(), (type) ->
+        Piler.utils.fs.watch codeOb.object(), (type) ->
           if type is 'change'
             logger.info 'updated', codeOb.object()
             namespace.emit 'update', codeOb.id()

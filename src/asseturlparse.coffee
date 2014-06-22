@@ -40,7 +40,7 @@ module.exports = (Piler) ->
 
     debug('asset', url, mode, filename)
 
-    if mode is "dev"
+    if mode is 'dev'
       [__..., name, devopt, ext] = filename.split "."
       return if not name or not devopt or not ext
       [type, uid] = devopt.split "-"
@@ -48,6 +48,14 @@ module.exports = (Piler) ->
       ob.dev =
          uid: uid
          type: type
+    else if mode is 'temp'
+      [__..., name, devopt, ext] = filename.split "."
+      return if not name or not devopt or not ext
+      [type, uid] = devopt.split "-"
+      debug('parsing in temp mode', url, type, uid)
+      ob.temp =
+        uid: uid
+        type: type
     else
       [__..., name, ext] = filename.split "."
       return if not name or not ext

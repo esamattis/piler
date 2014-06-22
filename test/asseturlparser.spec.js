@@ -164,5 +164,14 @@ describe('asseturlparser', function(){
     });
   });
 
+  describe('can parse volatile piles', function(){
+    var urlOb;
+    urlOb = parse("/node-pile/pile/dev/my.file-321.css?v=43234");
+
+    it('is volatile', function(){
+      expect(urlOb.volatile).to.be(true);
+    });
+  });
+
 });
 

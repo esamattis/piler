@@ -1,5 +1,5 @@
-//process.env.NODE_ENV = 'development';
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = 'development';
+//process.env.NODE_ENV = 'production';
 
 var app = require('express')();
 var server = require('http').createServer(app);
@@ -16,11 +16,13 @@ Piler.addCompiler('livescript', function(){
   var ls = require('LiveScript');
 
   return {
-    render: function(filename, code) {
+    execute: function(filename, code) {
       return ls.compile(code);
     },
-    outputExt: 'js',
-    targetExt: ['ls']
+    targetExt: 'js',
+    on: {
+      file: '.ls' // matches only file types that end with .ls
+    }
   };
 });
 
@@ -53,13 +55,15 @@ app
 
 app.set('views', __dirname + "/views");
 
-// will initialize live css editing when in development mode
-LiveCSS.init(js, css, server/*, require('socket.io')(server)*/);
-
 // add some stylesheet files
-css.addFile(__dirname + "/style.css");
-css.addFile(__dirname + "/style.styl");
-css.addFile(__dirname + "/style.less");
+css.batch([
+  ['addFile', __dirname + "/style.css"],
+  ['addFile', __dirname + "/style.styl"],
+  ['addFile', __dirname + "/style.less"]
+]).done(function(){
+  // will initialize live css editing when in development mode
+  LiveCSS.init(js, css, server/*, require('socket.io')(server)*/);
+});
 
 // add a real object to the browser, reuse the same isEmail
 // function in both Node.js and the browser, will be available in
@@ -92,7 +96,7 @@ js.addMultiline(function(){/*
 // Urls are passed to the browser as-is, wrapped in their respective tags
 // in this case,
 // <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js" type="text/javascript" defer="defer"></script>
-js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js", {attrs: {'defer':'defer'}});
+js.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js", {extra: {'defer':'defer'}});
 
 // Add some files
 js.addFile(__dirname + "/client/backbone.js");
@@ -113,28 +117,34 @@ html.addMultiline(function(){/*
   <h3>Inline HTML ftw</h3>
 </div>
 <!-- Im hidden -->
-*/});
+*/}).then(function(){
+  html.contents();
+});
 
 app.get('/', function (req, res){
 
-  res.piler.js.addExec(function (){
-    console.log('Run client code from the response', FOO);
-    console.log(share.test());
-  });
+  // add all resources in order, then serve
 
-  res.piler.css.addRaw('h2{' +
-    'text-decoration: underline;' +
-  '}');
-
-  res.piler.css.addUrl('//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', {before: true});
-
-  res.piler.render('index.jade', {
-    layout: false,
-    js    : js.render('foo','bar'),
-    css   : css.render(),
-    html  : html.render()
-  }).done(function(){
-
+  Piler.utils.Q.all([
+    res.piler.js.addExec(function (){
+      console.log('Run client code from the response', FOO);
+      console.log(share.test());
+    }),
+    res.piler.css.addRaw('h2{' +
+      'text-decoration: underline;' +
+    '}'),
+    res.piler.html.addMultiline(function(){/*
+      <div>great minds think alike multiline</div>
+    */}),
+    res.piler.html.addRaw('<span></span>'),
+    res.piler.css.addUrl('//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', {before: true})
+  ]).done(function(){
+    res.piler.render('index.jade', {
+      layout: false,
+      js    : js.render('foo','bar'),
+      css   : css.render(),
+      html  : html.render()
+    });
   });
 });
 

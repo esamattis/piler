@@ -1,4 +1,4 @@
-module.exports = (classes, mainExports) ->
+module.exports = (Piler, mainExports) ->
   'use strict'
 
   ###*
@@ -10,7 +10,7 @@ module.exports = (classes, mainExports) ->
      * Output debug messages as if it was from {@link Piler.Minifiers}
      * @function Piler.Minifiers.debug
     ###
-    debug: debug = classes.utils.debug("piler:minifiers")
+    debug: debug = Piler.utils.debug("piler:minifiers")
   }
 
   minifiers = {}
@@ -32,9 +32,7 @@ module.exports = (classes, mainExports) ->
     throw new Error("Minify '#{name}' not found") if not name or not minifiers[name]
     debug("Minifying code '#{name}'")
 
-    classes.utils.Q.try(->
-      minifiers[name](code, options)
-    ).nodeify(cb)
+    minifiers[name].execute(code, options).nodeify(cb)
 
   ###*
    * @function Piler.addMinifier
@@ -44,15 +42,25 @@ module.exports = (classes, mainExports) ->
    *
    * @function Piler.Minifiers.addMinifier
    * @param {String} name Name
-   * @param {Piler.FactoryFn} factoryFn Function that returns a function
+   * @param {Piler.FactoryFn} factoryFn Function that returns a definition
    * @returns {Function|null} Returns the old minify function, if any
   ###
   out.addMinifier = mainExports.addMinifier = (name, factoryFn) ->
+    throw new Error('Missing name for minifier') if not name
+    throw new Error('factoryFn must be a function') if not Piler.utils._.isFunction(factoryFn)
+
     oldFn = if minifiers[name] then minifiers[name] else null
 
-    debug("Added minifier '#{name}'")
+    def = factoryFn(Piler)
 
-    minifiers[name] = classes.utils.Q.method(factoryFn(classes))
+    throw new Error("Missing 'on' for minifier '#{name}'") if not def.on
+    throw new Error("Missing 'execute' for minifier '#{name}'") if not Piler.utils._.isFunction(def.execute)
+
+    debug('Added', name, def.on)
+
+    def.execute = Piler.utils.Q.method(def.execute)
+    minifiers[name] = def
+
     oldFn
 
   ###*

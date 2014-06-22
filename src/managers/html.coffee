@@ -50,12 +50,18 @@ module.exports = (Piler) ->
     locals: (response) ->
       super(response)
 
-      Piler.Main.debug('setting HTMLManager locals')
+      if not Piler.utils.objectPath.get(@, 'html.namespace')
+        Piler.Main.debug('setting HTMLManager locals')
+        namespace = @createTempNamespace()
+        Piler.utils.objectPath.set(@,'html.namespace', namespace)
+      else
+        namespace = @html.namespace
 
       response.piler.html =
-        addMultiline: @bindToPile('addMultiline')
-        addRaw: @bindToPile('addRaw')
-        addFile: @bindToPile('addFile')
+        namespace: namespace
+        addMultiline: @bindToPile('addMultiline', namespace)
+        addRaw: @bindToPile('addRaw', namespace)
+        addFile: @bindToPile('addFile', namespace)
 
       @
 
@@ -63,8 +69,8 @@ module.exports = (Piler) ->
       @_prepareNamespaces(namespaces)
 
       Piler.utils.Q.reduce((pile for id,pile of @piles when id in namespaces), (tags, source) =>
-          source.pileUp().then (code) ->
-            tags += "#{code}\n"
+        source.pileUp().then (code) ->
+          tags += "#{code}\n"
       , "")
 
     middleware: ->

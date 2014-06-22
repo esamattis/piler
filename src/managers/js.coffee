@@ -35,9 +35,10 @@ module.exports = (Piler) ->
     addModule: (filePath, options = {}) ->
       filePath = Piler.utils.path.normalize filePath
 
-      @filterObjects('file').then (files) =>
-        if filePath not in files
+      @duplicated('file', filePath).then(
+        =>
           @add({type: "module", object: filePath, options})
+      )
 
     ###*
      * Add a object
@@ -48,7 +49,10 @@ module.exports = (Piler) ->
      * @returns {Promise}
     ###
     addOb: (ob, options = {}) ->
-      @add({type: "obj", object: ob, options})
+      @duplicated('obj', ob).then(
+        =>
+          @add({type: "obj", object: ob, options})
+      )
 
     ###*
      * Add a CommonJS module
@@ -59,7 +63,10 @@ module.exports = (Piler) ->
      * @returns {Promise}
     ###
     addExec: (fn, options = {}) ->
-      @add({type: "fn", object: fn, options})
+      @duplicated('fn', fn).then(
+        =>
+          @add({type: "fn", object: fn, options})
+      )
 
   class JSManager extends Piler.getManager('PileManager')
     ###*
@@ -75,8 +82,12 @@ module.exports = (Piler) ->
      * @constructor Piler.Main.JSManager
      * @augments Piler.Main.PileManager
     ###
-    constructor: ->
-      super
+    constructor: (@name, @options)->
+      super(@name, @options)
+
+      Piler.utils._.defaults(@options, {
+        scriptType: true
+      })
 
       @piles.global.addExec ->
         window.piler ?= {}
@@ -106,7 +117,7 @@ module.exports = (Piler) ->
      * @returns {String}
     ###
     wrapInTag: (uri, extra = "") ->
-      "<script type=\"text/javascript\"  src=\"#{ uri }\"#{ extra }></script>"
+      "<script#{if @options.scriptType then ' type="text/javascript"' else ''} src=\"#{ uri }\" #{ extra }></script>"
 
     ###*
      * @function Piler.Main.JSManager#_isReserved
@@ -157,15 +168,22 @@ module.exports = (Piler) ->
     locals: (response) ->
       super(response)
 
-      Piler.Main.debug('setting JSManager locals')
+      if not Piler.utils.objectPath.get(@, 'js.namespace')
+        Piler.Main.debug('setting JSManager locals')
+        namespace = @createTempNamespace()
+        Piler.utils.objectPath.set(@,'js.namespace', namespace)
+      else
+        namespace = @js.namespace
 
       response.piler.js =
-        addExec: @bindToPile('addExec')
-        addRaw: @bindToPile('addRaw')
-        addOb: @bindToPile('addOb')
-        addModule: @bindToPile('addModule')
-        addFile: @bindToPile('addFile')
-        addUrl: @bindToPile('addUrl')
+        namespace: namespace
+        addExec: @bindToPile('addExec', namespace)
+        addRaw: @bindToPile('addRaw', namespace)
+        addOb: @bindToPile('addOb', namespace)
+        addModule: @bindToPile('addModule', namespace)
+        addFile: @bindToPile('addFile', namespace)
+        addUrl: @bindToPile('addUrl', namespace)
+        addMultiline: @bindToPile('addMultiline', namespace)
 
       @
 

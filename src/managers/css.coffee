@@ -46,8 +46,8 @@ module.exports = (Piler) ->
      * @constructor Piler.Main.CSSManager
      * @augments Piler.Main.PileManager
     ###
-    constructor: ->
-      super
+    constructor: (@name, @options)->
+      super(@name, @options)
 
     ###*
      * Wrap a stylesheet path in a link tag
@@ -58,7 +58,7 @@ module.exports = (Piler) ->
      * @returns {String}
     ###
     wrapInTag: (uri, extra = "") ->
-      "<link rel=\"stylesheet\" href=\"#{ uri }\"#{ extra }/>"
+      "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra }/>"
 
     ###*
      * @function Piler.Main.CSSManager#locals
@@ -66,12 +66,19 @@ module.exports = (Piler) ->
     locals: (response) ->
       super(response)
 
-      Piler.Main.debug('setting CSSManager locals')
+      if not Piler.utils.objectPath.get(@, 'css.namespace')
+        Piler.Main.debug('setting CSSManager locals')
+        namespace = @createTempNamespace()
+        Piler.utils.objectPath.set(@, 'css.namespace', namespace)
+      else
+        namespace = @css.namespace
 
       response.piler.css =
-        addRaw: @bindToPile('addRaw')
-        addFile: @bindToPile('addFile')
-        addUrl: @bindToPile('addUrl')
+        namespace: namespace
+        addRaw: @bindToPile('addRaw', namespace)
+        addFile: @bindToPile('addFile', namespace)
+        addUrl: @bindToPile('addUrl', namespace)
+        addMultiline: @bindToPile('addMultiline', namespace)
 
       return
 

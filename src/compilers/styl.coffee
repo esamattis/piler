@@ -4,13 +4,16 @@ module.exports = (Piler) ->
   Piler.addCompiler('stylus', ->
 
     obj =
-      outputExt: 'css'
-      targetExt: ['styl']
+      on:
+        file:
+          object: ['styl']
 
-      render: (filename, code, options) ->
+      targetExt: 'css'
+
+      execute: (code, filename, options) ->
         options =  Piler.utils._.merge({}, options, {filename: filename})
 
-        Piler.utils.Q (resolve, reject) ->
+        new Piler.utils.Q (resolve, reject) ->
           stylus(code).set(options).render (err, code)->
             return reject(err) if err
             resolve code
@@ -18,19 +21,22 @@ module.exports = (Piler) ->
 
           return
 
-    ###istanbul ignore else###
-    if (require.resolve('nib'))
+    ###istanbul ignore catch###
+    try
       nib = require('nib')
 
-      obj.render = (filename, code, options) ->
+      obj.execute = (code, filename, options) ->
 
-        Piler.utils.Q (resolve, reject) ->
-          stylus(code).set(options).render (err, code)->
+        new Piler.utils.Q (resolve, reject) ->
+          options =  Piler.utils._.merge({}, options, {filename: filename})
+
+          stylus(code).set(options).use(nib()).render (err, code)->
             return reject(err) if err
             resolve code
             return
 
           return
+    catch
 
     obj
   )

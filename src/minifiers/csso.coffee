@@ -3,11 +3,15 @@ module.exports = (Piler) ->
 
   Piler.addMinifier('csso', ->
 
-    (code, options = {}) ->
-        if options.noCache is true
-          csso.justDoIt code
-        else
-          Piler.Cache.cache(code, -> csso.justDoIt code)
+    {
+      execute: (code, options = {}) ->
+        csso.justDoIt code
+      on: {
+        file: {
+          object: ['css']
+        }
+      }
+    }
   )
 
   return

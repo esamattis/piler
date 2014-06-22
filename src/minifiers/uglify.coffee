@@ -2,9 +2,8 @@ module.exports = (Piler) ->
   UglifyJS = require("uglify-js")
 
   Piler.addMinifier('uglify', ->
-    (code, options = {}) ->
-
-      fnCompress = ->
+    {
+      execute: (code, options = {}) ->
         ast = UglifyJS.parse code
         ast.figure_out_scope()
 
@@ -16,12 +15,16 @@ module.exports = (Piler) ->
         if options.noMangleNames isnt true
           compressed_ast.mangle_names()
 
-        compressed_ast.print_to_string(beautify: false)
+        options.beautify ?= false
 
-      if options.noCache is true
-        fnCompress()
-      else
-        Piler.Cache.cache(code, fnCompress)
+        compressed_ast.print_to_string(options)
+
+      on:
+        file:
+          object: ['js']
+
+    }
+
   )
 
   return

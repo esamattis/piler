@@ -146,19 +146,17 @@ _fn = function (type, port){
       }).get();
 
       Piler.utils.Q.reduce(cssUrls, function (memo, path){
-        var d = Piler.utils.Q.defer();
+        return new Piler.utils.Q(function(resolve, reject){
+          request(self.httpRoot + path, function (err, res, body){
+            expect(res.statusCode).to.be(200, "" + path + " is missing");
 
-        request(self.httpRoot + path, function (err, res, body){
-          expect(res.statusCode).to.be(200, "" + path + " is missing");
+            if (err) {
+              return reject(err);
+            }
 
-          if (err) {
-            return d.reject(err);
-          }
-
-          d.resolve(memo + body);
+            resolve(memo + body);
+          });
         });
-
-        return d.promise;
       }, "").done(function (css){
         var result;
         expect(spy.called).to.be(false);

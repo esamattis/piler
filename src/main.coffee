@@ -1,18 +1,18 @@
-module.exports = (classes, mainExports) ->
+module.exports = (Piler, mainExports) ->
   'use strict'
 
   ###*
    * @namespace Piler.Main
   ###
 
-  op = classes.utils.objectPath
+  op = Piler.utils.objectPath
 
   out = {
     ###*
      * Output debug messages as if it was from {@link Piler.Main}
      * @function Piler.Main.debug
     ###
-    debug: debug = classes.utils.debug("piler:main")
+    debug: debug = Piler.utils.debug("piler:main")
   }
 
   ###*
@@ -45,7 +45,7 @@ module.exports = (classes, mainExports) ->
       @rawPile = null
       @pileHash = ''
 
-      classes.utils._.defaults(@options, {
+      Piler.utils._.defaults(@options, {
         cacheKeys: true
         volatile: false
         urlRoot: '/piler/'
@@ -63,11 +63,11 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     add: (config) ->
-      throw new Error('add expects an object as parameter') if not classes.utils._.isObject(config)
+      throw new Error('add expects an object as parameter') if not Piler.utils._.isObject(config)
 
       op.ensureExists(config, 'options', {})
 
-      config.options = classes.utils._.defaults(config.options, {
+      config.options = Piler.utils._.defaults(config.options, {
         filePath: false
         asIs: false
         noSumContent: false
@@ -76,12 +76,34 @@ module.exports = (classes, mainExports) ->
 
       type = if not config.options.before then 'push' else 'unshift'
 
-      @assets[type] object = classes.Serialize.serialize.call
+      @assets[type] object = Piler.Serialize.serialize.call
         type: config.type
         object: config.object
         options: config.options
 
-      classes.utils.Q.resolve(object)
+      Piler.utils.Q.resolve(object)
+
+    ###*
+     * Permanently remove an asset from this pile
+     * @function Piler.Main.BasePile#remove
+    ###
+    remove: (obj) ->
+      index = -1
+      for asset in @assets
+        index++
+        if asset is obj
+          break
+
+      if index > -1
+        Piler.utils.objectPath.del(@assets, [index])
+
+      return
+
+    duplicated: (type, content) ->
+      @filterObjects(type, 'toString').then (items) =>
+        content = Piler.Serialize.stringify(content)
+        throw new Error('Duplicated item') if content in items
+        items
 
     ###*
      * Adds a multiline that will be converted to a string later (or can be compiled to any code)
@@ -90,7 +112,10 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     addMultiline: (fn, options = {}) ->
-      @add({type: "multiline", object: fn, options})
+      @duplicated('multiline', fn).then(
+        =>
+          @add({type: "multiline", object: fn, options})
+      )
 
     ###*
      * Add an array of files at once
@@ -105,23 +130,26 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.Main.BasePile} `this`
     ###
     addFile: (filePath, options = {}) ->
-      filePath = classes.utils.path.normalize filePath
-      @filterObjects('file').then (files) =>
-        if filePath not in files
-          options = classes.utils._.defaults(options, {noSumContent: true, filePath: true})
+      filePath = Piler.utils.path.normalize filePath
+
+      @duplicated('file', filePath).then(
+        =>
+          options = Piler.utils._.defaults(options, {noSumContent: true, filePath: true})
           @add({type: "file", object: filePath, options})
+      )
 
     ###*
      * @function  Piler.Main.BasePile#addUrl
      * @param {String} url
      * @param {Piler.Main.AddConfig} [options={}]
-     * @returns {Piler.Main.BasePile} `this`
+     * @returns {Promise} `this`
     ###
     addUrl: (url, options = {}) ->
-      @filterObjects('url').then (urls) =>
-        if url not in urls
-          options = classes.utils._.defaults(options, {asIs: true})
+      @duplicated('url', url).then(
+        =>
+          options = Piler.utils._.defaults(options, {asIs: true})
           @add({type: 'url', object: url, options})
+      )
 
     ###*
      * @function Piler.Main.BasePile#addRaw
@@ -130,7 +158,10 @@ module.exports = (classes, mainExports) ->
      * @returns {Piler.Main.BasePile} `this`
     ###
     addRaw: (raw, options = {}) ->
-      @add({type: "raw", object: raw, options})
+      @duplicated('raw', raw).then(
+        =>
+          @add({type: "raw", object: raw, options})
+      )
 
     ###*
      * @function Piler.Main.BasePile#filterObjects
@@ -138,10 +169,12 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise} The result of the promise will be an array
     ###
     filterObjects: (filter, member = 'object') ->
-      if filter
-        classes.utils.Q.all (ob[member]() for ob in @assets when ob.type() is filter)
+      if filter and member
+        Piler.utils.Q.all (ob[member]() for ob in @assets when ob.type() is filter)
+      else if member
+        Piler.utils.Q.all (ob[member]() for ob in @assets)
       else
-        classes.utils.Q.all (ob[member]() for ob in @assets)
+        Piler.utils.Q.all (ob for ob in @assets)
 
     ###*
      * Clear all the assets in this pile
@@ -160,18 +193,28 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise} Return an array of strings
     ###
     getSources: ->
-      sources = ([u.object()] for u in @assets when u.options.asIs is true)
+      sources = ([u.object(), u.options.extra] for u in @assets when u.options.asIs is true)
 
-      if @options.production
-        sources.push ["#{ @options.urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"]
-      else
-        devCacheKey = ''
-
-        if @options.cacheKeys
-          devCacheKey = "?v=#{Date.now()}"
-
+      if @options.volatile
         for ob in @assets when ob.options.asIs is false
-          sources.push ["#{ @options.urlRoot }dev/#{ @name }.#{ ob.type() }-#{ ob.id() }.#{ @ext }#{devCacheKey}", {id: "pile-#{ ob.id() }"}]
+          sources.push [
+            "#{ @options.urlRoot }temp/#{ @name }.#{ ob.type() }-#{ ob.id() }.#{ @ext }"
+            ob.options.extra
+          ]
+      else
+        if @options.production
+          sources.push ["#{ @options.urlRoot }min/#{@pileHash}/#{ @name }.#{ @ext }"]
+        else
+          devCacheKey = ''
+
+          if @options.cacheKeys
+            devCacheKey = "?v=#{Date.now()}"
+
+          for ob in @assets when ob.options.asIs is false
+            sources.push [
+              "#{ @options.urlRoot }dev/#{ @name }.#{ ob.type() }-#{ ob.id() }.#{ @ext }#{devCacheKey}"
+              Piler.utils._.merge({}, ob.options.extra, {id: "pile-#{ ob.id() }"})
+            ]
 
       sources
 
@@ -179,13 +222,14 @@ module.exports = (classes, mainExports) ->
      * @function Piler.Main.BasePile#findAssetBy
      * @param {String} member
      * @param {*} search
+     * @param {*} one Return the first item found
      * @returns {Promise} Array of values or single value
     ###
     findAssetBy: (member, search, one = true) ->
-      reduced = classes.utils.Q.reduce(
+      reduced = Piler.utils.Q.reduce(
         (asset for asset in @assets)
         (total, asset) ->
-          classes.utils.Q.try(->
+          Piler.utils.Q.try(->
             asset[member]()
           ).then((value)->
             if value is search
@@ -209,21 +253,24 @@ module.exports = (classes, mainExports) ->
      * @returns {String}
     ###
     _computeHash: ->
-      @pileHash = classes.Serialize.sha1(@rawPile, 'hex')
+      @pileHash = Piler.Serialize.sha1(@rawPile, 'hex')
 
     ###*
      * Perform a compilation on the given object
     ###
     compile: (code) ->
       return code
-      classes.Compilers.compile(classes.utils.extension(ob.object()), ob.object(), code.toString())
+      Piler.Compilers.compile(Piler.utils.extension(ob.object()), ob.object(), code.toString())
 
+    ###*
+     * Perform a minification on the given object
+    ###
     minify: (code, options = {}) ->
       return code
       return code if not @ext
 
       if @options.production
-        classes.Minifiers.minify @ext, code, classes.utils._.merge({noCache: @options.volatile}, options)
+        Piler.Minifiers.minify @ext, code, Piler.utils._.merge({noCache: @options.volatile}, options)
       else
         code
 
@@ -235,7 +282,7 @@ module.exports = (classes, mainExports) ->
     pileUp: (cb) ->
       self = @
 
-      classes.utils.Q.map(@assets, (codeOb) ->
+      Piler.utils.Q.map(@assets, (codeOb) ->
 
         codeOb.contents().then (code) ->
           "#{self.commentLine("#{ self.name }.#{ codeOb.type() }-#{ codeOb.id() }.#{self.ext}")}\n#{ code }"
@@ -263,15 +310,20 @@ module.exports = (classes, mainExports) ->
      *
      * @function Piler.Main.PileManager#bindToPile
      * @param {String} fnName Any method name on the {@link Piler.Main.PileManager PileManager} class
-     * @param {String} [namespace="__temp"] Namespace to be bound to
+     * @param {String|Boolean} [namespace=true] Namespace to be bound to. If sets to true, will create a random volatile pile
      * @returns {Function}
     ###
-    bindToPile: (fnName, namespace = "__temp") ->
+    bindToPile: (fnName, namespace = true) ->
       self = @
       (data, options = {}) ->
-        options = classes.utils._.defaults(options, {namespace: namespace})
+        defaults = {namespace: namespace}
+
+        if namespace is true
+          namespace = self.createTempNamespace()
+          defaults.namespace = namespace
+
+        options = Piler.utils._.defaults(options, defaults)
         self[fnName] data, options
-        return
 
     ###*
      * @member {Piler.Main.BasePile} Piler.Main.PileManager#type
@@ -290,34 +342,68 @@ module.exports = (classes, mainExports) ->
     ###
     constructor: (@name, @options = {}) ->
       @options.urlRoot ?= '/piler/'
-      @options.logger ?= classes.Logger
+      @options.logger ?= Piler.Logger
 
       @piles = {}
 
       @getPile "global"
-      @getPile "__temp", {volatile: true}
 
       return
+
+    ###*
+     * Add assets in order
+     * @param {Array} arr Array containing an array of ["command", "content", "options"]
+     * @returns {Promise}
+    ###
+    batch: (arr) ->
+      arr = Piler.utils.ensureArray(arr)
+      Piler.utils.Q.reduce(
+        arr
+        (total, value) =>
+          @[value[0]](value[1], value[2]).then((val)->
+            total.concat val
+          )
+        []
+      )
+
+    ###*
+     * Disposes a namespace, clear it and remove from this manager
+     * @param {...String} namespaces Namespaces names
+     * @function Piler.Main.PileManager#dispose
+    ###
+    dispose: (namespaces...) ->
+      for namespace in namespaces when namespace isnt 'global'
+        if (pile = @piles[namespace])
+          pile.clear()
+          delete @piles[namespace]
+
+      return
+
+    createTempNamespace: ->
+      namespace = "temp-#{Date.now().toString() + Math.random().toString().replace('.','~')}"
+      @getPile(namespace, {volatile: true})
+      debug('Created random volatile pile', @type::ext, namespace)
+      namespace
 
     ###*
      * Get a pile from this manager. If it doesn't exist, it will create one
      *
      * @function Piler.Main.PileManager#getPile
-     * @param {String} ns
+     * @param {String} namespace
      * @param {Piler.Main.PileSettings} [settings={}]
      * @returns {Piler.Main.BasePile} `this`
     ###
-    getPile: (ns, settings = {}) ->
-      pile = @piles[ns]
+    getPile: (namespace, settings = {}) ->
+      pile = @piles[namespace]
       if not pile
-        return @piles[ns] = new @type ns, classes.utils._.merge({}, @options, settings)
+        return @piles[namespace] = new @type namespace, Piler.utils._.merge({}, @options, settings)
       pile
 
     ###*
-     * @function Piler.Main.PileManager#_defaultArguments
+     * @function Piler.Main.PileManager#_defaultOptions
      * @protected
     ###
-    _defaultArguments: (options) ->
+    _defaultOptions: (options) ->
       if not options.namespace
         options.namespace = 'global'
 
@@ -325,7 +411,7 @@ module.exports = (classes, mainExports) ->
 
     ###*
      * Low level function that actually adds stuff to the pile, deals with
-     * normalizing arguments
+     * normalizing options
      * @function Piler.Main.PileManager#add
      * @param {String} type BasePile method name
      * @param {*} data Any type of data that should be piled
@@ -333,7 +419,7 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     add: (type, data, options = {}) ->
-      @_defaultArguments(options)
+      @_defaultOptions(options)
 
       debug('Adding:', type, data, options)
 
@@ -357,9 +443,9 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     addFiles:  (arr, options) ->
-      arr = classes.utils.ensureArray([], arr)
+      arr = Piler.utils.ensureArray(arr)
 
-      classes.utils.Q.all (@addFile(file, options) for file in arr)
+      Piler.utils.Q.all (@addFile(file, options) for file in arr)
 
     ###*
      * Add a directory
@@ -374,9 +460,9 @@ module.exports = (classes, mainExports) ->
      * @returns {Promise}
     ###
     addDir:  (arr, options) ->
-      arr = classes.utils.ensureArray(arr)
+      arr = Piler.utils.ensureArray(arr)
 
-      classes.utils.Q.all (@addFile(file, options) for file in arr)
+      Piler.utils.Q.all (@addFile(file, options) for file in arr)
 
     ###*
      * @function Piler.Main.PileManager#addFile
@@ -416,40 +502,46 @@ module.exports = (classes, mainExports) ->
       @add('addUrl', url, options)
 
     ###*
-     * @function Piler.Main.PileManager#pileUp
+     * Update all related piles and assets and save them to disk, if you set outputDirectory
+     *
+     * @function Piler.Main.PileManager#contents
      *
      * @param {Function} [cb] You can use a callback if you want
-     * @returns {Promise}
+     * @returns {Promise} The current array of all content
     ###
-    pileUp: (cb) ->
+    contents: (cb) ->
       piles = @piles
       options = @options
 
-      options.logger.notice "Generating assets for '#{ @type::ext }'"
+      Piler.utils.Q.reduce(
+        Object.keys(piles)
+        (total, name) =>
+          pile = piles[name]
 
-      classes.utils.Q.each(Object.keys(piles), (name) ->
-        pile = piles[name]
+          options.logger.notice "Generating assets for '#{ pile.name }' in '#{ pile.ext }'"
 
-        pile.pileUp().then(
-          (code) ->
+          pile.pileUp().then(
+            (code) ->
 
-            if options.outputDirectory
-              # skip volatile piles
-              return code if pile.options.volatile is true
+              if options.outputDirectory
+                # skip volatile piles
+                return total.concat(code) if pile.options.volatile is true
 
-              outputPath = classes.utils.path.join options.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
+                outputPath = Piler.utils.path.join options.outputDirectory,  "#{ pile.name }.#{ pile.ext }"
 
-              classes.utils.fs.writeFileAsync(outputPath, code).then ->
-                options.logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
-                code
+                Piler.utils.fs.writeFileAsync(outputPath, code).then ->
+                  options.logger.info "Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }"
+                  total.concat(code)
 
-            else
-              code
-        )
+              else
+                total.concat(code)
+          )
+        []
       ).nodeify(cb)
 
+
     _prepareNamespaces: (namespaces) ->
-      if typeof classes.utils._.last(namespaces) is "object"
+      if typeof Piler.utils._.last(namespaces) is "object"
         opts = namespaces.pop()
       else
         opts = {}
@@ -457,8 +549,9 @@ module.exports = (classes, mainExports) ->
       if not opts.disableGlobal
         namespaces.unshift "global"
 
-      if not opts.disableTemp
-        namespaces.push "__temp"
+      if not opts.disableVolatile
+        for namespace,pile of @piles when pile.options.volatile is true
+          namespaces.push namespace
 
       namespaces
 
@@ -473,19 +566,19 @@ module.exports = (classes, mainExports) ->
       sources = []
 
       for ns in namespaces
-        if pile = @piles[ns]
+        if (pile = @piles[ns])
           sources.push pile.getSources()...
 
       sources
 
     _objectToAttr: (obj)->
-      if classes.utils._.isArray(obj)
+      if Piler.utils._.isArray(obj)
         obj.join(' ')
       else if obj
         code = []
 
         for k of obj
-          code.push "#{k}=#{classes.Serialize.stringify obj[k]}"
+          code.push "#{k}=#{Piler.Serialize.stringify obj[k]}"
 
         code.join(' ')
       else
@@ -501,24 +594,25 @@ module.exports = (classes, mainExports) ->
     ###
     render: (namespaces...) ->
 
-      classes.utils.Q.reduce(@getSources(namespaces...), (tags, source) =>
-          tags += "#{@wrapInTag(source[0], @_objectToAttr(source[1]))}\n"
+      Piler.utils.Q.reduce(@getSources(namespaces...), (tags, source) =>
+        tags += "#{@wrapInTag(source[0], @_objectToAttr(source[1]))}\n"
       , "")
 
     ###*
      * Add our version of render, we need to support promise locals
+     *
      * @function Piler.Main.PileManager#_render
      * @protected
      * @returns {Function}
     ###
     _render: (response) ->
       (name, locals, callback) ->
-        if not classes.utils._.isObject locals
+        if not Piler.utils._.isObject locals
           _locals = {}
         else
           _locals = locals
 
-        classes.utils.Q.props(_locals).then (locals) ->
+        Piler.utils.Q.props(_locals).then (locals) ->
           response.render(name, locals, callback)
 
           locals
@@ -529,7 +623,7 @@ module.exports = (classes, mainExports) ->
      * @function Piler.Main.PileManager#locals
     ###
     locals: (response) ->
-      classes.utils.objectPath.ensureExists(response, 'piler', {render: @_render(response)})
+      Piler.utils.objectPath.ensureExists(response, 'piler', {render: @_render(response)})
       @
 
     ###*
@@ -538,25 +632,29 @@ module.exports = (classes, mainExports) ->
      * @returns {Stream}
     ###
     stream: (namespaces...) ->
-      stream = classes.utils.through()
+      stream = Piler.utils.through()
+      main = Piler.utils.Q.resolve()
       promises = (@piles[namespace].pileUp() for namespace in namespaces when @piles[namespace])
+
       if promises.length
-        classes.utils.Q.each(promises,
-          (value) ->
+        for promise in promises
+          main = main.then(promise).then((value)->
             stream.write(value)
-        ).done(->
+          )
+
+        main.done(->
           stream.end()
-          return
         )
       else
         stream.end()
+
       stream
 
     ###*
      * Find an asset from a namespace
      * @returns {Promise}
     ###
-    findAssetBy: classes.utils.Q.method (member, search, namespace = 'global') ->
+    findAssetBy: Piler.utils.Q.method (member, search, namespace = 'global') ->
       pile = @piles[namespace]
 
       throw new Error("namespace '#{namespace}' not found") if not pile
@@ -581,10 +679,10 @@ module.exports = (classes, mainExports) ->
 
         self.locals(res)
 
-        if not classes.utils._.startsWith req.url, self.options.urlRoot
+        if not Piler.utils._.startsWith req.url, self.options.urlRoot
           return next()
 
-        asset = classes.AssetUrlParse.parse req.url
+        asset = Piler.AssetUrlParse.parse req.url
 
         if not asset
           debug('not an asset, skipping', req.url)
@@ -607,37 +705,33 @@ module.exports = (classes, mainExports) ->
           return
 
         if asset.min
-          if pile.options.volatile is true
-            debug('prod code volatile object', asset.name, asset.ext)
-
-            pile.pileUp().then (code) ->
-              res.send code
-              pile.clear()
-              res.end()
-
-          else
-            res.setHeader('Cache-Control', 'max-age=31556900')
-            res.send pile.rawPile
-            res.end()
+          res.setHeader('Cache-Control', 'max-age=31556900')
+          res.send pile.rawPile
+          res.end()
 
           return
 
-        pile.findAssetBy('id', asset.dev.uid).then (codeOb) ->
+        return next() if not asset.dev and not asset.temp
+
+        uid = if asset.temp then asset.temp.uid else asset.dev.uid
+
+        pile.findAssetBy('id', uid).then (codeOb) ->
 
           if codeOb
-            debug('dev code object', codeOb)
+            debug('code object', codeOb.id())
 
             codeOb.contents().then (code) ->
               res.end code
               return
           else
-            res.send "Cannot find codeOb #{ asset.dev.uid }", 404
+            res.send "Cannot find codeOb #{ uid }", 404
             res.end()
 
           if pile.options.volatile is true
-            pile.clear()
+            pile.remove(codeOb)
 
           return
+
 
         return
 
@@ -667,7 +761,7 @@ module.exports = (classes, mainExports) ->
   out.addManager = mainExports.addManager = (name, factoryFn) ->
     oldFn = if managers[name] then managers[name] else null
     debug("Added manager '#{name}'")
-    managers[name] = factoryFn(classes)
+    managers[name] = factoryFn(Piler)
     oldFn
 
   ###*
@@ -708,14 +802,14 @@ module.exports = (classes, mainExports) ->
   out.createManager = mainExports.createManager = (type, name, options = {}) ->
     throw new Error("Manager #{type} not available") if not managers[type]
 
-    if classes.utils._.isObject(name)
+    if Piler.utils._.isObject(name)
       options = name
       name = null
 
     if not name
       name = type
 
-    classes.utils.objectPath.ensureExists(options, 'production', production)
+    Piler.utils.objectPath.ensureExists(options, 'production', production)
 
     new managers[type](name, options)
 
@@ -732,7 +826,7 @@ module.exports = (classes, mainExports) ->
   out.addPile = mainExports.addPile = (name, factoryFn) ->
     oldFn = if piles[name] then piles[name] else ->
     debug("Added pile '#{name}'")
-    piles[name] = factoryFn(classes)
+    piles[name] = factoryFn(Piler)
     oldFn
 
   ###*

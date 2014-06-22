@@ -1,4 +1,4 @@
-module.exports = (classes, mainExports) ->
+module.exports = (Piler, mainExports) ->
   'use strict'
 
   ###*

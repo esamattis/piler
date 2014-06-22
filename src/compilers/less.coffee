@@ -4,11 +4,14 @@ module.exports = (Piler) ->
   render = Piler.utils.Q.promisify less.render, less
 
   Piler.addCompiler('less', ->
-    render: (filename, code, options) ->
+    execute: (code, filename, options) ->
       render code, Piler.utils._.merge({}, options, paths: [Piler.utils.path.dirname filename])
 
-    targetExt: ['less']
-    outputExt: 'css'
+    on:
+      file:
+        object: ['less']
+
+    targetExt: 'css'
   )
 
   return

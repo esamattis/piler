@@ -2,7 +2,7 @@
 
 var _fn, _i, _len, piles;
 
-piles = [Piler.getPile('js'), Piler.getPile('css')];
+piles = [Piler.getPile('js'), Piler.getPile('css'), Piler.getPile('html')];
 
 _fn = function (Pile){
 
@@ -10,23 +10,25 @@ _fn = function (Pile){
     var dummyPath;
     dummyPath = "/foo/bar";
 
-    it("Pile addFile adds up to one file", function (){
+    it("and adds up to one file", function (done){
       var js;
 
       js = new Pile();
-      js.addFile(dummyPath);
-
-      expect(js.code.length).to.be(1);
+      js.addFile(dummyPath).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
     });
 
-    it("Pile addFile cannot make duplicates", function (){
+    it("and cannot make duplicates", function (done){
       var js;
 
       js = new Pile();
-      js.addFile(dummyPath);
-      js.addFile(dummyPath);
+      js.addFile(dummyPath).then(function(){
+        return js.addFile(dummyPath);
+      }).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
 
-      expect(js.code.length).to.be(1);
     });
   });
 
@@ -34,21 +36,49 @@ _fn = function (Pile){
     var dummyUrl;
     dummyUrl = "http://example.com/test.js";
 
-    it("Pile addUrl adds up to one url", function (){
+    it("and adds up to one url", function (done){
       var js;
       js = new Pile();
-      js.addUrl(dummyUrl);
-
-      expect(js.urls.length).to.be(1);
+      js.addUrl(dummyUrl).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
     });
 
-    it("Pile addUrl cannot make duplicates", function (){
+    it("and cannot make duplicates", function (done){
       var js;
       js = new Pile();
-      js.addUrl(dummyUrl);
-      js.addUrl(dummyUrl);
+      js.addUrl(dummyUrl).then(function(){
+        return js.addUrl(dummyUrl);
+      }).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
+    });
+  });
 
-      expect(js.urls.length).to.be(1);
+  describe("addMultiline works as expected in " + Pile.name, function (){
+    var dummyFn;
+    dummyFn = function(){
+      /*
+        <testing>
+      */
+    };
+
+    it("and adds up to one multiline", function (done){
+      var js;
+      js = new Pile();
+      js.addMultiline(dummyFn).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
+    });
+
+    it("and cannot make duplicates", function (done){
+      var js;
+      js = new Pile();
+      js.addMultiline(dummyFn).then(function(){
+        return js.addMultiline(dummyFn);
+      }).then(function(){
+        expect(js.assets.length).to.be(1);
+      }).done(done);
     });
   });
 };

@@ -20,35 +20,43 @@ module.exports = (Piler, mainExports) ->
    * @function Piler.Cache.cache
    * @param {String} code
    * @param {Function} fnCompress Function that returns a value or a promise
+   * @param {Function} [cb] Optional callback
+   * @returns {Promise}
   ###
-  cache: (code, fnCompress) ->
+  cache: (code, fnCompress, cb) ->
     if options.enable isnt true
       debug('minified code cache isnt enabled')
-      return fnCompress()
+      return Piler.utils.Q.resolve(fnCompress()).nodeify(cb)
 
     hash = Piler.Serialize.sha1(code, 'hex')
 
     if options.useFS is true
       file = Piler.utils.path.join TMPDIR, '/', hash
 
-      debug('using filesystem.', 'hash:', hash, 'file:', file)
+      debug('using filesystem.', 'hash', hash, 'file', file)
 
-      if Piler.utils.fs.existsSync(file)
-        debug('file already in cache')
-        # if already in cache
-        return Piler.utils.fs.readFileSync(file, {encoding: 'utf8'})
-
-      # if not: compress the code
-      cache = fnCompress()
-
-      # write the file
-      Piler.utils.fs.writeFileSync(file, cache, {encoding: 'utf8'})
-
-      # .. and return the compressed version
-      cache
+      Piler.utils.fs.readFileAsync(
+        file, {encoding: 'utf8'}
+      ).then(
+        (contents) ->
+          debug('file already in cache')
+          # if already in cache
+          contents
+        ->
+          debug('caching', file)
+          # if not: compress the code
+          Piler.utils.Q.try(->
+            fnCompress()
+          ).then((cache)->
+            Piler.utils.fs.writeFileAsync(file, cache, {encoding: 'utf8'}).then(-> cache)
+          )
+      ).nodeify(cb)
     else
-      debug('not using file system. calling custom callback.', 'hash:', hash)
-      options.cacheCallback(code, hash, fnCompress)
+      debug('not using file system. calling custom callback.', 'hash', hash)
+
+      Piler.utils.Q.try(->
+        options.cacheCallback(code, hash, fnCompress)
+      ).nodeify(cb)
 
   options: options =
     enable: true
@@ -88,6 +96,6 @@ module.exports = (Piler, mainExports) ->
     throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
 
     options.useFS = false
-    options.cacheCallback = Piler.utils.Q.method(cacheFn)
+    options.cacheCallback = Piler.utils.Q.method cacheFn
 
     return

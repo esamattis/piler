@@ -1,4 +1,4 @@
-module.exports = (classes, mainExports) ->
+module.exports = (Piler, mainExports) ->
   'use strict'
 
   ###*
@@ -6,7 +6,7 @@ module.exports = (classes, mainExports) ->
   ###
 
   crypto = require 'crypto'
-  debug = classes.utils.debug("piler:serialize")
+  debug = Piler.utils.debug("piler:serialize")
 
   ###*
    * Serializable callback
@@ -33,10 +33,10 @@ module.exports = (classes, mainExports) ->
       ob.object()
 
     multiline: (ob)->
-      classes.utils.multiline ob.object()
+      Piler.utils.multiline ob.object()
 
     file: (ob) ->
-      classes.utils.fs.readFileAsync(ob.object())
+      Piler.utils.fs.readFileAsync(ob.object())
       .then (data) ->
         data.toString()
 
@@ -81,10 +81,10 @@ module.exports = (classes, mainExports) ->
         # itself.
         sum.update codeFrom [@object(), @options, @type()]
 
-      hash = sum.digest('hex').substring 10, 0
+      hash = sum.digest('hex').substring 12, 0
 
       if @options.filePath
-        filename = classes.utils.path.basename @object()
+        filename = Piler.utils.path.basename @object()
         filename = filename.replace /\./g, "_"
         filename = filename.replace /\-/g, "_"
         hash = filename + "_" + hash
@@ -101,11 +101,14 @@ module.exports = (classes, mainExports) ->
       @object = ->
         obj
 
+      @toString = ->
+        codeFrom @object()
+
       @type = ->
         type
 
       @contents = (cb) ->
-        classes.utils.Q.try(->
+        Piler.utils.Q.try(->
           pilers[type] self
         ).nodeify(cb)
 
@@ -139,7 +142,7 @@ module.exports = (classes, mainExports) ->
   addSerializable: mainExports.addSerializable = (name, factoryFn)->
     oldFn = if pilers[name] then pilers[name] else ->
     debug('Added', name)
-    pilers[name] = factoryFn(classes)
+    pilers[name] = factoryFn(Piler)
     oldFn
 
   ###*
