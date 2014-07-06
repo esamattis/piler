@@ -32,39 +32,35 @@
 						</li>
 						
 						<li>
-							<a href="Piler.AssetUrlParse.html">AssetUrlParse</a>
+							<a href="Piler.AssetUrlParse.html">Piler.AssetUrlParse</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Cache.html">Cache</a>
+							<a href="Piler.Cache.html">Piler.Cache</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Compilers.html">Compilers</a>
+							<a href="Piler.LiveCSS.html">Piler.LiveCSS</a>
 						</li>
 						
 						<li>
-							<a href="Piler.LiveCSS.html">LiveCSS</a>
+							<a href="Piler.Logger.html">Piler.Logger</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Logger.html">Logger</a>
+							<a href="Piler.Main.html">Piler.Main</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.html">Main</a>
+							<a href="Piler.Processors.html">Piler.Processors</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Minifiers.html">Minifiers</a>
+							<a href="Piler.Serialize.html">Piler.Serialize</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Serialize.html">Serialize</a>
-						</li>
-						
-						<li>
-							<a href="Piler.utils.html">utils</a>
+							<a href="Piler.utils.html">Piler.utils</a>
 						</li>
 						
 
@@ -78,35 +74,35 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Piler.Main.BasePile.html">BasePile</a>
+							<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.CSSManager.html">CSSManager</a>
+							<a href="Piler.Main.CSSManager.html">Piler.Main.CSSManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.CSSPile.html">CSSPile</a>
+							<a href="Piler.Main.CSSPile.html">Piler.Main.CSSPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.HTMLManager.html">HTMLManager</a>
+							<a href="Piler.Main.HTMLManager.html">Piler.Main.HTMLManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.HTMLPile.html">HTMLPile</a>
+							<a href="Piler.Main.HTMLPile.html">Piler.Main.HTMLPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.JSManager.html">JSManager</a>
+							<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.JSPile.html">JSPile</a>
+							<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.PileManager.html">PileManager</a>
+							<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>
 						</li>
 						
 
@@ -155,85 +151,134 @@
 <a href="https://david-dm.org/epeli/piler"><img src="https://david-dm.org/epeli/piler.svg" alt="Dependency Status"></a></p>
 <p><a href="https://nodei.co/npm/piler/"><img src="https://nodei.co/npm/piler.svg?downloads=true&amp;stars=true" alt="NPM"></a></p>
 <h2>Feature highlights</h2><ul>
-<li>Promise based interface, dealing with assets is asynchronous by nature (serving, compiling, reading, writing, 
-caching), so you need to tame it properly. A lot of preprocessors and template engines are asynchronous, and 
-Piler need to comply with that </li>
-<li>Minify and concatenate JS and CSS for fast page loads</li>
-<li>Tag rendering, for example, <code>&lt;script type=&quot;text/javascript&quot;&gt;</code>, <code>&lt;link&gt;</code>, <code>&lt;script type=&quot;text/ng-template&quot;&gt;</code>, etc</li>
-<li>Namespace your assets, serve them only when needed </li>
-<li>Flexible and distributed cache</li>
-<li>Transparent preprocessor (for example, <code>.coffee -&gt; .js</code> without a hassle)</li>
-<li>Push CSS changes to the browser using Socket.IO 1.x.x in development mode</li>
-<li>Reuse server code in the browser and vice-versa</li>
-<li>API consistency and generic interface for all your needs</li>
-<li><a href="https://epeli.github.io/piler">Check the documentation</a> </li>
+<li><p>Dual API Callback/Promise based interface, since dealing with assets and file contents are asynchronous
+by nature (serving, compiling, reading, writing, caching). A lot of preprocessors and template engines are
+asynchronous, and Piler need to comply with that. Plus it enables a flow interface that can join in multiple
+3rd party modules alongside with Piler, like it happens with streams interface.</p>
+</li>
+<li><p>Minify and concatenate JS and CSS for fast page loads</p>
+</li>
+<li><p>Tag rendering, for example, <code>&lt;script type=&quot;text/javascript&quot; src=&quot;...&quot;&gt;&lt;/script&gt;</code>,
+<code>&lt;link href=&quot;...&quot;&gt;</code>, <code>&lt;script type=&quot;text/ng-template&quot;&gt;...&lt;/script&gt;</code>, etc</p>
+</li>
+<li><p>Namespace your assets, serve them only when needed</p>
+</li>
+<li><p>Flexible and distributed cache</p>
+</li>
+<li><p>Transparent preprocessor (for example, <code>.coffee -&gt; .js</code> or es6 modules to todays javascript without a hassle)</p>
+</li>
+<li><p>Push CSS changes to the browser using Socket.IO 1.x.x in development mode</p>
+</li>
+<li><p>Reuse server code in the browser and vice-versa without extra steps</p>
+</li>
+<li><p>API consistency and fluent interface</p>
+</li>
+<li><p>Reliable. Piler as module shouldn't be your concern, it doesn't affect your application.</p>
+</li>
+<li><p>Focuses on <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">D.R.Y.</a>, <a href="http://en.wikipedia.org/wiki/Inversion_of_control">IoC</a>
+and <a href="http://en.wikipedia.org/wiki/Strategy_pattern">Strategy</a> paradigms.</p>
+</li>
+<li><p><a href="https://epeli.github.io/piler">Check the documentation</a></p>
+</li>
+</ul>
+<h4>Piler is written following principles in mind:</h4><ul>
+<li><p>Creating best possible production setup for assets should be as easy as
+including script/link to a page.</p>
+</li>
+<li><p>Namespaces. You don't want to serve huge blob of admin view code for all
+anonymous users.</p>
+</li>
+<li><p>Support any type of files. No need to create special structure for your
+assets. Just include your jQueries, html, stylesheets or whatever.</p>
+</li>
+<li><p>Preprocessor languages are first class citizens. Eg. Just change the file
+extension to .coffee to use CoffeeScript. That's it. No need to worry about
+compiled files.</p>
+</li>
+<li><p>Use heavy caching headers. Browser caches are killed automatically using the hash
+sum of the assets.</p>
+</li>
+<li><p>Awesome development mode. Build-in support for pushing CSS changes to
+browser using Socket.IO.</p>
+</li>
 </ul>
 <h2>Whats new in 1.0.0</h2><p>Version 1.x is almost a complete rewrite from the 0.x versions. A lot changed since Node.js community
-and some 'best practices' have emerged, a lot of great tools and of course, with great power, 
+and some 'best practices' have emerged, a lot of great tools and of course, with great power,
 comes great responsibility. On the verge of generators and an avalanche of functional code (namely Promises)
 it needed to be done.</p>
 <p>Piler 1.x aims to be completely flexible and expose as many API possible to ensure
-community modules can be quickly used along with Piler. By modularizing the asset management 'inner' 
+community modules can be quickly used along with Piler. By modularizing the asset management 'inner'
 workings, it can achieve more testable and maintainable code. With the module interface, modules
-can set minifiers, managers, compilers, serializable objects, all in one package. </p>
-<p>Also, the new code is well tested and commented, so it's not a blackbox. </p>
-<p>This is a big change, and it's <strong>completely</strong> not backward compatible with 0.x. </p>
-<h2>Awesome Asset Manager for Node.js</h2><p><em>Piler</em> allows you to manage all your assets cleanly and directly from code. 
-It will concatenate and minify them in production and it takes care of rendering 
+can set minifiers, managers, compilers, serializable objects, all in one package.</p>
+<p>Also, the new code is well tested and commented, so it's not a blackbox.</p>
+<p>This is a big change, and it's <strong>completely</strong> not backward compatible with 0.x.</p>
+<h4>Migrating</h4><ul>
+<li><p><code>createCSSManager</code> and <code>createJSManager</code> are gone, instantiation should be done using the factory method, as
+<code>createManager('js')</code> and <code>createManager('css')</code>, respectively, for example.</p>
+</li>
+<li><p><code>JSManager.liveUpdate</code> is gone, use <code>Piler.LiveCSS.init(jsmanager, cssmanager, httpserver, ioserver);</code></p>
+</li>
+<li><p><code>manager.pileUp()</code> is gone and called <code>manager.contents()</code>. There's no need to call <code>contents()</code> on
+the manager now, unless you want to output to a directory. This function is always asynchronous because
+the time it might take and the I/O it causes may take sometime.</p>
+</li>
+<li><p>Pile now has an internal file cache, so that the contents can live between server restarts.
+If you prefer to use a memory cache, like memcached or replicate it to other servers and act as a in-memory
+CDN, you can roll your own.</p>
+</li>
+<li><p><code>renderTags</code> is now called <code>render</code>, and it's asynchronous (returns a promise or you can use a callback),
+and instead of variadic arguments, it takes an array.
+eg: <code>js.renderTags('admin','utils');</code> to <code>js.render(['admin','utils']);</code></p>
+</li>
+</ul>
+<h3>Community modules / plugins</h3><ul>
+<li>None yet, create one, put it in the readme and make a PR!</li>
+</ul>
+<h2>Awesome Asset Manager for Node.js</h2><p><em>Piler</em> allows you to manage all your assets cleanly and directly from code.
+It will concatenate and minify them in production and it takes care of rendering
 the tags. The idea is to make your pages load as quickly as possible.</p>
 <p>So why create a yet another asset manager? Because Node.js is special. In
 Node.js a JavaScript asset isn't just a pile of bits that are sent to the
 browser. It's code. It's code that can be also used in the server and I think
-that it's the job of asset managers to help with it. </p>
-<p>So in <em>Piler</em> you can take code directly from your Javascript objects, not just 
+that it's the job of asset managers to help with it.</p>
+<p>So in <em>Piler</em> you can take code directly from your Javascript objects, not just
 from JavaScript files.</p>
 <p>Copying things from Rails is just not enough. This is just a one reason why
 <em>Piler</em> was created.</p>
 <p>Server-side code:</p>
-<pre class="prettyprint source"><code>clientjs.addOb({BROWSER_GLOBAL: {
+<pre class="prettyprint source lang-javascript"><code>clientjs.addOb({BROWSER_GLOBAL: {
     aFunction: function() {
-        console.log("Hello I'm in the browser also. Here I have", window, "and other friends");
+        console.log(&quot;Hello I'm in the browser also. Here I have&quot;, window, &quot;and other friends&quot;);
     }
 }});</code></pre><p>You can also tell <em>Piler</em> to directly execute some function in the browser:</p>
-<pre class="prettyprint source"><code>clientjs.addExec(function() {
+<pre class="prettyprint source lang-javascript"><code>clientjs.addExec(function() {
     BROWSER_GLOBAL.aFunction();
-    alert("Hello" + window.navigator.appVersion);
-});</code></pre><p>You can even add custom language names by signaling a compiler, and it will be served
-as Javascript, plus it can be reused in Node.js as well</p>
-<pre class="prettyprint source"><code>clientjs.addMultiline(function() {/*
+    alert(&quot;Hello&quot; + window.navigator.appVersion);
+});</code></pre><p>You can even add custom language names mixed in the Javascript code by signaling a processor, and it will be
+served as Javascript, plus it can be reused in Node.js as well</p>
+<pre class="prettyprint source lang-javascript"><code>var obj = clientjs.addMultiline(function() {/*
+  ->
     coffee = 'very versatile library'
-    console.log "I'm a #{coffee}"
+    console.log &quot;I'm a #{coffee}&quot;
     coffee
-*/}, {options:{compilers:'coffeescript'}, name:'coffeestuff', namespace:'usefulstuff'});
+*/}, {processors:{coffeescript:{}}, name:'coffeestuff', namespace:'usefulstuff'});
 
-clientjs
-.findAssetBy('name', 'coffeestuff', 'usefulstuff')
-.then(function(object){
-    return object.contents();
-})
-.then(function(fn){
-    fn();
-});</code></pre><p><em>Piler</em> is written following principles in mind:</p>
-<ul>
-<li>Creating best possible production setup for assets should be as easy as
-including script/link to a page.</li>
-<li>Namespaces. You don't want to serve huge blob of admin view code for all
-anonymous users.</li>
-<li>Support any JS- or CSS-files. No need to create special structure for your
-assets. Just include your jQueries or whatever.</li>
-<li>Preprocessor languages are first class citizens. Eg. Just change the file
-extension to .coffee to use CoffeeScript. That's it. No need to worry about
-compiled files.</li>
-<li>Use heavy caching. Browser caches are killed automatically using the hash
-sum of the assets.</li>
-<li>Awesome development mode. Build-in support for pushing CSS changes to
-browser using Socket.IO.</li>
-</ul>
-<p><strong>Full example Express 3.x and 4.x</strong></p>
-<pre class="prettyprint source"><code>var app = require('express')(),
+obj.contents().then(function(code){
+  /* code is:
+
+    (function(){
+      return function(){
+        coffee = 'very versatile library';
+        console.log(&quot;I'm a &quot; + coffee);
+        return coffee;
+      };
+    }).call(this);
+   */
+});</code></pre><p><strong>Full example Express 3.x and 4.x</strong></p>
+<pre class="prettyprint source lang-javascript"><code>var app = require('express')(),
     http = require('http'),
-    Piler = require("piler"),
-    livecss = Piler.require('piler/modules/livecss');
+    Piler = require('piler'),
+    livecss = Piler.LiveCSS;
 
 var clientjs = piler.createManager('js');
 var clientcss = piler.createManager('css');
@@ -242,23 +287,26 @@ var srv = http.createServer(app);
 
 app
     .use(clientjs.middleware())
-    .use(clientcss.middleware());
+    .use(clientcss.middleware())
+    ;
 
-clientcss.addFile(__dirname + "/style.css");
+clientcss.addFile(__dirname + &quot;/style.css&quot;);
 
-clientjs.addUrl("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js");
-clientjs.addFile(__dirname + "/client/hello.js");
+clientjs.addUrl(&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.js&quot;);
+clientjs.addFile(__dirname + &quot;/client/hello.js&quot;);
+clientjs.addWildcard(__dirname + &quot;/client/*-es6.js&quot;);
 
 livecss.init(clientjs, clientcss, srv, require('socket.io')(srv));
 
-clientjs.addOb({ VERSION: "1.0.0" });
+clientjs.addOb({ VERSION: &quot;1.0.0&quot; });
 
 clientjs.addExec(function() {
-    alert("Hello browser" + window.navigator.appVersion);
+    alert(&quot;Hello browser&quot; + window.navigator.appVersion);
 });
 
-app.get("/", function(req, res){
-    res.piler.render("index.jade", {
+app.get(&quot;/&quot;, function(req, res){
+
+    res.piler.render(&quot;index.jade&quot;, {
         layout: false,
         js: clientjs.render(),
         css: clientcss.render()
@@ -268,36 +316,53 @@ app.get("/", function(req, res){
 srv.listen(8080);</code></pre><h2>Namespaces</h2><p>The example above uses just a one pile. The global pile.</p>
 <p>If you for example want to add big editor files only for administration pages
 you can create a pile for it:</p>
-<pre class="prettyprint source"><code>clientjs.addFile("admin", __dirname + "/editor.js");
-clientjs.addFile("admin", __dirname + "/editor.extension.js");</code></pre><p>This will add file editor.js and editor.extension.js to a admin pile. Now you
+<pre class="prettyprint source lang-javascript"><code>clientjs.addFile(__dirname + &quot;/editor.js&quot;, {namespace: &quot;admin&quot;});
+clientjs.addFile(__dirname + &quot;/editor.extension.js&quot;, {namespace: &quot;admin&quot;});</code></pre><p>This will add file <code>editor.js</code> and <code>editor.extension.js</code> to a admin pile. Now you
 can add that to your admin pages by using giving it as parameter for
-<em>renderTags</em>.</p>
-<pre class="prettyprint source"><code>js.renderTags("admin");</code></pre><p>This will render script-tags for the global pile and the admin-pile.
-<code>js.renderTags</code> and <code>css.renderTags</code> can take variable amount of arguments.
-Use <code>js.renderTags(&quot;pile1&quot;, &quot;pile2&quot;, ....)</code> to render multiple namespaces</p>
-<p>Piling works just the same with css.</p>
+<em>render</em>.</p>
+<pre class="prettyprint source lang-javascript"><code>js.render('admin');</code></pre><p>This will render script-tags for the <code>global</code> pile and the <code>admin</code> pile.
+<code>js.render</code> and <code>css.render</code> can take variable amount of arguments.
+Use <code>js.render(['pile1', 'pile2', ...])</code> to render multiple namespaces</p>
+<p>Piling works just the same with other asset types, css or html.</p>
+<p>You can disable the rendering of <code>global</code> pile by using <code>js.render(['admin'], {disableGlobal: true});</code></p>
+<h2>Express Middleware</h2><p>Although you don't need to use the middleware that comes with Piler, you can
+use it to speed up development.</p>
+<p>The Express <code>piler</code> namespace on the response parameter have an special <code>render</code>
+function that can handle promises and generators! A very nice extra and adds the
+possibility for future proof code.</p>
+<pre class="prettyprint source lang-javascript"><code>app.get('/', function(req, res){
+    res.piler.render('view', {
+        promiseValue: SomePromiseReturningFunction('w00t'),
+        generator: SomeGeneratorReturningFunction(),
+        plainValue: 10
+    });
+});</code></pre><p>The call from <code>res.piler.render</code> is passed as-is to express original <code>res.render</code> function.
+You can add functions to the <code>piler</code> response namespace by overloading the
+<code>BasePile.prototype.locals</code> function.</p>
 <h2>Sharing code with the server</h2><p>Ok, that's pretty much what every asset manager does, but with <em>Piler</em> you can
 share code directly from your server code.</p>
 <p>Let's say that you want to share a email-validating function with a server and
 the client</p>
-<pre class="prettyprint source"><code>function isEmail(s) {
+<pre class="prettyprint source lang-javascript"><code>function isEmail(s) {
   return !! s.match(/.\w+@\w+\.\w/);
-}</code></pre><p>You can share it with <em>addOb</em> -method:</p>
-<pre class="prettyprint source"><code>clientjs.addOb({MY: {
+}</code></pre><p>You can share it with <em>addOb</em> method:</p>
+<pre class="prettyprint source lang-javascript"><code>clientjs.addOb({MY: {
    isEmail: isEmail
    }
-});</code></pre><p>Now on the client you can find the isEmail-function from MY.isEmail.</p>
+});</code></pre><p>Now on the client you can find the <code>isEmail</code> function from <code>window.MY.isEmail</code>.</p>
 <p><code>addOb</code> takes an object which will be merged to global window-object on the
 client. So be carefull when choosing the keys. The object can be almost any
 JavaScript object. It will be serialized and sent to the browser. Few caveats:</p>
 <ol>
 <li>No circular references</li>
-<li>Functions will be serialized using Function.prototype.toString. So closures
-won't transferred to the client!</li>
+<li>Functions will be serialized using Function.prototype.toString. So closures and
+outside code won't be transferred to the client!</li>
 </ol>
+<p><strong>PRO-TIP</strong>: You can use dot delimited namespaces, and they will be created in the browser, as such: <code>{'MY.isEmail': isEmail}</code>
+is effectively the same. Doing <code>{'$.fn.isEmail': isEmail}</code> can automatically extend jQuery with a function <code>isEmail</code> function!</p>
 <h3>Pattern for sharing full modules</h3><p>This is nothing specific to <em>Piler</em>, but this is a nice pattern which can be
 used to share modules between the server and the client.</p>
-<pre class="prettyprint source"><code>// share.js
+<pre class="prettyprint source lang-javascript"><code>// share.js
 (function(exports){
 
   exports.test = function(){
@@ -305,124 +370,136 @@ used to share modules between the server and the client.</p>
   };
 
 }(typeof exports === 'undefined' ? this.share = {} : exports));
-// "this" in the browser is window, so effectively, window.share</code></pre><p>In Node.js you can use it by just requiring it as any other module</p>
-<pre class="prettyprint source"><code>var share = require("./share.js");</code></pre><p>and you can share it the client using <code>addFile</code>:</p>
-<pre class="prettyprint source"><code>clientjs.addFile(__dirname + "/share.js");</code></pre><p>Now you can use it in both as you would expect</p>
-<pre class="prettyprint source"><code>share.test();</code></pre><p>You can read more about the pattern from <a href="http://caolanmcmahon.com/posts/writing_for_node_and_the_browser">here</a></p>
-<h2>Logging</h2><p>Sometimes it is nessesary to control pilers output based on the system environment your running your application in. 
-In default mode Pilers logger will output any information it has by using the &quot;console&quot; javascript object. The following example shows
-how to configure a custom logger  </p>
+// &quot;this&quot; in the browser is window, so effectively, window.share</code></pre><p>In Node.js you can use it by just requiring it as any other module</p>
+<pre class="prettyprint source lang-javascript"><code>var share = require(&quot;./share.js&quot;);</code></pre><p>and you can share it the client using <code>addFile</code>:</p>
+<pre class="prettyprint source lang-javascript"><code>clientjs.addFile(__dirname + &quot;/share.js&quot;);</code></pre><p>Now you can use it in both as you would expect</p>
+<pre class="prettyprint source lang-javascript"><code>share.test();</code></pre><p>You can read more about the pattern from <a href="http://caolanmcmahon.com/posts/writing_for_node_and_the_browser">here</a></p>
+<p><a href="https://github.com/umdjs/umd">UMD</a> is another way to share full modules between server and client without the need for external tools, like
+<a href="https://github.com/substack/node-browserify">browserify</a>.</p>
+<h2>Cache</h2><p>This whole process isn't worth if your repetitive tasks, such as compiling, concatenating, preprocessing are
+done over and over, wasting huge amounts of processing power and memory. For this, you should always rely
+on a strong cache mechanism, that you can even use in other parts that aren't related to <em>Piler</em>.</p>
+<p>By default, Piler uses a file cache, which can help initially with <em>some</em> caching, but memory related caches are far better
+and usually much faster. This file cache will help retain code between server restarts or even allow many instances of your
+application to reach the same previously cached content, since it generates a SHA1 of the identifier, so it can remain unique
+even between servers.</p>
+<p>But disabling or completely exchaging the existing caches are easy as using <code>Piler.useCache</code> and <code>Piler.getCache</code>.
+Check the <a href="https://github.com/epeli/piler/blob/master/examples/app.js">example</a> to see how it's done.</p>
+<h2>Logging</h2><p>Sometimes it is nessesary to control pilers output based on the system environment your running your application in.
+In default mode Pilers logger will output any information it has by using the &quot;console&quot; javascript object. The following
+example shows how to configure a custom logger</p>
 <h3>Logger interface</h3><p>The basic logger facility implements the following methods.</p>
-<pre class="prettyprint source"><code>exports.debug    = console.debug
+<pre class="prettyprint source lang-javascript"><code>exports.debug    = console.debug
 exports.notice   = console.log
 exports.info     = console.info
 exports.warn     = console.warn
 exports.warning  = console.warn
 exports.error    = console.error
 exports.critical = console.error</code></pre><h3>Inject a custom logger</h3><p>The following example injects &quot;winston&quot;, a multi-transport async logging library into pilers logging mechanism.</p>
-<pre class="prettyprint source"><code>var piler = require('piler');
+<pre class="prettyprint source lang-javascript"><code>var piler = require('piler');
 var logger = require('winston');
 // [More logger configuration can take place here]
 var assetTmpDir = path.join(__dirname, 'public');
 
-var js = piler.createJSManager({ outputDirectory: assetTmpDir , "logger": logger});
-var css = piler.createCSSManager({ outputDirectory: assetTmpDir, "logger": logger});</code></pre><p>More information about winston can be found <a href="https://github.com/flatiron/winston">here</a>.</p>
+var js = piler.createManager('js', { outputDirectory: assetTmpDir , logger: logger});
+var css = piler.createManager('css', { outputDirectory: assetTmpDir, logger: logger});
+var html = piler.createManager('html', { outputDirectory: assetTmpDir, logger: logger});</code></pre><p>More information about winston can be found <a href="https://github.com/flatiron/winston">here</a>.</p>
 <h2>Awesome development mode!</h2><p>Development and production modes works as in Express. By default the
-development mode is active. To activate production mode set NODE_ENV
+development mode is active. To activate production mode set <code>NODE_ENV</code>
 environment variable to <em>production</em>.</p>
 <h3>Live CSS editing</h3><p>This is really cool! You don't want to edit CSS at all without this after you
 try it!</p>
 <p>Because <em>Piler</em> handles the script-tag rendering it can add some development
 tools when in development mode.</p>
 <p>Using Express you can add Live CSS editing in development mode:</p>
-<pre class="prettyprint source"><code>if (process.env.NODE_ENV === 'development') {
-   clientjs.liveUpdate(clientcss, io);
-}</code></pre><p>This is similar to <a href="http://livejs.com/">Live.js</a>, but it does not use polling. It will add
+<pre class="prettyprint source lang-javascript"><code>Piler.LiveCSS.init(jsmanager, clientcss, httpServer);</code></pre><p>This is similar to <a href="http://livejs.com/">Live.js</a>, but it does not use polling. It will add
 Socket.IO which will push the CSS-changes to your browser as you edit them.</p>
-<p>If your app already uses Socket.IO you need to add the <em>io</em>-object as second
-parameter to liveUpdate:</p>
-<pre class="prettyprint source"><code>var app = require('express')();
+<p>If your app already uses Socket.IO you need to add the <em>io</em> app:</p>
+<pre class="prettyprint source lang-javascript"><code>var app = require('express')();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-clientjs.liveUpdate(clientcss, io);</code></pre><h3>Script-tag rendering</h3><p>In development mode every JS and CSS file will be rendered as a separate tag.</p>
-<p>For example <code>js.renderTags(&quot;admin&quot;)</code> will render</p>
-<pre class="prettyprint source"><code>clientjs.addFile(__dirname + "/helpers.js");
-clientjs.addFile("admin", __dirname + "/editor.js");
-clientjs.addFile("admin", __dirname + "/editor.extension.js");</code></pre><p>in development mode, to</p>
-<pre class="prettyprint source"><code><script type="text/javascript" src="/pile/dev/global.file-helpers.js?v=1317298508710" ></script>
-<script type="text/javascript" src="/pile/dev/admin.file-editor.js?v=1317298508714" ></script>
-<script type="text/javascript" src="/pile/dev/admin.file-editor.extension.js?v=1317298508716" ></script></code></pre><p>but in production it will render to</p>
-<pre class="prettyprint source"><code><script type="text/javascript"  src="/pile/min/f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c/global.js"  ></script>
-<script type="text/javascript"  src="/pile/min/2d730ac54f9e63e1a7e99cd669861bda33905365/admin.js"  ></script></code></pre><p>So debugging should be as easy as directly using script-tags.  Line numbers
-will match your real files in the filesystem. No need to debug huge Javascript
-bundle!</p>
-<h2>Print debug</h2><p>This module uses the <code>debug</code> module, and you can output console debug output by using</p>
-<pre class="prettyprint source"><code>export DEBUG=piler:*</code></pre><p>So that you can see development messages. You can filter out specific debug messages by using:</p>
-<pre class="prettyprint source"><code>export DEBUG=piler:minifier</code></pre><h2>Example</h2><p>This <a href="https://github.com/epeli/piler/blob/master/examples/app.js">example</a> uses ExpressJS 4.x and a 
-custom logger (winston) and a global socket.io instance together with Piler.</p>
+Piler.LiveCSS.init(clientjs, clientcss, server, io);</code></pre><h3>Script-tag rendering</h3><p>In development mode every asset in a pile will be rendered as a separate tag.</p>
+<pre class="prettyprint source lang-javascript"><code>clientjs.addFile(__dirname + &quot;/helpers.js&quot;, {name: &quot;named asset&quot;});
+clientjs.addFile(__dirname + &quot;/editor.js&quot;, {namespace: &quot;admin&quot;});
+clientjs.addFile(__dirname + &quot;/editor.extension.js&quot;, {namespace: &quot;admin&quot;});</code></pre><p>For example <code>js.render('admin')</code> will render in development mode, to</p>
+<pre class="prettyprint source lang-html"><code>&lt;script type=&quot;text/javascript&quot; src=&quot;/pile/dev/global.file-helpers_named_asset.js?v=1317298508710&quot;>&lt;/script>
+&lt;script type=&quot;text/javascript&quot; src=&quot;/pile/dev/admin.file-editor_ce619a0fe0a1.js?v=1317298508714&quot;>&lt;/script>
+&lt;script type=&quot;text/javascript&quot; src=&quot;/pile/dev/admin.file-editor_extension_215ba9caf921.js?v=1317298508716&quot;>&lt;/script></code></pre><p>but in production it will render to</p>
+<pre class="prettyprint source lang-html"><code>&lt;script type=&quot;text/javascript&quot; src=&quot;/pile/min/f1d27a8d9b92447439f6ebd5ef8f7ea9d25bc41c/global.js&quot;>&lt;/script>
+&lt;script type=&quot;text/javascript&quot; src=&quot;/pile/min/2d730ac54f9e63e1a7e99cd669861bda33905365/admin.js&quot;>&lt;/script></code></pre><p>So debugging should be as easy as directly using script-tags. Line numbers
+will match your real files in the filesystem. No need to debug huge minified
+Javascript bundle!</p>
+<p><strong>PRO-TIP</strong>: You can, while in production mode, get dev mode url assets as well.</p>
+<h2>Example</h2><p>This <a href="https://github.com/epeli/piler/blob/master/examples/app.js">example</a> uses ExpressJS 4.x and a global
+socket.io instance together with Piler.</p>
 <h2>API summary</h2><p>Code will be rendered in the order you call these functions with the exception
-of <code>addUrl</code> which will be rendered as first.</p>
-<h3>createJSManager and createCSSManager</h3><p>Can take an optional configuration object as an argument with following keys.</p>
-<pre class="prettyprint source"><code>var jsclient = piler.createJSManager({
-    outputDirectory: __dirname + "/mydir",
-    urlRoot: "/my/root"
-});</code></pre><h4>urlRoot</h4><p>Url root to which Piler's paths are appended. For example urlRoot &quot;/my/root&quot;
+of assets that are set with <code>options.asIs</code> to true, which will be rendered as first.</p>
+<h3>Piler.createManager</h3><p>Can take an optional configuration object as an argument with following keys.</p>
+<pre class="prettyprint source lang-javascript"><code>var jsclient = piler.createManager('js', {
+    outputDirectory: __dirname + &quot;/mydir&quot;,
+    urlRoot: &quot;/my/root&quot;
+});</code></pre><h5>logger</h5><p>Set your logger</p>
+<h5>cacheKeys</h5><p>Enable cache busting query string <code>?v=Date.now()</code> on development strings</p>
+<h5>volatile</h5><p>Create a volatile pile that as soon the asset is served, it's removed from memory.</p>
+<h5>urlRoot</h5><p>Url root to which Piler's paths are appended. For example urlRoot &quot;/my/root&quot;
 will result in following script tag:</p>
-<pre class="prettyprint source"><code><script type="text/javascript" src="/my/root/min/f4ec8d2b2be16a4ae8743039c53a1a2c31e50570/code.js" ></script></code></pre><h4>outputDirectory</h4><p>If specified <em>Piler</em> will write the minified assets to this folder. Useful if
-you want to share you assets from Apache, nginx, lighttpd etc. instead of directly serving from
-Piler's Connect middleware.</p>
-<h3>JavaScript pile</h3><h4>addFile( [namespace], path to a asset file )</h4><p>File on filesystem.</p>
-<h4>addUrl( [namespace], url to a asset file )</h4><p>Useful for CDNs and for dynamic assets in other libraries such as socket.io.</p>
-<h4>addOb( [namespace string], any Javascript object )</h4><p>Keys of the object will be added to the global window object. So take care when
-choosing those.  Also remember that parent scope of functions will be lost.</p>
-<p>You can also give a nested namespace for it</p>
-<pre class="prettyprint source"><code>clientjs.addOb({"foo.bar": "my thing"});</code></pre><p>Now on the client &quot;my thing&quot; string will be found from window.foo.bar.</p>
-<p>The object will be serialized at the second it is passed to this method so you
-won't be able modify it other than between server restarts. This is usefull for
-sharing utility functions etc.</p>
-<p>Use <code>res.addOb</code> to share more dynamically objects.</p>
-<h4>addExec( [namespace], Javascript function )</h4><p>A function that will executed immediately in browser as it is parsed. Parent
-scope is also lost here.</p>
-<h4>addRaw( [namespace], raw Javascript string )</h4><p>Any valid Javascript string.</p>
-<p>NOTE: Don't use <code>'global'</code> as your namespace, as it will conflict with the internal
-namespace of Piler.</p>
-<h3>CSS pile</h3><p>These are similar to ones in JS pile.</p>
-<h4>addFile( [namespace], path to a asset file )</h4><p>CSS asset on your filesystem.</p>
-<h4>addUrl( [namespace], url to a asset file )</h4><p>CSS asset behind a url. Can be remote too. This will be directly linked to you
-page. Use addFile if you want it be minified.</p>
-<h4>addRaw( [namespace], raw CSS string )</h4><p>Any valid CSS string.</p>
-<p>NOTE: Don't use <code>'global'</code> as your namespace, as it will conflict with the internal
-namespace of Piler.</p>
-<h2>Preprocessors</h2><p>You can easily add new compilers by doing, for example, compiling livescript (.ls files) to .js:</p>
-<pre class="prettyprint source"><code>var piler = require('piler');
+<pre class="prettyprint source lang-html"><code>&lt;script type=&quot;text/javascript&quot; src=&quot;/my/root/min/f4ec8d2b2be16a4ae8743039c53a1a2c31e50570/code.js&quot; >&lt;/script></code></pre><h5>outputDirectory</h5><p>If specified <em>Piler</em> will write the minified assets to this folder. Useful if you want to share your assets
+from Apache, nginx, lighttpd etc. instead of directly serving from Piler's Express/Connect middleware.</p>
+<p>For all the possible configurations and managers, <a href="https://epeli.github.io/piler">Check the documentation</a>.</p>
+<h3>Processors</h3><p>You can easily add new processor by doing, for example, compiling livescript to .js:</p>
+<pre class="prettyprint source lang-javascript"><code>var Piler = require('piler');
 
-piler.addCompiler('ls', function(){
-    var livescript = require('LiveScript');
+Piler.addProcessor('livescript', function(){
+  var livescript = require('LiveScript');
 
-    // this is the initialization function, called once, you must return a rendering 
-    // object
-    return {
-        render: function(filename, code, cb){
-            try {
-                code = livescript.compile(code);
-                cb(null, code);
-            } catch (e) {
-                cb(e);
-            }
-        },
-        targetExt: 'js' // this is optional in some cases, for this example, we need to convert .ls to .js
-    };
-});</code></pre><h3>JavaScript</h3><p>For JavaScript the only supported one is <a href="http://jashkenas.github.com/coffee-script/">CoffeeScript</a> and the compiler is
-included in <em>Piler</em>.</p>
-<h3>CSS</h3><p>CSS-compilers are not included in <em>Piler</em>. Just install what you need using <a href="http://npmjs.org/">npm</a>.</p>
+  // this is the initialization function, called once, you must return a rendering
+  // object
+  return {
+    pre: {
+      render: function(code, asset, options){
+        return livescript.compile(code);
+      },
+      condition: function(asset) {
+        return asset.options.filePath && Piler.utils.extension(asset.options.filePath) === 'ls';
+      }
+    }
+  };
+});
+
+piler.addFile(__dirname + '/file.ls', {processors:{livescript:{/* can set processor options */}});</code></pre><p>You may edit processor default options by editing the <code>defaults</code> member, for example, in coffeescript:</p>
+<pre class="prettyprint source lang-javascript"><code>Piler.getProcessor('coffeescript').pre.defaults = {bare: false};</code></pre><p>This is an application wide modification.</p>
+<p>You can also exchange/change the existing processors in, for example,
+the <code>js</code> manager (that defaults to <code>es6</code> and <code>coffeescript</code>)</p>
+<pre class="prettyprint source lang-javascript"><code>// adding livescript for the ready-to-use processors
+Piler.getManager('js').prototype.processors.livescript = {};</code></pre><p>From now on, you can use livescript files without the need to manually setting the <code>processors</code> option</p>
+<h4>Using the power of promises</h4><p>Since the promise interface is in core of Piler, you can compose a cascade of promise and non-promise interfaces
+together, in this example, create a stream out of the contents of a manager:</p>
+<pre class="prettyprint source lang-javascript"><code>var
+  Piler = require('piler'),
+  js = Piler.createManager('js');
+
+js
+  .addOb({'some.namespace': thatFn})
+  .addFile(__dirname + '/file.coffee')
+  .contents()
+  .then(function(code){
+    return require('someStreamModule')(code); // make a stream out of a promise
+  })
+  .pipe(require('someWriteStreamModule'));</code></pre><h4>Supported out-of-the-box</h4><p>JavaScript:</p>
+<ul>
+<li><a href="http://jashkenas.github.com/coffee-script/">CoffeeScript</a> (by default, files with <code>.coffee</code> extension)</li>
+<li><a href="https://github.com/google/traceur-compiler">ES6</a> (by default, files with <code>es6</code> in the filename)</li>
+</ul>
+<p>CSS:</p>
 <ul>
 <li><a href="http://learnboost.github.com/stylus/">Stylus</a> with <a href="https://github.com/visionmedia/nib">nib</a> (npm install stylus nib)</li>
 <li><a href="http://lesscss.org/">LESS</a> (npm install less)</li>
 </ul>
-<p>Adding support for new compilers should be <a href="https://github.com/epeli/pile/blob/master/lib/compilers.js">easy</a>.</p>
 <h2>Installing</h2><p>From <a href="http://npmjs.org/">npm</a></p>
-<pre class="prettyprint source"><code>npm install piler</code></pre><h2>Source code</h2><p>Source code is licenced under <a href="https://github.com/epeli/piler/blob/master/LICENSE">The MIT License</a> and it is hosted
+<pre class="prettyprint source lang-bash"><code>npm install piler</code></pre><h2>Print debug</h2><p>This module uses the <code>debug</code> module, and you can output console debug output by using</p>
+<pre class="prettyprint source lang-bash"><code>export DEBUG=piler:*</code></pre><p>So that you can see development messages. You can filter out specific debug messages by using:</p>
+<pre class="prettyprint source lang-bash"><code>export DEBUG=piler:main</code></pre><h2>Source code</h2><p>Source code is licenced under <a href="https://github.com/epeli/piler/blob/master/LICENSE">The MIT License</a> and it is hosted
 on <a href="https://github.com/epeli/piler">Github</a>.</p>
 <h2>Contact</h2><p>Questions and suggestions are very welcome</p>
 <ul>
@@ -446,8 +523,8 @@ on <a href="https://github.com/epeli/piler">Github</a>.</p>
 					
 					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a>
-		on Jun 21 2014 using the <a
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Jul 06 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
@@ -469,28 +546,35 @@ on <a href="https://github.com/epeli/piler">Github</a>.</p>
 
 	<script>
 		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
 			$( "#toc" ).toc( {
 				anchorName  : function ( i, heading, prefix ) {
 					return $( heading ).attr( "id" ) || ( prefix + i );
 				},
 				selectors   : "h1,h2,h3,h4",
 				showAndHide : false,
-				scrollTo    : 60
+				scrollTo    : "100px"
 			} );
+
 			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
 			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-			$('.dropdown-toggle').dropdown();
+			$( '.dropdown-toggle' ).dropdown();
 //			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 				var $this = $( this );
 
-				var example = $this.find("code" );
+				var example = $this.find( "code" );
 				exampleText = example.html();
 				var lang = /{@lang (.*?)}/.exec( exampleText );
 				if ( lang && lang[1] ) {
 					exampleText = exampleText.replace( lang[0], "" );
-					example.html(exampleText);
+					example.html( exampleText );
 					lang = lang[1];
 				} else {
 					lang = "javascript";
@@ -508,17 +592,55 @@ on <a href="https://github.com/epeli/piler">Github</a>.</p>
 
 			Sunlight.highlightAll( {
 				lineNumbers : true,
-				showMenu:true,
-				enableDoclinks:true
+				showMenu : true,
+				enableDoclinks : true
+			} );
 		} );
-		} );
+	 </script>
 
-	</script>
 
-	<!--Google Analytics-->
-	
 
 	<!--Navigation and Symbol Display-->
+	
+	<script>
+		$( function () {
+			$( '#main' ).localScroll( {
+				offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+			} );
+			$( "dt.name" ).each( function () {
+				var $this = $( this ).find("h4");
+				var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+				var dt = $(this);
+				var children = dt.next( "dd" );
+
+				dt.prepend( icon ).css( {cursor : "pointer"} );
+				dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+				children.hide();
+
+				dt.children().on( "click", function () {
+					children = dt.next( "dd" );
+					console.debug(dt, children)
+					children.slideToggle( "fast", function () {
+
+						if ( children.is( ":visible" ) ) {
+							icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+							dt.addClass( "member-open" ).animate( "member-collapsed" );
+						} else {
+							icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+							dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+						}
+					} );
+				} );
+
+			} );
+		} );
+	</script>
+	
+
+
+	<!--Google Analytics-->
 	
 
 </body>

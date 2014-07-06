@@ -1,17 +1,19 @@
 module.exports = (Piler) ->
-  less = require 'less'
+  less = require('less')
 
-  render = Piler.utils.Q.promisify less.render, less
+  render = Piler.utils.Promise.promisify(less.render, less)
 
-  Piler.addCompiler('less', ->
-    execute: (code, filename, options) ->
-      render code, Piler.utils._.merge({}, options, paths: [Piler.utils.path.dirname filename])
+  Piler.addProcessor('less', ->
+    {
+      pre: {
+        render: (code, asset, options) ->
+          render(code, Piler.utils._.merge({}, options, {paths: if asset and asset.options.filePath then [Piler.utils.path.dirname(asset.options.filePath)] else []}))
 
-    on:
-      file:
-        object: ['less']
+        condition: (asset, options) ->
+          (asset.options.filePath and Piler.utils.extension(asset.options.filePath) is 'less')
+      }
+    }
 
-    targetExt: 'css'
   )
 
   return

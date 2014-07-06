@@ -32,39 +32,35 @@
 						</li>
 						
 						<li>
-							<a href="Piler.AssetUrlParse.html">AssetUrlParse</a>
+							<a href="Piler.AssetUrlParse.html">Piler.AssetUrlParse</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Cache.html">Cache</a>
+							<a href="Piler.Cache.html">Piler.Cache</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Compilers.html">Compilers</a>
+							<a href="Piler.LiveCSS.html">Piler.LiveCSS</a>
 						</li>
 						
 						<li>
-							<a href="Piler.LiveCSS.html">LiveCSS</a>
+							<a href="Piler.Logger.html">Piler.Logger</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Logger.html">Logger</a>
+							<a href="Piler.Main.html">Piler.Main</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.html">Main</a>
+							<a href="Piler.Processors.html">Piler.Processors</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Minifiers.html">Minifiers</a>
+							<a href="Piler.Serialize.html">Piler.Serialize</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Serialize.html">Serialize</a>
-						</li>
-						
-						<li>
-							<a href="Piler.utils.html">utils</a>
+							<a href="Piler.utils.html">Piler.utils</a>
 						</li>
 						
 
@@ -78,35 +74,35 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="Piler.Main.BasePile.html">BasePile</a>
+							<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.CSSManager.html">CSSManager</a>
+							<a href="Piler.Main.CSSManager.html">Piler.Main.CSSManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.CSSPile.html">CSSPile</a>
+							<a href="Piler.Main.CSSPile.html">Piler.Main.CSSPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.HTMLManager.html">HTMLManager</a>
+							<a href="Piler.Main.HTMLManager.html">Piler.Main.HTMLManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.HTMLPile.html">HTMLPile</a>
+							<a href="Piler.Main.HTMLPile.html">Piler.Main.HTMLPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.JSManager.html">JSManager</a>
+							<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.JSPile.html">JSPile</a>
+							<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>
 						</li>
 						
 						<li>
-							<a href="Piler.Main.PileManager.html">PileManager</a>
+							<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>
 						</li>
 						
 
@@ -152,6 +148,11 @@
 <dd>
     
     
+    <div class="description">
+        <p>Manager that holds many pile namespaces at once, and serve assets through
+middleware</p>
+    </div>
+    
 
     
     
@@ -193,7 +194,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="Piler.Main.html#Config">Piler.Main.Config</a></span>
+<span class="param-type"><a href="Piler.Main.html#PileSettings">Piler.Main.PileSettings</a></span>
 
 
             
@@ -251,6 +252,16 @@
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-589">line 589</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -291,14 +302,14 @@
 
         <dl>
             
-<dt>
-    <h4 class="name" id="contentType"><span class="type-signature"></span>contentType<span class="type-signature"> :String</span></h4>
-    
+<dt class="name" id="contentType">
+    <h4><span class="type-signature"></span>contentType<span class="type-signature"> :String</span></h4>
+
     
 </dt>
 <dd>
     
-    
+
     
         <h5>Type:</h5>
         <ul>
@@ -330,9 +341,26 @@
 	
 
 	
+	<dt class="tag-default">Default Value:</dt>
+	<dd class="tag-default">
+		<ul class="dummy">
+			<li>'text/plain'</li>
+		</ul>
+	</dd>
+	
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-581">line 581</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -342,20 +370,20 @@
 	
 </dl>
 
-    
+
     
 </dd>
 
         
             
-<dt>
-    <h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"> :<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span></h4>
-    
+<dt class="name" id="type">
+    <h4><span class="type-signature"></span>type<span class="type-signature"> :<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a></span></h4>
+
     
 </dt>
 <dd>
     
-    
+
     
         <h5>Type:</h5>
         <ul>
@@ -398,6 +426,16 @@
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-573">line 573</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -406,7 +444,7 @@
 	
 </dl>
 
-    
+
     
 </dd>
 
@@ -419,7 +457,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="_defaultArguments"><span class="type-signature">&lt;protected> </span>_defaultArguments<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_defaultOptions"><span class="type-signature">&lt;protected> </span>_defaultOptions<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -455,6 +493,291 @@
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-689">line 689</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="_objectToAttr"><span class="type-signature">&lt;private> </span>_objectToAttr<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Convert an object to <code>attribute=&quot;value&quot;</code> for HTML tags</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-935">line 935</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="_prepareNamespaces"><span class="type-signature">&lt;private> </span>_prepareNamespaces<span class="signature">(<span class="optional">namespaces</span>, <span class="optional">opts</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>namespaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    ["global"]
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-885">line 885</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -522,6 +845,16 @@
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-988">line 988</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -566,7 +899,7 @@
         
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(type, data, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(type, data, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
@@ -575,7 +908,7 @@
     
     <div class="description">
         <p>Low level function that actually adds stuff to the pile, deals with
-normalizing arguments</p>
+normalizing options</p>
     </div>
     
 
@@ -719,169 +1052,16 @@ normalizing arguments</p>
         </tr>
 
 	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Promise</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="addDir"><span class="type-signature"></span>addDir<span class="signature">(paths, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Add a directory</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-		<th>Default</th>
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
 
         <tr>
             
-                <td class="name"><code>paths</code></td>
+                <td class="name"><code>cb</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>You can give a glob string or an array of glob strings</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
 
 
             
@@ -902,12 +1082,10 @@ normalizing arguments</p>
             
                 <td class="default">
                 
-                    {}
-                
                 </td>
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Use a callback instead</p></td>
         </tr>
 
 	
@@ -939,6 +1117,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-701">line 701</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -968,7 +1156,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
 
 
 	</dd>
@@ -978,18 +1166,12 @@ normalizing arguments</p>
         
     
     
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">PileManager.addDir([&quot;/file/1&quot;,&quot;/file/2&quot;])</pre>
-
-
-    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
@@ -1102,6 +1284,43 @@ normalizing arguments</p>
         </tr>
 
 	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
 	</tbody>
 </table>
 
@@ -1129,6 +1348,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-792">line 792</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -1159,7 +1388,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
 
 
 	</dd>
@@ -1174,7 +1403,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
     
     
 </dt>
@@ -1319,6 +1548,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-726">line 726</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -1340,6 +1579,10 @@ normalizing arguments</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -1348,7 +1591,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
 
 
 	</dd>
@@ -1369,7 +1612,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
@@ -1482,6 +1725,43 @@ normalizing arguments</p>
         </tr>
 
 	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
 	</tbody>
 </table>
 
@@ -1509,6 +1789,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-806">line 806</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -1539,7 +1829,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
 
 
 	</dd>
@@ -1554,7 +1844,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
@@ -1667,6 +1957,43 @@ normalizing arguments</p>
         </tr>
 
 	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
 	</tbody>
 </table>
 
@@ -1694,6 +2021,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-820">line 820</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -1724,7 +2061,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
 
 
 	</dd>
@@ -1739,7 +2076,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
     
     
 </dt>
@@ -1852,6 +2189,43 @@ normalizing arguments</p>
         </tr>
 
 	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
 	</tbody>
 </table>
 
@@ -1879,6 +2253,255 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-834">line 834</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addWildcard"><span class="type-signature"></span>addWildcard<span class="signature">(paths, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add a match of files</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>paths</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>You can give a glob string or an array of glob strings</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-750">line 750</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -1910,6 +2533,160 @@ normalizing arguments</p>
 	<dd>
 		
 <span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">PileManager.addWildcard([&quot;/folder/*.js&quot;,&quot;/folder2/*.js&quot;])</pre>
+
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="batch"><span class="type-signature"></span>batch<span class="signature">(arr)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Add assets in order</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Array containing an array of [&quot;command&quot;, &quot;content&quot;, &quot;options&quot;]</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-607">line 607</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
 
 
 	</dd>
@@ -2012,6 +2789,9 @@ normalizing arguments</p>
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Boolean</span>
 
 
             
@@ -2032,12 +2812,12 @@ normalizing arguments</p>
             
                 <td class="default">
                 
-                    "__temp"
+                    true
                 
                 </td>
             
 
-            <td class="description last"><p>Namespace to be bound to</p></td>
+            <td class="description last"><p>Namespace to be bound to. If sets to true, will create a random volatile pile</p></td>
         </tr>
 
 	
@@ -2068,6 +2848,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-533">line 533</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -2108,12 +2898,709 @@ normalizing arguments</p>
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var addSingularity = js.bindToPile(&#x27;addSingularity&#x27;, &#x27;global&#x27;)
+js.addSingularity = function(doh){
+  return this.add({type: &#x27;singularity&#x27;, raw: doh});
+};
+// will always point to js manager to the global pile, regardless when or where it&#x27;s called
+addSingularity(&#x27;doh&#x27;);</pre>
+
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="getPile"><span class="type-signature"></span>getPile<span class="signature">(ns, <span class="optional">settings</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
+    <h4 class="name" id="contents"><span class="type-signature"></span>contents<span class="signature">(<span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Update all related piles and assets and if this pile has set outputDirectory save, them to disk.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>You can use a callback if you want</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-849">line 849</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The current array of all content</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="createTempNamespace"><span class="type-signature"></span>createTempNamespace<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Create a volatile randomly named namespace</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-649">line 649</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">(namespaces)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Disposes a namespace, clear it and remove from this manager</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>namespaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Namespaces names</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-627">line 627</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="findAssetsBy"><span class="type-signature"></span>findAssetsBy<span class="signature">(member, search, <span class="optional">namespace</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Find an asset from a namespace</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+		<th>Default</th>
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>member</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>search</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>namespace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'global'
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-1071">line 1071</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Promise</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getPile"><span class="type-signature"></span>getPile<span class="signature">(namespace, <span class="optional">settings</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>}</span></h4>
     
     
 </dt>
@@ -2159,7 +3646,7 @@ normalizing arguments</p>
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>namespace</code></td>
             
 
             <td class="type">
@@ -2258,6 +3745,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-667">line 667</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -2306,7 +3803,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">(<span class="optional">namespaces</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="getSources"><span class="type-signature"></span>getSources<span class="signature">(<span class="optional">namespaces</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -2336,6 +3833,8 @@ normalizing arguments</p>
 		
 
 		
+		<th>Default</th>
+		
 
 		<th class="last">Description</th>
 	</tr>
@@ -2352,7 +3851,7 @@ normalizing arguments</p>
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">Array</span>
 
 
             
@@ -2367,11 +3866,15 @@ normalizing arguments</p>
                 
 
                 
-                    &lt;repeatable><br>
-                
                 </td>
             
 
+            
+                <td class="default">
+                
+                    ["global"]
+                
+                </td>
             
 
             <td class="description last"></td>
@@ -2406,6 +3909,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-915">line 915</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -2435,7 +3948,7 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type">Promise</span>
+<span class="param-type">Array</span>
 
 
 	</dd>
@@ -2491,6 +4004,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-1012">line 1012</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -2516,7 +4039,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="middleware"><span class="type-signature"></span>middleware<span class="signature">(<span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="middleware"><span class="type-signature"></span>middleware<span class="signature">(<span class="optional">options</span>)</span><span class="type-signature"> &rarr; {function}</span></h4>
     
     
 </dt>
@@ -2626,6 +4149,16 @@ normalizing arguments</p>
 
 
 	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-1096">line 1096</a>
+			</li>
+		</ul>
+	</dd>
+	
 
 	
 
@@ -2647,10 +4180,6 @@ normalizing arguments</p>
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p><code>this</code></p>
-</div>
-
 
 
 <dl>
@@ -2659,151 +4188,9 @@ normalizing arguments</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="pileUp"><span class="type-signature"></span>pileUp<span class="signature">(<span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>cb</code></td>
-            
-
-            <td class="type">
-            
-                
 <span class="param-type">function</span>
 
 
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>You can use a callback if you want</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Promise</span>
-
-
 	</dd>
 </dl>
 
@@ -2816,7 +4203,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">(<span class="optional">namespaces</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">(<span class="optional">namespaces</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -2862,7 +4249,7 @@ normalizing arguments</p>
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">Array.&lt;String></span>
 
 
             
@@ -2877,7 +4264,38 @@ normalizing arguments</p>
                 
 
                 
-                    &lt;repeatable><br>
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
                 
                 </td>
             
@@ -2915,6 +4333,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-971">line 971</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -2964,7 +4392,7 @@ normalizing arguments</p>
         
             
 <dt>
-    <h4 class="name" id="stream"><span class="type-signature"></span>stream<span class="signature">()</span><span class="type-signature"> &rarr; {Stream}</span></h4>
+    <h4 class="name" id="stream"><span class="type-signature"></span>stream<span class="signature">(namespaces, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {Stream}</span></h4>
     
     
 </dt>
@@ -2980,6 +4408,98 @@ normalizing arguments</p>
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>namespaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Pass options to the <code>_prepareNamespaces</code> function</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
     
     
     
@@ -3004,6 +4524,16 @@ normalizing arguments</p>
 
 
 
+	
+	<dt class="tag-source">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="main.js.html">main.js</a>,
+				 <a href="main.js.html#sunlight-1-line-1026">line 1026</a>
+			</li>
+		</ul>
+	</dd>
 	
 
 	
@@ -3066,8 +4596,8 @@ normalizing arguments</p>
 					
 					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a>
-		on Jun 21 2014 using the <a
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Jul 06 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
@@ -3089,28 +4619,35 @@ normalizing arguments</p>
 
 	<script>
 		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
 			$( "#toc" ).toc( {
 				anchorName  : function ( i, heading, prefix ) {
 					return $( heading ).attr( "id" ) || ( prefix + i );
 				},
 				selectors   : "h1,h2,h3,h4",
 				showAndHide : false,
-				scrollTo    : 60
+				scrollTo    : "100px"
 			} );
+
 			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
 			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-			$('.dropdown-toggle').dropdown();
+			$( '.dropdown-toggle' ).dropdown();
 //			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 				var $this = $( this );
 
-				var example = $this.find("code" );
+				var example = $this.find( "code" );
 				exampleText = example.html();
 				var lang = /{@lang (.*?)}/.exec( exampleText );
 				if ( lang && lang[1] ) {
 					exampleText = exampleText.replace( lang[0], "" );
-					example.html(exampleText);
+					example.html( exampleText );
 					lang = lang[1];
 				} else {
 					lang = "javascript";
@@ -3128,17 +4665,55 @@ normalizing arguments</p>
 
 			Sunlight.highlightAll( {
 				lineNumbers : true,
-				showMenu:true,
-				enableDoclinks:true
+				showMenu : true,
+				enableDoclinks : true
+			} );
 		} );
-		} );
+	 </script>
 
-	</script>
 
-	<!--Google Analytics-->
-	
 
 	<!--Navigation and Symbol Display-->
+	
+	<script>
+		$( function () {
+			$( '#main' ).localScroll( {
+				offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+			} );
+			$( "dt.name" ).each( function () {
+				var $this = $( this ).find("h4");
+				var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+				var dt = $(this);
+				var children = dt.next( "dd" );
+
+				dt.prepend( icon ).css( {cursor : "pointer"} );
+				dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+				children.hide();
+
+				dt.children().on( "click", function () {
+					children = dt.next( "dd" );
+					console.debug(dt, children)
+					children.slideToggle( "fast", function () {
+
+						if ( children.is( ":visible" ) ) {
+							icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+							dt.addClass( "member-open" ).animate( "member-collapsed" );
+						} else {
+							icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+							dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+						}
+					} );
+				} );
+
+			} );
+		} );
+	</script>
+	
+
+
+	<!--Google Analytics-->
 	
 
 </body>

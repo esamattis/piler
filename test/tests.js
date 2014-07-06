@@ -31,7 +31,7 @@ if (production && development) {
   if (process.argv.indexOf('--start') === -1) {
     var mocha = cp.spawn('node', [path.join('.', 'node_modules', 'mocha', 'bin', '_mocha')], {
       cwd  : process.cwd(),
-      env  : process.env,
+      env  : {},
       stdio: 'inherit'
     });
 

@@ -1,30 +1,21 @@
 module.exports = (Piler) ->
-  UglifyJS = require("uglify-js")
+  UglifyJS = require('uglify-js')
 
-  Piler.addMinifier('uglify', ->
+  Piler.addProcessor('uglify', ->
+
     {
-      execute: (code, options = {}) ->
-        ast = UglifyJS.parse code
-        ast.figure_out_scope()
+      post: {
+        render: (code, asset, options) ->
+          options = Piler.utils._.merge(options, {fromString: true})
+          UglifyJS.minify(code, options).code
 
-        compressor = UglifyJS.Compressor()
-        compressed_ast = ast.transform(compressor)
+        defaults: {mangle: true, compress:{}}
 
-        compressed_ast.figure_out_scope()
-
-        if options.noMangleNames isnt true
-          compressed_ast.mangle_names()
-
-        options.beautify ?= false
-
-        compressed_ast.print_to_string(options)
-
-      on:
-        file:
-          object: ['js']
-
+        condition: (asset, options) ->
+          (asset.options.filePath and asset.options.filePath.indexOf('.min') is -1 and Piler.utils.extension(asset.options.filePath) is 'js') and
+          (asset.options.env is 'production')
+      }
     }
-
   )
 
   return

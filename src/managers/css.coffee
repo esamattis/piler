@@ -6,7 +6,12 @@ module.exports = (Piler) ->
      * @memberof Piler.Main.CSSPile
      * @instance
     ###
-    ext: "css"
+    ext: 'css'
+
+    processors: {
+      'less': {}
+      'styl': {}
+    }
 
     ###*
      * @constructor Piler.Main.CSSPile
@@ -25,7 +30,7 @@ module.exports = (Piler) ->
      * @returns {Piler.Main.CSSPile} `this`
     ###
     commentLine: (line) ->
-      return "/* #{ line.trim() } */"
+      "/* #{ line.trim() } */"
 
 
   class CSSManager extends Piler.getManager('PileManager')
@@ -40,7 +45,7 @@ module.exports = (Piler) ->
      * @memberof Piler.Main.CSSManager
      * @instance
     ###
-    contentType: "text/css"
+    contentType: 'text/css'
 
     ###*
      * @constructor Piler.Main.CSSManager
@@ -57,7 +62,7 @@ module.exports = (Piler) ->
      * @instance
      * @returns {String}
     ###
-    wrapInTag: (uri, extra = "") ->
+    wrapInTag: (uri, extra = '') ->
       "<link rel=\"stylesheet\" href=\"#{ uri }\" #{ extra }/>"
 
     ###*
@@ -73,14 +78,15 @@ module.exports = (Piler) ->
       else
         namespace = @css.namespace
 
-      response.piler.css =
-        namespace: namespace
-        addRaw: @bindToPile('addRaw', namespace)
-        addFile: @bindToPile('addFile', namespace)
-        addUrl: @bindToPile('addUrl', namespace)
+      response.piler.css = {
+        namespace   : namespace
+        addRaw      : @bindToPile('addRaw', namespace)
+        addFile     : @bindToPile('addFile', namespace)
+        addUrl      : @bindToPile('addUrl', namespace)
         addMultiline: @bindToPile('addMultiline', namespace)
+      }
 
-      return
+      @
 
     middleware: ->
       super

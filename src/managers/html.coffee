@@ -3,7 +3,7 @@ module.exports = (Piler) ->
   class HTMLPile extends Piler.getPile('BasePile')
     ###*
      * @member {String} Piler.Main.HTMLPile#ext
-     * @default html
+     * @default "html"
     ###
     ext: "html"
 
@@ -12,7 +12,6 @@ module.exports = (Piler) ->
      *
      * @function Piler.Main.HTMLPile#commentLine
      * @returns {String}
-     * @instance
     ###
     commentLine: (line) ->
       "<!-- #{ line.trim() } -->"
@@ -27,10 +26,12 @@ module.exports = (Piler) ->
   class HTMLManager extends Piler.getManager('PileManager')
     ###*
      * @member {Piler.Main.HTMLPile} Piler.Main.HTMLManager#type
+     * @default {Piler.Main.HTMLPile}
     ###
     type: HTMLPile
     ###*
      * @member {String} Piler.Main.HTMLManager#contentType
+     * @default "text/html"
     ###
     contentType: "text/html"
 
@@ -57,20 +58,27 @@ module.exports = (Piler) ->
       else
         namespace = @html.namespace
 
-      response.piler.html =
-        namespace: namespace
+      response.piler.html = {
+        namespace   : namespace
         addMultiline: @bindToPile('addMultiline', namespace)
-        addRaw: @bindToPile('addRaw', namespace)
-        addFile: @bindToPile('addFile', namespace)
+        addRaw      : @bindToPile('addRaw', namespace)
+        addFile     : @bindToPile('addFile', namespace)
+      }
 
       @
 
-    render: (namespaces...) ->
-      @_prepareNamespaces(namespaces)
+    ###*
+     * @function Piler.Main.HTMLManager#render
+     * @returns {Promise}
+    ###
+    render: (namespaces) ->
+      namespaces = @_prepareNamespaces(namespaces)
 
-      Piler.utils.Q.reduce((pile for id,pile of @piles when id in namespaces), (tags, source) =>
-        source.pileUp().then (code) ->
-          tags += "#{code}\n"
+      Piler.utils.Promise.reduce(
+        (pile for id,pile of @piles when id in namespaces)
+        (tags, source) =>
+          source.pileUp().then (code) ->
+            tags += "#{code}\n"
       , "")
 
     middleware: ->

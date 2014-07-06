@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Awesome Asset Manager for Node.js | Piler Source: main.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">Awesome Asset Manager for Node.js | Piler</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.html">Piler</a>
+						</li>
+						
+						<li>
+							<a href="Piler.AssetUrlParse.html">Piler.AssetUrlParse</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Cache.html">Piler.Cache</a>
+						</li>
+						
+						<li>
+							<a href="Piler.LiveCSS.html">Piler.LiveCSS</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Logger.html">Piler.Logger</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.html">Piler.Main</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Processors.html">Piler.Processors</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Serialize.html">Piler.Serialize</a>
+						</li>
+						
+						<li>
+							<a href="Piler.utils.html">Piler.utils</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSManager.html">Piler.Main.CSSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSPile.html">Piler.Main.CSSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLManager.html">Piler.Main.HTMLManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLPile.html">Piler.Main.HTMLPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+			<div class="span12">
+				
+				<div id="main">
+					
+
+
+		<h1 class="page-title">Source: main.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">module.exports = function(Piler, mainExports) {
+  'use strict';
+
+  /**
+   * @namespace Piler.Main
+   */
+  var BasePile, PileManager, debug, managers, op, out, piles;
+  op = Piler.utils.objectPath;
+  out = {
+
+    /**
+     * Output debug messages as if it was from {@link Piler.Main}
+     * @function Piler.Main.debug
+     */
+    debug: debug = Piler.utils.debug('piler:main'),
+    defaults: function(options) {
+      return Piler.utils._.defaults(options, {
+        cacheKeys: true,
+        volatile: false,
+        logger: Piler.Logger,
+        urlRoot: '/piler/',
+        env: 'development',
+        commentLines: true
+      });
+    }
+  };
+
+  /**
+   * Config object for each processor
+   *
+   * @example
+   *   {
+   *     'coffeescript':{},
+   *     'csso':{}
+   *   }
+   * @typedef {Object.&lt;String, Object>} Piler.Main.ProcessorsConfig
+   */
+
+  /**
+   * Automated processors for the current pile
+   *
+   * @typedef {Piler.Main.ProcessorsConfig} Piler.Main.BasePile#processors
+   */
+
+  /**
+   * Config object for {@link Piler.Main.BasePile#add BasePile#add}
+   *
+   * @typedef {Object} Piler.Main.AddConfig
+   * @property {String} type Type assigned by {@link Piler.Serialize.addSerializable addSerializable}
+   * @property {*} raw Any content
+   * @property {Piler.Serialize.CodeObjectOptions} [options] Assign any options to this object
+   */
+  BasePile = (function() {
+
+    /**
+     * @member {Piler.Main.Processors} Piler.Main.BasePile#processors
+     * @default null
+     */
+    BasePile.prototype.processors = null;
+
+
+    /**
+     * @constructor Piler.Main.BasePile
+     *
+     * @param {String} name
+     * @param {Piler.Main.PileSettings} [options={}]
+     */
+
+    function BasePile(name, options) {
+      this.name = name;
+      this.options = options != null ? options : {};
+      this.assets = [];
+      this.rawPile = null;
+      this.pileHash = '';
+      out.defaults(this.options);
+      return;
+    }
+
+
+    /**
+     * All add* calls ends here. Add an asset and mutate extend the passed
+     * configuration with mixins from {@link Piler.Serialize.CodeObject CodeObject}
+     *
+     * @function Piler.Main.BasePile#add
+     * @param {Piler.Main.AddConfig} config
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    BasePile.prototype.add = function(config) {
+      var object, type;
+      if (!Piler.utils._.isObject(config)) {
+        throw new Error('add expects an object as parameter');
+      }
+      op.ensureExists(config, 'options', {
+        env: this.options.env
+      });
+      type = !config.options.before ? 'push' : 'unshift';
+      this.assets[type](object = Piler.Serialize.serialize.call({
+        type: config.type,
+        raw: config.object,
+        options: config.options
+      }));
+      return object;
+    };
+
+
+    /**
+     * Permanently remove an asset from this pile
+     *
+     * @function Piler.Main.BasePile#remove
+     * @param {Piler.Serialize.CodeObject} obj
+     */
+
+    BasePile.prototype.remove = function(obj) {
+      var asset, index, _i, _len, _ref;
+      index = -1;
+      _ref = this.assets;
+      for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+        asset = _ref[_i];
+        index++;
+        if (asset === obj) {
+          break;
+        }
+      }
+      if (index > -1) {
+        op.del(this.assets, [index]);
+      }
+    };
+
+
+    /**
+     * Check for duplicated asset
+     *
+     * @function Piler.Main.BasePile#duplicated
+     * @param {String} type Any type added by {@link Piler.Serializable.addSerializable addSerializable}
+     * @param {*} content Content to be checked against
+     *
+     * @returns {Boolean}
+     */
+
+    BasePile.prototype.duplicated = function(type, content) {
+      var asset, _i, _len, _ref;
+      content = Piler.Serialize.stringify(content);
+      _ref = this.assets;
+      for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+        asset = _ref[_i];
+        if (asset.type() === type) {
+          if (asset.toString() === content) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+
+    /**
+     * Adds a multiline that will be converted to a string later (or can be compiled to any code)
+     *
+     * @function Piler.Main.BasePile#addMultiline
+     * @param {Function} fn
+     * @param {Object} [options={}]
+     *
+     * @returns {Piler.Main.BasePile} `this`
+     */
+
+    BasePile.prototype.addMultiline = function(fn, options) {
+      if (!this.duplicated('multiline', fn)) {
+        this.add({
+          type: 'multiline',
+          object: fn,
+          options: options
+        });
+      }
+      return this;
+    };
+
+
+    /**
+     * Add an array of files at once
+     *
+     * @example
+     *   Pile.addFile("/path/to/file")
+     *
+     * @function Piler.Main.BasePile#addFile
+     * @param {String} filePath Absolute path to the file
+     * @param {Piler.Main.AddConfig} [options={}] Options to assign to this object
+     *
+     * @returns {Piler.Main.BasePile} `this`
+     */
+
+    BasePile.prototype.addFile = function(filePath, options) {
+      filePath = Piler.utils.path.normalize(filePath);
+      if (!this.duplicated('file', filePath)) {
+        options = Piler.utils._.defaults(options, {
+          hashFrom: 'options.filePath',
+          filePath: filePath
+        });
+        this.add({
+          type: 'file',
+          object: filePath,
+          options: options
+        });
+      }
+      return this;
+    };
+
+
+    /**
+     * Adds a URL, can be external, complete (with protocols) or relative to the current page
+     *
+     * @example
+     *   Pile.addUrl('/remote.js');
+     *
+     * @function Piler.Main.BasePile#addUrl
+     * @param {String} url
+     * @param {Piler.Main.AddConfig} [options={}]
+     * @returns {Piler.Main.BasePile} `this`
+     */
+
+    BasePile.prototype.addUrl = function(url, options) {
+      if (!this.duplicated('url', url)) {
+        options = Piler.utils._.defaults(options, {
+          asIs: true
+        });
+        this.add({
+          type: 'url',
+          object: url,
+          options: options
+        });
+      }
+      return this;
+    };
+
+
+    /**
+     * Add raw string or object. This will rely on the options
+     *
+     * @function Piler.Main.BasePile#addRaw
+     * @param {*} raw
+     * @param {Piler.Main.AddConfig} [options={}]
+     * @returns {Piler.Main.BasePile} `this`
+     */
+
+    BasePile.prototype.addRaw = function(raw, options) {
+      if (!this.duplicated('raw', raw)) {
+        this.add({
+          type: 'raw',
+          object: raw,
+          options: options
+        });
+      }
+      return this;
+    };
+
+
+    /**
+     * Get or filter assets on this pile
+     *
+     * @function Piler.Main.BasePile#getObjects
+     *
+     * @example
+     *   // get all objects contents of all types
+     *   Pile.getObjects(null, 'contents').done(function(contentsArray){
+     *     // contentsArray is the contents of all assets in the pile
+     *   });
+     *   // get all types of 'file'
+     *   Pile.getObjects('file', null, function(objectArray){
+     *     // objectArray is all objects are that of type 'file'
+     *   });
+     *   // get all objects
+     *   Pile.getObjects().then(function(objectArray){
+     *     // objectArray is all objects are that of type 'file'
+     *   });
+     *
+     * @param {String} [type] Filter by type
+     * @param {String|Array} [member='raw'] Member of the object. May use a map string, like `'options.name'` or an array
+     * @param {Piler.NodeCallback} [cb]
+     *
+     * @returns {Promise} `this` The result of the promise will be an array
+     */
+
+    BasePile.prototype.getObjects = function(type, member, cb) {
+      var f, filterFn, ob, promises, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (member == null) {
+        member = 'raw';
+      }
+      filterFn = function(ob) {
+        var fn;
+        fn = op.get(ob, [member].join('.'));
+        if (Piler.utils._.isFunction(fn)) {
+          return fn();
+        } else {
+          return fn;
+        }
+      };
+      promises = [];
+      if (type &amp;&amp; member) {
+        _ref = this.assets;
+        for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+          ob = _ref[_i];
+          if (!(ob.type() === type)) {
+            continue;
+          }
+          f = filterFn(ob);
+          if (f !== void 0) {
+            promises.push(f);
+          }
+        }
+      } else if (member) {
+        _ref1 = this.assets;
+        for (_j = 0, _len1 = _ref1.length; _j &lt; _len1; _j++) {
+          ob = _ref1[_j];
+          f = filterFn(ob);
+          if (f !== void 0) {
+            promises.push(f);
+          }
+        }
+      } else if (type) {
+        _ref2 = this.assets;
+        for (_k = 0, _len2 = _ref2.length; _k &lt; _len2; _k++) {
+          ob = _ref2[_k];
+          if (ob.type() === type) {
+            promises.push(ob);
+          }
+        }
+      } else {
+        promises.push.apply((function() {
+          var _l, _len3, _ref3, _results;
+          _ref3 = this.assets;
+          _results = [];
+          for (_l = 0, _len3 = _ref3.length; _l &lt; _len3; _l++) {
+            ob = _ref3[_l];
+            _results.push(ob);
+          }
+          return _results;
+        }).call(this));
+      }
+      return Piler.utils.Promise.all(promises).bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * Clear all the assets in this pile
+     *
+     * @function Piler.Main.BasePile#clear
+     *
+     * @returns {Piler.Main.BasePile}
+     */
+
+    BasePile.prototype.clear = function() {
+      this.assets.length = 0;
+      this.rawPile = null;
+      this.pileHash = '';
+      return this;
+    };
+
+
+    /**
+     * @function Piler.Main.BasePile#getSources
+     * @returns {Array} Return an array of strings
+     */
+
+    BasePile.prototype.getSources = function() {
+      var devCacheKey, ob, sources, u, _i, _j, _len, _len1, _ref, _ref1;
+      sources = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.assets;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+          u = _ref[_i];
+          if (u.options.asIs === true) {
+            _results.push([u.raw(), u.options.extra]);
+          }
+        }
+        return _results;
+      }).call(this);
+      if (this.options.volatile) {
+        _ref = this.assets;
+        for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+          ob = _ref[_i];
+          if (ob.options.asIs === false) {
+            sources.push(["" + this.options.urlRoot + "temp/" + this.name + "." + (ob.type()) + "-" + (ob.id()) + "." + this.ext, ob.options.extra]);
+          }
+        }
+      } else {
+        if (this.options.env === 'production') {
+          sources.push(["" + this.options.urlRoot + "min/" + this.pileHash + "/" + this.name + "." + this.ext]);
+        } else {
+          devCacheKey = '';
+          if (this.options.cacheKeys) {
+            devCacheKey = "?v=" + (Date.now());
+          }
+          _ref1 = this.assets;
+          for (_j = 0, _len1 = _ref1.length; _j &lt; _len1; _j++) {
+            ob = _ref1[_j];
+            if (ob.options.asIs === false) {
+              sources.push([
+                "" + this.options.urlRoot + "dev/" + this.name + "." + (ob.type()) + "-" + (ob.id()) + "." + this.ext + devCacheKey, Piler.utils._.merge({}, ob.options.extra, {
+                  id: "pile-" + (ob.id())
+                })
+              ]);
+            }
+          }
+        }
+      }
+      return sources;
+    };
+
+
+    /**
+     * Find an asset by any member of {@link Piler.Serialize.CodeObject CodeObject}
+     *
+     * @example
+     *  PM.findAssetBy('id', '9a810daff', false, function(err, asset){
+     *     // asset.contents()
+     *  })
+     *  // or using promises
+     *  PM.findAssetBy('id', '9a810daff', false).then(function(asset){
+     *     // asset.contents()
+     *  }, function(err){
+     *     // failed
+     *  });
+     *
+     * @function Piler.Main.BasePile#findAssetBy
+     *
+     * @param {String} member
+     * @param {*} search
+     * @param {Boolean} [one=true] Return the first item found
+     * @param {Piler.NodeCallback} [cb] Callback if you don't want to use promises
+     * @returns {Promise} `this` Array of values or single value
+     */
+
+    BasePile.prototype.findAssetBy = function(member, search, one, cb) {
+      var asset, reduced;
+      if (one == null) {
+        one = true;
+      }
+      member = [member].join('.');
+      reduced = Piler.utils.Promise.reduce((function() {
+        var _i, _len, _ref, _results;
+        _ref = this.assets;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+          asset = _ref[_i];
+          _results.push(asset);
+        }
+        return _results;
+      }).call(this), function(total, asset) {
+        return Piler.utils.Promise["try"](function() {
+          var fn;
+          fn = op.get(asset, [member]);
+          if (typeof fn === 'function') {
+            return fn.call(asset);
+          } else {
+            return fn;
+          }
+        }).then(function(value) {
+          if (value === search) {
+            return total.push(asset);
+          }
+        }).then(function() {
+          return total;
+        });
+      }, []);
+      if (one) {
+        reduced = reduced.then(function(values) {
+          return values[0];
+        });
+      }
+      return reduced.bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * Set the pileHash from the concatenated result from pileUp
+     *
+     * @function Piler.Main.BasePile#_computeHash
+     * @private
+     *
+     * @returns {String}
+     */
+
+    BasePile.prototype._computeHash = function() {
+      return this.pileHash = Piler.Serialize.sha1(this.rawPile, 'hex');
+    };
+
+
+    /**
+     * Returns the sum of all assets in this pile
+     *
+     * @function Piler.Main.BasePile#pileUp
+     * @param {Piler.NodeCallback} [cb] Callback instead of using the promise
+     * @returns {Promise} `this`
+     */
+
+    BasePile.prototype.pileUp = function(cb) {
+      var self;
+      self = this;
+      return Piler.utils.Promise.map(this.assets, function(codeOb) {
+        if (codeOb.options.asIs) {
+          return '';
+        }
+        return codeOb.contents().then(function(code) {
+          return "" + (self.options.commentLines ? self.commentLine("" + self.name + "." + (codeOb.type()) + "-" + (codeOb.id()) + "." + self.ext) : '') + "\n" + code;
+        });
+      }).then(function(result) {
+        self.rawPile = result.join('\n\n').trim();
+        self._computeHash();
+        return self.rawPile;
+      }, function(err) {
+        return err;
+      }).bind(this).nodeify(cb);
+    };
+
+    return BasePile;
+
+  })();
+
+  /**
+   * Config object for {@link Piler.Main.BasePile BasePile} and {@link Piler.Main.PileManager PileManager}
+   *
+   * @typedef {Object} Piler.Main.PileSettings
+   * @property {Boolean} [cacheKeys=true] When true, adds ?v=xxxxxxx query string to
+   * @property {Boolean} [volatile=false] Setting a pile to volatile means that everytime an asset is served, it's removed from the pile
+   * @property {String} [urlRoot='/piler/"] The middleware URI root, like `/piler/min/...`
+   * @property {Object} [logger=console] By default, the logger is the console
+   * @property {String} [env='development'] Environment this pile works on, it affects processors directly
+   * @property {Boolean} [commentLines=true] When set to true, the ID of the pile is appended to the asset, so you can easily find it in your code.
+   */
+  PileManager = (function() {
+
+    /**
+     * Binds an add function to an specific pile
+     *
+     * @example
+     *  var addSingularity = js.bindToPile('addSingularity', 'global')
+     *  js.addSingularity = function(doh){
+     *    return this.add({type: 'singularity', raw: doh});
+     *  };
+     *  // will always point to js manager to the global pile, regardless when or where it's called
+     *  addSingularity('doh');
+     *
+     * @function Piler.Main.PileManager#bindToPile
+     * @param {String} fnName Any method name on the {@link Piler.Main.PileManager PileManager} class
+     * @param {String|Boolean} [namespace=true] Namespace to be bound to. If sets to true, will create a random volatile pile
+     * @returns {Function}
+     */
+    PileManager.prototype.bindToPile = function(fnName, namespace) {
+      var self;
+      if (namespace == null) {
+        namespace = true;
+      }
+      self = this;
+      return function(data, options) {
+        var defaults;
+        if (options == null) {
+          options = {};
+        }
+        defaults = {
+          namespace: namespace
+        };
+        if (namespace === true) {
+          namespace = self.createTempNamespace();
+          defaults.namespace = namespace;
+        }
+        options = Piler.utils._.defaults(options, defaults);
+        return self[fnName](data, options);
+      };
+    };
+
+
+    /**
+     * @member {Piler.Main.BasePile} Piler.Main.PileManager#type
+     * @default null
+     */
+
+    PileManager.prototype.type = null;
+
+
+    /**
+     * @member {String} Piler.Main.PileManager#contentType
+     * @default 'text/plain'
+     */
+
+    PileManager.prototype.contentType = 'text/plain';
+
+
+    /**
+     * Manager that holds many pile namespaces at once, and serve assets through
+     * middleware
+     *
+     * @constructor Piler.Main.PileManager
+     * @param {Piler.Main.PileSettings} [options={}]
+     */
+
+    function PileManager(name, options) {
+      this.name = name;
+      this.options = options != null ? options : {};
+      out.defaults(this.options);
+      this.piles = {};
+      this.getPile('global');
+      return;
+    }
+
+
+    /**
+     * Add assets in order
+     *
+     * @function Piler.Main.PileManager#batch
+     * @param {Array} arr Array containing an array of ["command", "content", "options"]
+     *
+     * @returns {Piler.Main.PileManager} `this`
+     */
+
+    PileManager.prototype.batch = function(arr) {
+      var value, _i, _len;
+      arr = Piler.utils.ensureArray(arr);
+      for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
+        value = arr[_i];
+        this[value[0]](value[1], value[2]);
+      }
+      return this;
+    };
+
+
+    /**
+     * Disposes a namespace, clear it and remove from this manager
+     *
+     * @param {...String} namespaces Namespaces names
+     * @function Piler.Main.PileManager#dispose
+     * @returns {Piler.Main.PileManager} `this`
+     */
+
+    PileManager.prototype.dispose = function(namespaces) {
+      var namespace, pile, _i, _len;
+      namespaces = Piler.utils.ensureArray(namespaces);
+      for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
+        namespace = namespaces[_i];
+        if ((pile = this.piles[namespace])) {
+          pile.clear();
+          delete this.piles[namespace];
+        }
+      }
+      return this;
+    };
+
+
+    /**
+     * Create a volatile randomly named namespace
+     *
+     * @function Piler.Main.PileManager#createTempNamespace
+     * @returns {String}
+     */
+
+    PileManager.prototype.createTempNamespace = function() {
+      var namespace;
+      namespace = "temp+" + this.type.prototype.ext + "-" + (Piler.Serialize.sha1(Date.now().toString() + Math.random().toString().replace('.', '~'), 'hex').substr(0, 12));
+      this.getPile(namespace, {
+        volatile: true
+      });
+      debug('Created random volatile pile', this.type.prototype.ext, namespace);
+      return namespace;
+    };
+
+
+    /**
+     * Get a pile from this manager. If it doesn't exist, it will create one
+     *
+     * @function Piler.Main.PileManager#getPile
+     * @param {String} namespace
+     * @param {Piler.Main.PileSettings} [settings={}]
+     * @returns {Piler.Main.BasePile} `this`
+     */
+
+    PileManager.prototype.getPile = function(namespace, settings) {
+      var pile;
+      if (settings == null) {
+        settings = {};
+      }
+      pile = this.piles[namespace];
+      if (!pile) {
+        return this.piles[namespace] = new this.type(namespace, Piler.utils._.merge({}, this.options, settings));
+      }
+      return pile;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#_defaultOptions
+     * @protected
+     */
+
+    PileManager.prototype._defaultOptions = function(options) {
+      if (!options.namespace) {
+        options.namespace = 'global';
+      }
+    };
+
+
+    /**
+     * Low level function that actually adds stuff to the pile, deals with
+     * normalizing options
+     * @function Piler.Main.PileManager#add
+     * @param {String} type BasePile method name
+     * @param {*} data Any type of data that should be piled
+     * @param {Piler.Main.AddConfig} [options={}]
+     * @param {Piler.NodeCallback} [cb] Use a callback instead
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    PileManager.prototype.add = function(type, data, options, cb) {
+      var obj, pile;
+      if (options == null) {
+        options = {};
+      }
+      this._defaultOptions(options);
+      debug('Adding:', type, data, options);
+      pile = this.getPile(options.namespace);
+      obj = pile["" + type](data, options);
+      pile.pileUp(cb);
+      return obj;
+    };
+
+
+    /**
+     * Add an array of files at once
+     *
+     * @example
+     *   PileManager.addFiles(["/file/1","/file/2"])
+     *
+     * @function Piler.Main.PileManager#addFiles
+     *
+     * @param {Array} arr
+     * @param {Object} [options={}]
+     * @returns {Piler.Main.PileManager} `this`
+     */
+
+    PileManager.prototype.addFiles = function(arr, options) {
+      var file, _i, _len;
+      arr = Piler.utils.ensureArray(arr);
+      for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
+        file = arr[_i];
+        this.addFile(file, options);
+      }
+      return this;
+    };
+
+
+    /**
+     * Add a match of files
+     *
+     * @example
+     *   PileManager.addWildcard(["/folder/*.js","/folder2/*.js"])
+     *
+     * @function Piler.Main.PileManager#addWildcard
+     *
+     * @param {String|Array} paths You can give a glob string or an array of glob strings
+     * @param {Object} [options={}]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Promise}
+     */
+
+    PileManager.prototype.addWildcard = function(arr, options, cb) {
+      var file, promises, _i, _len;
+      arr = Piler.utils.ensureArray(arr);
+      promises = [];
+      for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
+        file = arr[_i];
+        promises.push((function(file) {
+          return new Piler.utils.Promise(function(resolve, reject) {
+            Piler.utils.glob(file, {
+              cwd: Piler.utils.path.dirname(file)
+            }, function(err, matches) {
+              if (err) {
+                reject(aerr);
+              } else {
+                resolve(matches);
+              }
+            });
+          });
+        })(file));
+      }
+      return Piler.utils.Promise.map(promises, (function(_this) {
+        return function(value) {
+          return _this.addFiles(value, options);
+        };
+      })(this)).bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#addFile
+     * @param {String} path
+     * @param {Object} [options={}]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    PileManager.prototype.addFile = function(path, options, cb) {
+      this.add('addFile', path, options, cb);
+      return this;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#addMultiline
+     * @param {Function} path
+     * @param {Object} [options={}]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    PileManager.prototype.addMultiline = function(fn, options, cb) {
+      this.add('addMultiline', fn, options, cb);
+      return this;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#addRaw
+     * @param {String} raw
+     * @param {Object} [options={}]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    PileManager.prototype.addRaw = function(raw, options, cb) {
+      this.add('addRaw', raw, options, cb);
+      return this;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#addUrl
+     *
+     * @param {String} url
+     * @param {Object} [options={}]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Piler.Serialize.CodeObject}
+     */
+
+    PileManager.prototype.addUrl = function(url, options, cb) {
+      this.add('addUrl', url, options, cb);
+      return this;
+    };
+
+
+    /**
+     * Update all related piles and assets and if this pile has set outputDirectory save, them to disk.
+     *
+     * @function Piler.Main.PileManager#contents
+     *
+     * @param {Piler.NodeCallback} [cb] You can use a callback if you want
+     * @returns {Promise} The current array of all content
+     */
+
+    PileManager.prototype.contents = function(cb) {
+      var options, piles;
+      piles = this.piles;
+      options = this.options;
+      return Piler.utils.Promise.reduce(Object.keys(piles), function(total, name) {
+        var pile;
+        pile = piles[name];
+        options.logger.notice("Generating assets for '" + pile.name + "' in '" + pile.ext + "'");
+        return pile.pileUp().then(function(code) {
+          var outputPath;
+          if (options.outputDirectory) {
+            if (pile.options.volatile === true) {
+              return total.concat(code);
+            }
+            outputPath = Piler.utils.path.join(options.outputDirectory, "" + pile.name + "." + pile.ext);
+            return Piler.utils.fs.writeFileAsync(outputPath, code).then(function() {
+              options.logger.info("Wrote " + pile.ext + " pile " + pile.name + " to " + outputPath);
+              return total.concat(code);
+            });
+          } else {
+            return total.concat(code);
+          }
+        });
+      }, []).bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#_prepareNamespaces
+     *
+     * @param {Array} [namespaces=["global"]]
+     * @param {Object} [opts={}]
+     * @private
+     */
+
+    PileManager.prototype._prepareNamespaces = function(namespaces, opts) {
+      var namespace, pile, _ref;
+      if (opts == null) {
+        opts = {};
+      }
+      namespaces = Piler.utils.ensureArray(namespaces);
+      if (!opts.disableGlobal) {
+        namespaces.unshift('global');
+      }
+      if (!opts.disableVolatile) {
+        _ref = this.piles;
+        for (namespace in _ref) {
+          pile = _ref[namespace];
+          if (pile.options.volatile === true) {
+            namespaces.push(namespace);
+          }
+        }
+      }
+      return namespaces;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#getSources
+     * @param {Array} [namespaces=["global"]]
+     * @returns {Array}
+     */
+
+    PileManager.prototype.getSources = function(namespaces) {
+      var ns, pile, sources, _i, _len;
+      namespaces = this._prepareNamespaces(namespaces);
+      sources = [];
+      for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
+        ns = namespaces[_i];
+        if ((pile = this.piles[ns])) {
+          sources.push.apply(sources, pile.getSources());
+        }
+      }
+      return sources;
+    };
+
+
+    /**
+     * Convert an object to `attribute="value"` for HTML tags
+     *
+     * @function Piler.Main.PileManager#_objectToAttr
+     * @private
+     * @returns {String}
+     */
+
+    PileManager.prototype._objectToAttr = function(obj) {
+      var code, k;
+      if (Piler.utils._.isArray(obj)) {
+        return obj.join(' ');
+      } else if (obj) {
+        code = [];
+        for (k in obj) {
+          code.push("" + k + "=" + (Piler.Serialize.stringify(obj[k])));
+        }
+        return code.join(' ');
+      } else {
+        return '';
+      }
+    };
+
+
+    /**
+     * When {@link Piler.Main.PileManager#render render} is called, each content calls this function
+     *
+     * @param {String} code The code itself
+     * @param {*} [extra] Any extra information passed to the tag
+     */
+
+    PileManager.prototype.wrapInTag = function(code) {
+      return "" + code;
+    };
+
+
+    /**
+     * @function Piler.Main.PileManager#render
+     * @param {Array.&lt;String>} [namespaces]
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Promise} Returns the rendered tags
+     */
+
+    PileManager.prototype.render = function(namespaces, cb) {
+      namespaces = Piler.utils.ensureArray(namespaces);
+      return Piler.utils.Promise.reduce(this.getSources(namespaces), (function(_this) {
+        return function(tags, source) {
+          return tags += "" + (_this.wrapInTag(source[0], _this._objectToAttr(source[1]))) + "\n";
+        };
+      })(this), '').bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * Add our version of render, we need to support promise locals
+     *
+     * @function Piler.Main.PileManager#_render
+     * @protected
+     * @returns {Function}
+     */
+
+    PileManager.prototype._render = function(response) {
+      return function(name, locals, callback) {
+        var _locals;
+        if (!Piler.utils._.isObject(locals)) {
+          _locals = {};
+        } else {
+          _locals = locals;
+        }
+        return Piler.utils.Promise.props(_locals).then(function(locals) {
+          response.render(name, locals, callback);
+          return locals;
+        });
+      };
+    };
+
+
+    /**
+     * Assign the piler namespace on the response object
+     *
+     * @function Piler.Main.PileManager#locals
+     */
+
+    PileManager.prototype.locals = function(response) {
+      op.ensureExists(response, 'piler', {
+        render: this._render(response)
+      });
+      return this;
+    };
+
+
+    /**
+     * Stream the contents of the piles in this manager
+     * @function Piler.Main.PileManager#stream
+     * @param {Array} namespaces
+     * @param {Object} [options] Pass options to the {@link Piler.Main.PilerManager#_prepareNamespaces _prepareNamespaces} function
+     * @returns {Stream}
+     */
+
+    PileManager.prototype.stream = function(namespaces, options) {
+      var main, namespace, pm, promises;
+      namespaces = this._prepareNamespaces(namespaces, options);
+      pm = this;
+      main = Piler.utils.Promise.resolve();
+      promises = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
+          namespace = namespaces[_i];
+          if (pm.piles[namespace]) {
+            _results.push(pm.piles[namespace].pileUp());
+          }
+        }
+        return _results;
+      })();
+      return Piler.utils.through(function(chunk, enc, callback) {
+        var promise, _i, _len;
+        if (promises.length) {
+          for (_i = 0, _len = promises.length; _i &lt; _len; _i++) {
+            promise = promises[_i];
+            main = main.then(promise).then((function(_this) {
+              return function(value) {
+                _this.push(value);
+              };
+            })(this));
+          }
+          main["finally"](function() {
+            callback();
+          });
+        } else {
+          callback();
+        }
+      });
+    };
+
+
+    /**
+     * Find an asset from a namespace
+     * @function Piler.Main.PileManager#findAssetsBy
+     * @param {String} member
+     * @param {*} search
+     * @param {String} [namespace='global']
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Promise}
+     */
+
+    PileManager.prototype.findAssetsBy = function(member, search, namespace, cb) {
+      var pile, promise;
+      if (namespace == null) {
+        namespace = 'global';
+      }
+      pile = this.piles[namespace];
+      if (!pile) {
+        promise = Piler.utils.Promise.reject("namespace '" + namespace + "' not found");
+      } else {
+        promise = pile.findAssetBy(member, search, false);
+      }
+      return promise.bind(this).nodeify(cb);
+    };
+
+
+    /**
+     * Exposes a middleware for serving your assets
+     *
+     * @function Piler.Main.PileManager#middleware
+     * @param {Object} [options={}]
+     *
+     * @returns {Function}
+     */
+
+    PileManager.prototype.middleware = function(options) {
+      var self;
+      if (options == null) {
+        options = {};
+      }
+      debug("setting asset serving for " + this.name);
+      self = this;
+      return function(req, res, next) {
+        var asset, pile, uid;
+        if (!req) {
+          return next();
+        }
+        self.locals(res);
+        if (!Piler.utils._.startsWith(req.url, self.options.urlRoot)) {
+          return next();
+        }
+        asset = Piler.AssetUrlParse.parse(req.url);
+        if (!asset || Piler.utils._.isEmpty(asset)) {
+          debug('not an asset, skipping', req.url);
+          return next();
+        }
+        debug('request url', req.url, 'asset', asset);
+        if (asset.ext !== self.type.prototype.ext) {
+          return next();
+        }
+        res.setHeader('Content-Type', self.contentType);
+        pile = self.piles[asset.name];
+        if (!pile) {
+          debug('pile not found', asset.name);
+          res.send(404, "Cannot find pile " + asset.name);
+          res.end();
+          return;
+        }
+        if (asset.min) {
+          res.setHeader('Cache-Control', 'max-age=31556900');
+          res.send(pile.rawPile);
+          res.end();
+          return;
+        }
+        if (!asset.dev &amp;&amp; !asset.temp) {
+          return next();
+        }
+        uid = asset.temp ? asset.temp.uid : asset.dev.uid;
+        pile.findAssetBy('id', uid).then(function(codeOb) {
+          if (codeOb) {
+            debug('code object', codeOb.id());
+            codeOb.contents().then(function(code) {
+              res.end(code);
+            });
+          } else {
+            res.send(404, "Cannot find codeOb " + uid);
+            res.end();
+          }
+          if (pile.options.volatile === true) {
+            pile.remove(codeOb);
+          }
+        });
+      };
+    };
+
+    return PileManager;
+
+  })();
+  managers = {
+    PileManager: PileManager
+  };
+  piles = {
+    BasePile: BasePile
+  };
+  out.BasePile = BasePile;
+  out.PileManager = PileManager;
+
+  /**
+   * @function Piler.addManager
+   */
+
+  /**
+   * Adds a manager to Piler
+   *
+   * @function Piler.Main.addManager
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+   * @returns {Piler.Main.PileManager|null}
+   */
+  out.addManager = mainExports.addManager = function(name, factoryFn) {
+    var oldFn;
+    oldFn = managers[name] ? managers[name] : null;
+    debug("Added manager '" + name + "'");
+    managers[name] = factoryFn(Piler);
+    return oldFn;
+  };
+
+  /**
+   * @function Piler.removeManager
+   */
+
+  /**
+   * Removes a manager from Piler
+   *
+   * @function Piler.Main.removeManager
+   * @param {String} name Name of the manager
+   */
+  out.removeManager = mainExports.removeManager = function(name) {
+    if (managers[name]) {
+      delete managers[name];
+    }
+  };
+
+  /**
+   * @function Piler.getManager
+   */
+
+  /**
+   * Get a manager from Piler
+   *
+   * @function Piler.Main.getManager
+   * @param {String} name Name of the manager
+   * @returns {Piler.Main.PileManager}
+   */
+  out.getManager = mainExports.getManager = function(name) {
+    return managers[name];
+  };
+
+  /**
+   * @function Piler.createManager
+   */
+
+  /**
+   * Create a new manager
+   *
+   * @function Piler.Main.createManager
+   * @param {String} name Name of the manager
+   * @param {Piler.Main.Add} name Name of the manager
+   *
+   * @returns {Piler.Main.PileManager}
+   */
+  out.createManager = mainExports.createManager = function(type, name, options) {
+    if (options == null) {
+      options = {};
+    }
+    if (!managers[type]) {
+      throw new Error("Manager " + type + " not available");
+    }
+    if (Piler.utils._.isObject(name)) {
+      options = name;
+      name = null;
+    }
+    if (!name) {
+      name = type;
+    }
+    op.ensureExists(options, 'env', process.env.NODE_ENV || 'development');
+    return new managers[type](name, options);
+  };
+
+  /**
+   * @function Piler.addPile
+   */
+
+  /**
+   * Adds a pile to Piler
+   *
+   * @function Piler.Main.addPile
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+   *
+   * @returns {Piler.Main.BasePile|null}
+   */
+  out.addPile = mainExports.addPile = function(name, factoryFn) {
+    var oldFn;
+    oldFn = piles[name] ? piles[name] : null;
+    debug("Added pile '" + name + "'");
+    piles[name] = factoryFn(Piler);
+    return oldFn;
+  };
+
+  /**
+   * @function Piler.getPile
+   */
+
+  /**
+   * Get a pile from Piler
+   *
+   * @function Piler.Main.getPile
+   * @param {String} name
+   * @param {Piler.FactoryFn} factoryFn
+   *
+   * @returns {Piler.Main.BasePile}
+   */
+  out.getPile = mainExports.getPile = function(name) {
+    return piles[name];
+  };
+
+  /**
+   * @function Piler.removePile
+   */
+
+  /**
+   * Removes a pile from Piler
+   *
+   * @function Piler.Main.removePile
+   * @param {String} name Name of the pile
+   */
+  out.removePile = mainExports.removePile = function(name) {
+    if (piles[name]) {
+      delete piles[name];
+    }
+  };
+  return out;
+};
+</pre>
+	</article>
+</section>
+
+
+
+
+
+				</div>
+
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Jul 06 2014 using the <a
+			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
+
+			
+			<br clear="both">
+		</div>
+
+	</div>
+	<!--<script src="scripts/sunlight.js"></script>-->
+	<script src="scripts/docstrap.lib.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+	<script>
+		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
+			$( "#toc" ).toc( {
+				anchorName  : function ( i, heading, prefix ) {
+					return $( heading ).attr( "id" ) || ( prefix + i );
+				},
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : "100px"
+			} );
+
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+			$( '.dropdown-toggle' ).dropdown();
+//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+				var $this = $( this );
+
+				var example = $this.find( "code" );
+				exampleText = example.html();
+				var lang = /{@lang (.*?)}/.exec( exampleText );
+				if ( lang && lang[1] ) {
+					exampleText = exampleText.replace( lang[0], "" );
+					example.html( exampleText );
+					lang = lang[1];
+				} else {
+					lang = "javascript";
+				}
+
+				if ( lang ) {
+
+					$this
+						.addClass( "sunlight-highlight-" + lang )
+						.addClass( "linenums" )
+						.html( example.html() );
+
+				}
+			} );
+
+			Sunlight.highlightAll( {
+				lineNumbers : true,
+				showMenu : true,
+				enableDoclinks : true
+			} );
+		} );
+	 </script>
+
+
+
+	<!--Navigation and Symbol Display-->
+	
+	<script>
+		$( function () {
+			$( '#main' ).localScroll( {
+				offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+			} );
+			$( "dt.name" ).each( function () {
+				var $this = $( this ).find("h4");
+				var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+				var dt = $(this);
+				var children = dt.next( "dd" );
+
+				dt.prepend( icon ).css( {cursor : "pointer"} );
+				dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+				children.hide();
+
+				dt.children().on( "click", function () {
+					children = dt.next( "dd" );
+					console.debug(dt, children)
+					children.slideToggle( "fast", function () {
+
+						if ( children.is( ":visible" ) ) {
+							icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+							dt.addClass( "member-open" ).animate( "member-collapsed" );
+						} else {
+							icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+							dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+						}
+					} );
+				} );
+
+			} );
+		} );
+	</script>
+	
+
+
+	<!--Google Analytics-->
+	
+
+</body>
+</html>

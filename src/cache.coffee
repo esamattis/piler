@@ -4,98 +4,220 @@ module.exports = (Piler, mainExports) ->
    * @namespace Piler.Cache
   ###
 
-  os = require 'os'
+  os = require('os')
 
-  # e.g. /var/folders/zm/jmjb49l172g6g_h1y8701spc0000gn/T/
   TMPDIR = os.tmpDir()
 
   ###*
-   * Output debug messages as if it was from {@link Piler.Cache Cache}
-   * @function Piler.Cache.debug
-  ###
-  debug: debug = Piler.utils.debug('piler:cache')
-  ###*
-   * Return a compressed version (already cached or not) of `code`
+   * Execute this callback when there's no cache, so you can retrieve the code
    *
-   * @function Piler.Cache.cache
-   * @param {String} code
-   * @param {Function} fnCompress Function that returns a value or a promise
-   * @param {Function} [cb] Optional callback
-   * @returns {Promise}
-  ###
-  cache: (code, fnCompress, cb) ->
-    if options.enable isnt true
-      debug('minified code cache isnt enabled')
-      return Piler.utils.Q.resolve(fnCompress()).nodeify(cb)
-
-    hash = Piler.Serialize.sha1(code, 'hex')
-
-    if options.useFS is true
-      file = Piler.utils.path.join TMPDIR, '/', hash
-
-      debug('using filesystem.', 'hash', hash, 'file', file)
-
-      Piler.utils.fs.readFileAsync(
-        file, {encoding: 'utf8'}
-      ).then(
-        (contents) ->
-          debug('file already in cache')
-          # if already in cache
-          contents
-        ->
-          debug('caching', file)
-          # if not: compress the code
-          Piler.utils.Q.try(->
-            fnCompress()
-          ).then((cache)->
-            Piler.utils.fs.writeFileAsync(file, cache, {encoding: 'utf8'}).then(-> cache)
-          )
-      ).nodeify(cb)
-    else
-      debug('not using file system. calling custom callback.', 'hash', hash)
-
-      Piler.utils.Q.try(->
-        options.cacheCallback(code, hash, fnCompress)
-      ).nodeify(cb)
-
-  options: options =
-    enable: true
-    useFS: true
-    cacheCallback: (code, hash, fnCompress) ->
-      fnCompress()
-
-  ###*
-   * @typedef {Function} Piler.Cache.CacheFn
-   * @param {String} code The raw code itself
-   * @param {String} hash The current sha1 of the code
-   * @param {Function} code Execute the minify routine that generates code
-   * @returns {String}
-  ###
-
-  ###*
-   * @function Piler.useCache
-  ###
-  ###*
-   * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override the internal one.
-   *
+   * @typedef {Function} Piler.Cache.ProcessCallback
    * @example
-   *   piler.useCache(function(code, hash, fnCompress) {
-   *     if (typeof memoryCache[hash] === 'undefined') {
-   *       memoryCache[hash] = fnCompress();
-   *     }
-   *     return memoryCache[hash];
+   *   callback().then(function(code){
+   *     return code;
+   *   });
+   *   // or
+   *   callback(function(err, code){
+   *     return code;
    *   });
    *
-   * @param {Piler.Cache.CacheFn} cacheFn Function that will be called with the current code, generated hash and the callback
-   * @throws Error
-   *
-   * @function Piler.Cache.useCache
+   * @param {Piler.NodeCallback} [cb] Pass in a callback instead
+   * @returns {Promise|*} Do the processing
   ###
-  useCache: mainExports.useCache = (cacheFn) ->
-    throw new Error('useCache expects a function') if not Piler.utils._.isFunction(cacheFn)
-    throw new Error('useCache expects a function with 3 arguments defined') if cacheFn.length < 3
 
-    options.useFS = false
-    options.cacheCallback = Piler.utils.Q.method cacheFn
+  fileCacheCallback = (hash, processCallback) ->
+    file = Piler.utils.path.join(TMPDIR, hash)
 
-    return
+    debug('using filesystem.', 'hash', hash, 'file', file)
+
+    # no need to check if the file exists, it's an anti-pattern
+    Piler.utils.fs.readFileAsync(
+      file
+    ).then(
+      (contents) ->
+        debug('file already in cache')
+        # if already in cache
+        contents.toString()
+      ->
+        debug('caching', file)
+        # if not: execute the callback and get the code
+        processCallback().then((code) ->
+          Piler.utils.fs.writeFileAsync(file, code).then(->
+            code
+          )
+        )
+    )
+
+  caches = {
+    contents: {
+      enabled: true
+      callback: fileCacheCallback
+    }
+    pre: {
+      enabled: true
+      callback: fileCacheCallback
+    }
+    post: {
+      enabled: true
+      callback: fileCacheCallback
+    }
+  }
+
+  {
+    ###*
+     * Output debug messages as if it was from {@link Piler.Cache Cache}
+     *
+     * @function Piler.Cache.debug
+    ###
+    debug: debug = Piler.utils.debug('piler:cache')
+
+    ###*
+     * Return the code, regardless of cached or not.
+     *
+     * @function Piler.Cache.cache
+     *
+     * @example
+     *   Piler.Cache.cache('some id', function(){
+     *     return 'Im code that will get cached';
+     *   }, 'contents', function(err, code){
+     *     // will always yield 'Im code that will get cached' if no error happens
+     *   });
+     *   // or using promises
+     *   Piler.Cache.cache(
+     *     'some id',
+     *     function(){
+     *       return 'Im code that will get cached';
+     *     },
+     *     'contents'
+     *   ).then(function(code){
+     *     // will "always" yield 'Im code that will get cached' if no error happens
+     *   });
+     *
+     *
+     * @param {String} identifier Any kind of identification, will be converted to a sha1 hash
+     * @param {Function} processFn Function that return a string value or a promise
+     * @param {String} type Type of cache
+     * @param {Piler.NodeCallback} [cb] Optional callback
+     *
+     * @returns {Promise}
+    ###
+    cache: (identifier, processFn, type, cb) ->
+      if not type or not caches[type]
+        debug('cache type not found', if type then type else undefined)
+        return Piler.utils.Promise.try(processFn).nodeify(cb)
+
+      cache = caches[type]
+
+      if cache.enabled isnt true
+        debug('code cache isnt enabled for', type)
+        return Piler.utils.Promise.try(processFn).nodeify(cb)
+
+      process = do (processFn) ->
+        (fn) ->
+          if fn and Piler.utils._.isFunction(fn)
+            Piler.utils.Promise.try(processFn).then(
+              (result) ->
+                fn(null, result)
+              (err) ->
+                fn(err)
+            )
+          else
+            Piler.utils.Promise.try(processFn)
+
+      hash = Piler.Serialize.sha1(identifier, 'hex')
+
+      Piler.utils.Promise.try(->
+        cache.callback(hash, process)
+      ).nodeify(cb)
+
+    ###*
+     * A function that get's called when a cache call is made
+     *
+     * @typedef {Function} Piler.Cache.CacheFn
+     * @example
+     *   function(hash, callback) {
+     *     // hash "should" be unique. execute the callback when you need to retrieve the code
+     *     // (aka, there's no cached code)
+     *     return callback(function(err, code){
+     *       // store your "code" alongside your hash
+     *       // then return it
+     *       return keepInMemory[hash] = code;
+     *     });
+     *     // or with promises
+     *     return callback().then(function(code){
+     *       // store your "code" alongside your hash
+     *       return code;
+     *     });
+     *   }
+     * @param {String} hash The current sha1 of the code
+     * @param {Function|Promise} callback Execute the routine that generates code
+     * @returns {Promise|*}
+    ###
+
+    ###*
+     * Get a registered cache
+     *
+     * @function Piler.Cache.getCache
+     * @param  {String} name Name of the cache. Built-in caches are 'contents','pre' and 'post'
+     * @returns {Piler.Cache.CacheFn}
+    ###
+    getCache: mainExports.getCache = (name) ->
+      caches[name]
+
+    ###*
+     * @function Piler.useCache
+    ###
+    ###*
+     * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override
+     * the internal one.
+     *
+     * @example
+     *   var memoryCache = {};
+     *
+     *   piler.useCache(['contents','pre','post'], function(hash, getCode) {
+     *     if (typeof memoryCache[hash] === 'undefined') {
+     *       return getCode(function(err, code){
+     *         memoryCache[hash] = code;
+     *         return code;
+     *       });
+     *     }
+     *     return memoryCache[hash];
+     *   });
+     *   // or one type of cache only, only for file contents
+     *   piler.useCache(['contents'], function(hash, getCode) {
+     *     if (typeof memoryCache[hash] === 'undefined') {
+     *       return getCode().then(function(code){
+     *         memoryCache[hash] = code;
+     *         return code;
+     *       });
+     *     }
+     *     return memoryCache[hash];
+     *   });
+     *
+     * @param {String|Array|Function} [type=['contents','pre','post']] Type(s) of caches, you can go beyond the built-in types
+     * @param {Piler.Cache.CacheFn} cacheFn Function that will be called with content
+     * @throws Error
+     *
+     * @function Piler.Cache.useCache
+    ###
+    useCache: mainExports.useCache = (type, cacheFn) ->
+      if not Piler.utils._.isFunction(cacheFn) and not Piler.utils._.isFunction(type)
+        throw new Error('useCache expects at least a function')
+
+      if Piler.utils._.isFunction(type)
+        cacheFn = type
+        type = ['contents','pre','post']
+
+      type = Piler.utils.ensureArray(type)
+
+      for t in type
+        if caches[t]
+          debug('Overwriting cache', t)
+        else
+          caches[t] = {}
+
+        caches[t].enabled = true
+        caches[t].callback = cacheFn
+
+      return
+  }

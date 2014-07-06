@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Awesome Asset Manager for Node.js | Piler Source: index.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">Awesome Asset Manager for Node.js | Piler</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.html">Piler</a>
+						</li>
+						
+						<li>
+							<a href="Piler.AssetUrlParse.html">Piler.AssetUrlParse</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Cache.html">Piler.Cache</a>
+						</li>
+						
+						<li>
+							<a href="Piler.LiveCSS.html">Piler.LiveCSS</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Logger.html">Piler.Logger</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.html">Piler.Main</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Processors.html">Piler.Processors</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Serialize.html">Piler.Serialize</a>
+						</li>
+						
+						<li>
+							<a href="Piler.utils.html">Piler.utils</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSManager.html">Piler.Main.CSSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSPile.html">Piler.Main.CSSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLManager.html">Piler.Main.HTMLManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLPile.html">Piler.Main.HTMLPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+			<div class="span12">
+				
+				<div id="main">
+					
+
+
+		<h1 class="page-title">Source: index.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">
+/**
+ * @namespace Piler
+ */
+var file, files, pilerRequire;
+
+files = {
+
+  /**
+   * @namespace Piler.utils
+   * @property {Object} _ Lodash
+   * @property {Object} through {@link http://npmjs.org/package/through2 through2} library
+   * @property {Object} path Node.js Path
+   * @property {Object} fast {@link http://npmjs.org/package/fast.js fast.js} library
+   * @property {Object} fs {@link http://npmjs.org/package/graceful-fs Graceful-fs}
+   * @property {Object} Promise {@link http://npmjs.org/package/bluebird Bluebird} promise library
+   * @property {Object} objectPath {@link http://npmjs.org/package/object-path objectPath} library
+   * @property {Function} debug {@link http://npmjs.org/package/debug Debug} library
+   * @property {Array} reserved {@link http://npmjs.org/package/reserved ECMAScript Reserved keywords}
+   * @property {Object} multiline {@link http://npmjs.org/package/multiline multiline} library
+   * @property {Object} glob {@link http://npmjs.org/package/glob glob} library
+   * @property {Function} extension Extract file extension
+   * @property {Function} ensureArray Ensure that its an array
+   */
+  utils: {
+    _: require('lodash'),
+    through: require('through2'),
+    path: require('path'),
+    fast: require('fast.js'),
+    fs: require('graceful-fs'),
+    Promise: require('bluebird'),
+    objectPath: require('object-path'),
+    debug: require('debug'),
+    glob: require('glob'),
+    reserved: require('reserved'),
+    multiline: require('multiline'),
+    ensureArray: function(args) {
+      if (!args) {
+        return [];
+      }
+      return files.utils.fast.concat(args);
+    },
+    extension: function(filename) {
+      var parts;
+      if (!filename) {
+        return '';
+      }
+      parts = filename.split('.');
+      return parts[parts.length - 1];
+    }
+  },
+  AssetUrlParse: require('./asseturlparse'),
+  Cache: require('./cache'),
+  Main: require('./main'),
+  LiveCSS: require('./modules/livecss'),
+  Logger: require('./logger'),
+  Serialize: require('./serialize'),
+  Processors: require('./processors')
+};
+
+module.exports = files;
+
+files.utils._.mixin(require('underscore.string'));
+
+files.utils._.mixin(files.utils.fast);
+
+files.utils.Promise.promisifyAll(files.utils.fs);
+
+for (file in files) {
+  if (files.utils._.isFunction(files[file])) {
+    files[file] = files[file](files, module.exports);
+  }
+}
+
+
+/**
+ * `require` a Piler module, inject the classes repository to it and provide options for the module.
+ * It actually calls require automatically
+ *
+ * @function Piler.require
+ * @example
+ *   Piler.require('./file.js');
+ *   // then in file.js, piler module looks like this
+ *   module.exports = function(Piler, options) {
+ *      // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
+ *   }
+ */
+
+module.exports.require = pilerRequire = function(path, options) {
+  if (options == null) {
+    options = {};
+  }
+  return require("" + path)(files, options);
+};
+
+
+/**
+ * Render all managers as a single chunk of data
+ *
+ * @function Piler.all
+ *
+ * @param {Array.&lt;Piler.Main.PileManager>} managers
+ * @param {Piler.NodeCallback} [cb]
+ * @returns {Promise}
+ */
+
+module.exports.all = function(managers, cb) {
+  managers = files.utils.ensureArray(managers);
+  return files.utils.Promise.reduce(managers, function(out, manager) {
+    return manager.render().then(function(rendered) {
+      return out += rendered;
+    });
+  }, '').nodeify(cb);
+};
+
+
+/**
+ * Use a function to add functionality to Piler. All this does is to inject Piler classes and options
+ * to the given factory function
+ *
+ * @function Piler.use
+ *
+ * @param {Piler.FactoryFn} factoryFn
+ * @param {Object} [options={}]
+ *
+ * @returns {*}
+ */
+
+module.exports.use = function(factoryFn, options) {
+  if (options == null) {
+    options = {};
+  }
+  return factoryFn(files, options);
+};
+
+(function() {
+  var path, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+  _ref = ['coffee', 'less', 'styl', 'es6'];
+  for (_i = 0, _len = _ref.length; _i &lt; _len; _i++) {
+    path = _ref[_i];
+    pilerRequire("./compilers/" + path);
+  }
+  _ref1 = ['uglify', 'csso'];
+  for (_j = 0, _len1 = _ref1.length; _j &lt; _len1; _j++) {
+    path = _ref1[_j];
+    pilerRequire("./minifiers/" + path);
+  }
+  _ref2 = ['js', 'css', 'html'];
+  for (_k = 0, _len2 = _ref2.length; _k &lt; _len2; _k++) {
+    path = _ref2[_k];
+    pilerRequire("./managers/" + path);
+  }
+})();
+
+
+/**
+ * Function that receives all the classes, and returns a definition object
+ *
+ * @example
+ *   function(Piler, options){
+ *     Piler.addManager();
+ *     return {
+ *     };
+ *   }
+ *
+ * @typedef {Function} Piler.FactoryFn
+ *
+ * @param {Object} classes All classes from Piler
+ * @param {Object} [options={}] Any options
+ *
+ * @returns {Object} Return a configuration object
+ */
+
+
+/**
+ * Normalized node.js callback
+ *
+ * @example
+ *   function(err, result) {
+ *     if (err) {
+ *       return;
+ *     }
+ *     result;
+ *   }
+ *
+ * @typedef {Function} Piler.NodeCallback
+ * @param {Error} [error] Error if any
+ * @param {*} result The result might be always present even when an error occurs
+ */
+</pre>
+	</article>
+</section>
+
+
+
+
+
+				</div>
+
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Jul 06 2014 using the <a
+			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
+
+			
+			<br clear="both">
+		</div>
+
+	</div>
+	<!--<script src="scripts/sunlight.js"></script>-->
+	<script src="scripts/docstrap.lib.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+	<script>
+		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
+			$( "#toc" ).toc( {
+				anchorName  : function ( i, heading, prefix ) {
+					return $( heading ).attr( "id" ) || ( prefix + i );
+				},
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : "100px"
+			} );
+
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+			$( '.dropdown-toggle' ).dropdown();
+//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+				var $this = $( this );
+
+				var example = $this.find( "code" );
+				exampleText = example.html();
+				var lang = /{@lang (.*?)}/.exec( exampleText );
+				if ( lang && lang[1] ) {
+					exampleText = exampleText.replace( lang[0], "" );
+					example.html( exampleText );
+					lang = lang[1];
+				} else {
+					lang = "javascript";
+				}
+
+				if ( lang ) {
+
+					$this
+						.addClass( "sunlight-highlight-" + lang )
+						.addClass( "linenums" )
+						.html( example.html() );
+
+				}
+			} );
+
+			Sunlight.highlightAll( {
+				lineNumbers : true,
+				showMenu : true,
+				enableDoclinks : true
+			} );
+		} );
+	 </script>
+
+
+
+	<!--Navigation and Symbol Display-->
+	
+	<script>
+		$( function () {
+			$( '#main' ).localScroll( {
+				offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+			} );
+			$( "dt.name" ).each( function () {
+				var $this = $( this ).find("h4");
+				var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+				var dt = $(this);
+				var children = dt.next( "dd" );
+
+				dt.prepend( icon ).css( {cursor : "pointer"} );
+				dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+				children.hide();
+
+				dt.children().on( "click", function () {
+					children = dt.next( "dd" );
+					console.debug(dt, children)
+					children.slideToggle( "fast", function () {
+
+						if ( children.is( ":visible" ) ) {
+							icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+							dt.addClass( "member-open" ).animate( "member-collapsed" );
+						} else {
+							icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+							dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+						}
+					} );
+				} );
+
+			} );
+		} );
+	</script>
+	
+
+
+	<!--Google Analytics-->
+	
+
+</body>
+</html>

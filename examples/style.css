@@ -1,5 +1,9 @@
 h1 {
   color: blue;
+  font-family: 'Verdana';
+  box-shadow: 6px 2px 4px #000;
+  display: inline-block;
+  clear: both;
 }
 
 

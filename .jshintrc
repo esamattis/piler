@@ -1,0 +1,16 @@
+{
+  "node":true,
+  "browser":true,
+  "quotmark":"single",
+  "globals":{
+    "describe": false,
+    "it":false,
+    "expect":false,
+    "Piler": false,
+    "before": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "after": false,
+    "sinon": false
+  }
+}

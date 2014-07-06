@@ -1,17 +1,17 @@
 module.exports = (Piler) ->
-  coffeescript = require 'coffee-script'
+  coffeescript = require('coffee-script')
 
-  Piler.addCompiler('coffeescript', ->
+  Piler.addProcessor('coffeescript', ->
 
-    # We always have coffee-script compiler ;)
-    execute: (code, filename, options) ->
-      coffeescript.compile code, options
+    {
+      pre: {
+        render: (code, asset, options) ->
+          coffeescript.compile(code, options)
 
-    on:
-      file:
-        object: ['coffee']
-
-    targetExt: 'js'
+        condition: (asset, options) ->
+          (asset.options.filePath and Piler.utils.extension(asset.options.filePath) is 'coffee')
+      }
+    }
   )
 
   return

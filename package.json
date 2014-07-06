@@ -16,10 +16,10 @@
     "Francois-Guillaume Ribreau <npm@fgribreau.com> (http://fgribreau.com)",
     "Andrew Nichols (https://github.com/tandrewnichols)"
   ],
-  "engines":{
-    "node":">=0.10"
+  "engines": {
+    "node": ">=0.10"
   },
-  "keywords":[
+  "keywords": [
     "asset",
     "manager",
     "preprocessor",
@@ -53,25 +53,28 @@
   },
   "main": "./lib",
   "dependencies": {
-    "graceful-fs":"3.x.x",
-    "socket.io": "1.x.x",
+    "bluebird": "2.x",
     "coffee-script": "1.x.x",
-    "lodash": "*",
-    "underscore.string": "2.x.x",
-    "uglify-js": "2.x.x",
     "csso": "1.x.x",
     "debug": "*",
-    "through": "*",
-    "reserved": "*",
-    "bluebird":"2.x",
+    "traceur": "0.x.x",
+    "fast.js": "0.x",
+    "glob": "4.x",
+    "graceful-fs": "3.x.x",
+    "lodash": "*",
+    "multiline": "*",
     "object-path": "0.x",
-    "multiline":"*",
-    "glob": "4.x"
+    "reserved": "*",
+    "socket.io": "1.x.x",
+    "through2": "*",
+    "uglify-js": "2.x.x",
+    "underscore.string": "2.x.x"
   },
   "devDependencies": {
-    "sinon":"*",
+    "sinon": "*",
+    "ejs": "*",
     "mocha": "*",
-    "supertest":"*",
+    "supertest": "*",
     "express": "4.x",
     "expect.js": "*",
     "zombie": "2.0.0-alpha31",
@@ -80,13 +83,13 @@
     "stylus": "*",
     "nib": "*",
     "less": "*",
-    "istanbul":"*",
+    "istanbul": "*",
     "serve-static": "*",
     "request": "*",
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
     "csslint": "*",
     "jsdoc": "*",
-    "ink-docstrap":"*"
+    "ink-docstrap": "*"
   }
 }

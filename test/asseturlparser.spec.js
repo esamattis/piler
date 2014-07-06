@@ -4,6 +4,19 @@ var parse = Piler.AssetUrlParse.parse;
 
 describe('asseturlparser', function(){
 
+  describe('empty object', function (){
+
+    it('ignores invalid urls', function(){
+      expect(parse('')).to.eql({});
+      expect(parse('/pile/')).to.eql({});
+      expect(parse('/pile/dev')).to.eql({});
+      expect(parse('/pile/dev/a.js')).to.eql({});
+      expect(parse('/pile/temp/a.js')).to.eql({});
+      expect(parse('/pile/min')).to.eql({});
+    });
+
+  });
+
   describe("parses url production url", function (){
     var url, urlOb, _i, _len, _ref;
 
@@ -149,7 +162,7 @@ describe('asseturlparser', function(){
       expect(urlOb.min).to.be.an('undefined');
     });
 
-    it("is not development", function (){
+    it("is development", function (){
 
       expect(urlOb.dev).to.be.ok();
     });
@@ -164,12 +177,21 @@ describe('asseturlparser', function(){
     });
   });
 
-  describe('can parse volatile piles', function(){
+  describe('works with multiple extensions', function(){
     var urlOb;
     urlOb = parse("/node-pile/pile/dev/my.file-321.css?v=43234");
 
-    it('is volatile', function(){
-      expect(urlOb.volatile).to.be(true);
+    it("has id 321", function (){
+      expect(urlOb.dev.uid).to.be("321");
+    });
+  });
+
+  describe('can parse volatile piles', function(){
+    var urlOb;
+    urlOb = parse("/node-pile/pile/temp/my.file-321.css?v=43234");
+
+    it('is temp', function(){
+      expect(urlOb.temp).to.be.ok();
     });
   });
 

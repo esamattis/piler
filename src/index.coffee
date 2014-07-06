@@ -2,14 +2,15 @@
  * @namespace Piler
 ###
 
-files =
+files = {
   ###*
    * @namespace Piler.utils
    * @property {Object} _ Lodash
+   * @property {Object} through {@link http://npmjs.org/package/through2 through2} library
    * @property {Object} path Node.js Path
-   * @property {Object} through {@link http://npmjs.org/package/through through} library
+   * @property {Object} fast {@link http://npmjs.org/package/fast.js fast.js} library
    * @property {Object} fs {@link http://npmjs.org/package/graceful-fs Graceful-fs}
-   * @property {Object} Q {@link http://npmjs.org/package/bluebird Bluebird} promise library
+   * @property {Object} Promise {@link http://npmjs.org/package/bluebird Bluebird} promise library
    * @property {Object} objectPath {@link http://npmjs.org/package/object-path objectPath} library
    * @property {Function} debug {@link http://npmjs.org/package/debug Debug} library
    * @property {Array} reserved {@link http://npmjs.org/package/reserved ECMAScript Reserved keywords}
@@ -18,38 +19,44 @@ files =
    * @property {Function} extension Extract file extension
    * @property {Function} ensureArray Ensure that its an array
   ###
-  utils:
-    _: require 'lodash'
-    through: require 'through'
-    path: require 'path'
-    fs: require 'graceful-fs'
-    Q: require 'bluebird'
-    objectPath: require 'object-path'
-    debug: require 'debug'
-    reserved: require 'reserved'
-    multiline: require 'multiline'
+  utils: {
+    _: require('lodash')
+    through: require('through2')
+    path: require('path')
+    fast: require('fast.js')
+    fs: require('graceful-fs')
+    Promise: require('bluebird')
+    objectPath: require('object-path')
+    debug: require('debug')
+    glob: require('glob')
+    reserved: require('reserved')
+    multiline: require('multiline')
     ensureArray: (args) ->
-      Array.prototype.concat.call([], args)
+      return [] if not args
+      files.utils.fast.concat(args)
 
     extension: (filename) ->
-      parts = filename.split "."
+      return '' if not filename
+      parts = filename.split('.')
       parts[parts.length - 1]
-
-  AssetUrlParse: require './asseturlparse'
-  Minifiers: require './minifiers'
-  Cache: require './cache'
-  Main: require './main'
-  Logger: require './logger'
-  Serialize: require './serialize'
-  Compilers: require './compilers'
+  }
+  AssetUrlParse: require('./asseturlparse')
+  Cache: require('./cache')
+  Main: require('./main')
+  LiveCSS: require('./modules/livecss')
+  Logger: require('./logger')
+  Serialize: require('./serialize')
+  Processors: require('./processors')
+}
 
 module.exports = files
 
-files.utils._.mixin require 'underscore.string'
+files.utils._.mixin(require('underscore.string'))
+files.utils._.mixin(files.utils.fast)
 
-files.utils.Q.promisifyAll files.utils.fs
+files.utils.Promise.promisifyAll(files.utils.fs)
 
-for file of files when file isnt 'utils'
+for file of files when files.utils._.isFunction(files[file])
   files[file] = files[file](files, module.exports)
 
 ###*
@@ -58,7 +65,8 @@ for file of files when file isnt 'utils'
  *
  * @function Piler.require
  * @example
- *   // piler module looks like this
+ *   Piler.require('./file.js');
+ *   // then in file.js, piler module looks like this
  *   module.exports = function(Piler, options) {
  *      // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
  *   }
@@ -69,46 +77,77 @@ module.exports.require = pilerRequire = (path, options = {}) ->
 ###*
  * Render all managers as a single chunk of data
  *
- * @param {...Piler.Main.PileManager} managers
  * @function Piler.all
- * @returns {String}
+ *
+ * @param {Array.<Piler.Main.PileManager>} managers
+ * @param {Piler.NodeCallback} [cb]
+ * @returns {Promise}
 ###
-module.exports.all = (managers...) ->
-  files.utils.Q.reduce(
-    managers...,
+module.exports.all = (managers, cb) ->
+  managers = files.utils.ensureArray(managers)
+
+  files.utils.Promise.reduce(
+    managers,
     (out, manager) ->
-      manager.render().then (rendered) ->
+      manager.render().then((rendered) ->
         out += rendered
-    ""
-  )
+      )
+    ''
+  ).nodeify(cb)
 
 ###*
  * Use a function to add functionality to Piler. All this does is to inject Piler classes and options
  * to the given factory function
  *
  * @function Piler.use
+ *
  * @param {Piler.FactoryFn} factoryFn
  * @param {Object} [options={}]
- * @example
- *   // piler module looks like this
- *   module.exports = function(Piler, options) {
- *      // Piler contains all Piler classes (compilers, minifiers, and interfaces to add functionality to Piler)
- *   }
+ *
+ * @returns {*}
 ###
 module.exports.use = (factoryFn, options = {}) ->
   factoryFn(files, options)
 
 do ->
   # Built-in compilers
-  pilerRequire("./compilers/#{path}") for path in ['coffee','less','styl']
+  pilerRequire("./compilers/#{path}") for path in ['coffee','less','styl','es6']
   # Built-in minifiers
   pilerRequire("./minifiers/#{path}") for path in ['uglify','csso']
   # Built-in managers
-  pilerRequire("./managers/#{path}") for path in ['js','css','html']
+  pilerRequire("./managers/#{path}")  for path in ['js','css','html']
   return
 
 ###*
+ * Function that receives all the classes, and returns a definition object
+ *
+ * @example
+ *   function(Piler, options){
+ *     Piler.addManager();
+ *     return {
+ *     };
+ *   }
+ *
  * @typedef {Function} Piler.FactoryFn
+ *
  * @param {Object} classes All classes from Piler
+ * @param {Object} [options={}] Any options
+ *
  * @returns {Object} Return a configuration object
+###
+
+###*
+ * Normalized node.js callback
+ *
+ * @example
+ *   function(err, result) {
+ *     if (err) {
+ *       return;
+ *     }
+ *     result;
+ *   }
+ *
+ * @typedef {Function} Piler.NodeCallback
+ * @param {Error} [error] Error if any
+ * @param {*} result The result might be always present even when an error occurs
 ###

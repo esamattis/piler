@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Awesome Asset Manager for Node.js | Piler Source: cache.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">Awesome Asset Manager for Node.js | Piler</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.html">Piler</a>
+						</li>
+						
+						<li>
+							<a href="Piler.AssetUrlParse.html">Piler.AssetUrlParse</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Cache.html">Piler.Cache</a>
+						</li>
+						
+						<li>
+							<a href="Piler.LiveCSS.html">Piler.LiveCSS</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Logger.html">Piler.Logger</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.html">Piler.Main</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Processors.html">Piler.Processors</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Serialize.html">Piler.Serialize</a>
+						</li>
+						
+						<li>
+							<a href="Piler.utils.html">Piler.utils</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="Piler.Main.BasePile.html">Piler.Main.BasePile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSManager.html">Piler.Main.CSSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.CSSPile.html">Piler.Main.CSSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLManager.html">Piler.Main.HTMLManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.HTMLPile.html">Piler.Main.HTMLPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSManager.html">Piler.Main.JSManager</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.JSPile.html">Piler.Main.JSPile</a>
+						</li>
+						
+						<li>
+							<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+			<div class="span12">
+				
+				<div id="main">
+					
+
+
+		<h1 class="page-title">Source: cache.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">module.exports = function(Piler, mainExports) {
+
+  /**
+   * @namespace Piler.Cache
+   */
+  var TMPDIR, caches, debug, fileCacheCallback, os;
+  os = require('os');
+  TMPDIR = os.tmpDir();
+
+  /**
+   * Execute this callback when there's no cache, so you can retrieve the code
+   *
+   * @typedef {Function} Piler.Cache.ProcessCallback
+   * @example
+   *   callback().then(function(code){
+   *     return code;
+   *   });
+   *   // or
+   *   callback(function(err, code){
+   *     return code;
+   *   });
+   *
+   * @param {Piler.NodeCallback} [cb] Pass in a callback instead
+   * @returns {Promise|*} Do the processing
+   */
+  fileCacheCallback = function(hash, processCallback) {
+    var file;
+    file = Piler.utils.path.join(TMPDIR, hash);
+    debug('using filesystem.', 'hash', hash, 'file', file);
+    return Piler.utils.fs.readFileAsync(file).then(function(contents) {
+      debug('file already in cache');
+      return contents.toString();
+    }, function() {
+      debug('caching', file);
+      return processCallback().then(function(code) {
+        return Piler.utils.fs.writeFileAsync(file, code).then(function() {
+          return code;
+        });
+      });
+    });
+  };
+  caches = {
+    contents: {
+      enabled: true,
+      callback: fileCacheCallback
+    },
+    pre: {
+      enabled: true,
+      callback: fileCacheCallback
+    },
+    post: {
+      enabled: true,
+      callback: fileCacheCallback
+    }
+  };
+  return {
+
+    /**
+     * Output debug messages as if it was from {@link Piler.Cache Cache}
+     *
+     * @function Piler.Cache.debug
+     */
+    debug: debug = Piler.utils.debug('piler:cache'),
+
+    /**
+     * Return the code, regardless of cached or not.
+     *
+     * @function Piler.Cache.cache
+     *
+     * @example
+     *   Piler.Cache.cache('some id', function(){
+     *     return 'Im code that will get cached';
+     *   }, 'contents', function(err, code){
+     *     // will always yield 'Im code that will get cached' if no error happens
+     *   });
+     *   // or using promises
+     *   Piler.Cache.cache(
+     *     'some id',
+     *     function(){
+     *       return 'Im code that will get cached';
+     *     },
+     *     'contents'
+     *   ).then(function(code){
+     *     // will "always" yield 'Im code that will get cached' if no error happens
+     *   });
+     *
+     *
+     * @param {String} identifier Any kind of identification, will be converted to a sha1 hash
+     * @param {Function} processFn Function that return a string value or a promise
+     * @param {String} type Type of cache
+     * @param {Piler.NodeCallback} [cb] Optional callback
+     *
+     * @returns {Promise}
+     */
+    cache: function(identifier, processFn, type, cb) {
+      var cache, hash, process;
+      if (!type || !caches[type]) {
+        debug('cache type not found', type ? type : void 0);
+        return Piler.utils.Promise["try"](processFn).nodeify(cb);
+      }
+      cache = caches[type];
+      if (cache.enabled !== true) {
+        debug('code cache isnt enabled for', type);
+        return Piler.utils.Promise["try"](processFn).nodeify(cb);
+      }
+      process = (function(processFn) {
+        return function(fn) {
+          if (fn &amp;&amp; Piler.utils._.isFunction(fn)) {
+            return Piler.utils.Promise["try"](processFn).then(function(result) {
+              return fn(null, result);
+            }, function(err) {
+              return fn(err);
+            });
+          } else {
+            return Piler.utils.Promise["try"](processFn);
+          }
+        };
+      })(processFn);
+      hash = Piler.Serialize.sha1(identifier, 'hex');
+      return Piler.utils.Promise["try"](function() {
+        return cache.callback(hash, process);
+      }).nodeify(cb);
+    },
+
+    /**
+     * A function that get's called when a cache call is made
+     *
+     * @typedef {Function} Piler.Cache.CacheFn
+     * @example
+     *   function(hash, callback) {
+     *     // hash "should" be unique. execute the callback when you need to retrieve the code
+     *     // (aka, there's no cached code)
+     *     return callback(function(err, code){
+     *       // store your "code" alongside your hash
+     *       // then return it
+     *       return keepInMemory[hash] = code;
+     *     });
+     *     // or with promises
+     *     return callback().then(function(code){
+     *       // store your "code" alongside your hash
+     *       return code;
+     *     });
+     *   }
+     * @param {String} hash The current sha1 of the code
+     * @param {Function|Promise} callback Execute the routine that generates code
+     * @returns {Promise|*}
+     */
+
+    /**
+     * Get a registered cache
+     *
+     * @function Piler.Cache.getCache
+     * @param  {String} name Name of the cache. Built-in caches are 'contents','pre' and 'post'
+     * @returns {Piler.Cache.CacheFn}
+     */
+    getCache: mainExports.getCache = function(name) {
+      return caches[name];
+    },
+
+    /**
+     * @function Piler.useCache
+     */
+
+    /**
+     * Add the cache method. By default it uses the filesystem. When you assign a function by yourself, it will override
+     * the internal one.
+     *
+     * @example
+     *   var memoryCache = {};
+     *
+     *   piler.useCache(['contents','pre','post'], function(hash, getCode) {
+     *     if (typeof memoryCache[hash] === 'undefined') {
+     *       return getCode(function(err, code){
+     *         memoryCache[hash] = code;
+     *         return code;
+     *       });
+     *     }
+     *     return memoryCache[hash];
+     *   });
+     *   // or one type of cache only, only for file contents
+     *   piler.useCache(['contents'], function(hash, getCode) {
+     *     if (typeof memoryCache[hash] === 'undefined') {
+     *       return getCode().then(function(code){
+     *         memoryCache[hash] = code;
+     *         return code;
+     *       });
+     *     }
+     *     return memoryCache[hash];
+     *   });
+     *
+     * @param {String|Array|Function} [type=['contents','pre','post']] Type(s) of caches, you can go beyond the built-in types
+     * @param {Piler.Cache.CacheFn} cacheFn Function that will be called with content
+     * @throws Error
+     *
+     * @function Piler.Cache.useCache
+     */
+    useCache: mainExports.useCache = function(type, cacheFn) {
+      var t, _i, _len;
+      if (!Piler.utils._.isFunction(cacheFn) &amp;&amp; !Piler.utils._.isFunction(type)) {
+        throw new Error('useCache expects at least a function');
+      }
+      if (Piler.utils._.isFunction(type)) {
+        cacheFn = type;
+        type = ['contents', 'pre', 'post'];
+      }
+      type = Piler.utils.ensureArray(type);
+      for (_i = 0, _len = type.length; _i &lt; _len; _i++) {
+        t = type[_i];
+        if (caches[t]) {
+          debug('Overwriting cache', t);
+        } else {
+          caches[t] = {};
+        }
+        caches[t].enabled = true;
+        caches[t].callback = cacheFn;
+      }
+    }
+  };
+};
+</pre>
+	</article>
+</section>
+
+
+
+
+
+				</div>
+
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Jul 06 2014 using the <a
+			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
+
+			
+			<br clear="both">
+		</div>
+
+	</div>
+	<!--<script src="scripts/sunlight.js"></script>-->
+	<script src="scripts/docstrap.lib.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+	<script>
+		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
+			$( "#toc" ).toc( {
+				anchorName  : function ( i, heading, prefix ) {
+					return $( heading ).attr( "id" ) || ( prefix + i );
+				},
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : "100px"
+			} );
+
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+			$( '.dropdown-toggle' ).dropdown();
+//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+				var $this = $( this );
+
+				var example = $this.find( "code" );
+				exampleText = example.html();
+				var lang = /{@lang (.*?)}/.exec( exampleText );
+				if ( lang && lang[1] ) {
+					exampleText = exampleText.replace( lang[0], "" );
+					example.html( exampleText );
+					lang = lang[1];
+				} else {
+					lang = "javascript";
+				}
+
+				if ( lang ) {
+
+					$this
+						.addClass( "sunlight-highlight-" + lang )
+						.addClass( "linenums" )
+						.html( example.html() );
+
+				}
+			} );
+
+			Sunlight.highlightAll( {
+				lineNumbers : true,
+				showMenu : true,
+				enableDoclinks : true
+			} );
+		} );
+	 </script>
+
+
+
+	<!--Navigation and Symbol Display-->
+	
+	<script>
+		$( function () {
+			$( '#main' ).localScroll( {
+				offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+			} );
+			$( "dt.name" ).each( function () {
+				var $this = $( this ).find("h4");
+				var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+				var dt = $(this);
+				var children = dt.next( "dd" );
+
+				dt.prepend( icon ).css( {cursor : "pointer"} );
+				dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+				children.hide();
+
+				dt.children().on( "click", function () {
+					children = dt.next( "dd" );
+					console.debug(dt, children)
+					children.slideToggle( "fast", function () {
+
+						if ( children.is( ":visible" ) ) {
+							icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+							dt.addClass( "member-open" ).animate( "member-collapsed" );
+						} else {
+							icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+							dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+						}
+					} );
+				} );
+
+			} );
+		} );
+	</script>
+	
+
+
+	<!--Google Analytics-->
+	
+
+</body>
+</html>

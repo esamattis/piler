@@ -1,11 +1,20 @@
 module.exports = (Piler) ->
 
   class JSPile extends Piler.getPile('BasePile')
+    processors: {
+      'coffeescript': {
+
+      },
+      'uglify': {
+
+      }
+    }
+
     ###*
      * @member {String} Piler.Main.JSPile#ext
      * @default js
     ###
-    ext: "js"
+    ext: 'js'
 
     ###*
      * Add line comment
@@ -30,15 +39,15 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addModule
      * @param {String} filePath
      * @param {Object} [options={}]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSPile}
     ###
     addModule: (filePath, options = {}) ->
-      filePath = Piler.utils.path.normalize filePath
+      filePath = Piler.utils.path.normalize(filePath)
 
-      @duplicated('file', filePath).then(
-        =>
-          @add({type: "module", object: filePath, options})
-      )
+      if not @duplicated('file', filePath)
+        @add({type: 'module', object: filePath, options})
+
+      @
 
     ###*
      * Add a object
@@ -46,13 +55,13 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addOb
      * @param {Object} ob
      * @param {Boolean} [options={}]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSPile}
     ###
     addOb: (ob, options = {}) ->
-      @duplicated('obj', ob).then(
-        =>
-          @add({type: "obj", object: ob, options})
-      )
+      if not @duplicated('obj', ob)
+        @add({type: 'obj', object: ob, options})
+
+      @
 
     ###*
      * Add a CommonJS module
@@ -60,13 +69,12 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSPile#addExec
      * @param {Function} fn
      * @param {Boolean} [options={}]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSPile}
     ###
     addExec: (fn, options = {}) ->
-      @duplicated('fn', fn).then(
-        =>
-          @add({type: "fn", object: fn, options})
-      )
+      if not @duplicated('fn', fn)
+        @add({type: 'fn', object: fn, options})
+      @
 
   class JSManager extends Piler.getManager('PileManager')
     ###*
@@ -76,7 +84,7 @@ module.exports = (Piler) ->
     ###*
      * @member {String} Piler.Main.JSManager#contentType
     ###
-    contentType: "application/javascript"
+    contentType: 'application/javascript'
 
     ###*
      * @constructor Piler.Main.JSManager
@@ -86,29 +94,33 @@ module.exports = (Piler) ->
       super(@name, @options)
 
       Piler.utils._.defaults(@options, {
-        scriptType: true
+        scriptType: 'text/javascript'
       })
 
-      @piles.global.addExec ->
+      @piles.global.addExec( ->
         window.piler ?= {}
 
         window.piler.namespace = namespace = (nsString) ->
           parent = window
-          for ns in nsString.split "."
+          for ns in nsString.split('.')
             # Create new namespace if it is missing
             parent = parent[ns] ?= {}
           parent # return the asked namespace
 
-        window.piler.set = (ns, ob) ->
-          parts = ns.split "."
-          if parts.length is 1
-            window[parts[0]] = ob
-          else
-            nsOb = namespace(parts.slice(0, -1).join("."))
-            target = parts.slice(-1)[0]
-            nsOb[target] = ob
+        window.piler.set = (ns, ob, options) ->
+          if ns
+            parts = ns.split('.')
+            if parts.length is 1
+              window[parts[0]] = ob
+            else
+              nsOb = namespace(parts.slice(0, -1).join('.'))
+              target = parts.slice(-1)[0]
+              nsOb[target] = ob
+
+          return
 
         return
+      , {before: true})
 
       return
 
@@ -116,8 +128,8 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSManager#wrapInTag
      * @returns {String}
     ###
-    wrapInTag: (uri, extra = "") ->
-      "<script#{if @options.scriptType then ' type="text/javascript"' else ''} src=\"#{ uri }\" #{ extra }></script>"
+    wrapInTag: (uri, extra = '') ->
+      "<script#{if @options.scriptType then ' type="' + @options.scriptType + '"' else ''} src=\"#{ uri }\" #{ extra }></script>"
 
     ###*
      * @function Piler.Main.JSManager#_isReserved
@@ -135,35 +147,38 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSManager#addModule
      * @param {String} path
      * @param {Boolean} [options]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSManager}
     ###
     addModule: (path, options) ->
       @_isReserved(options)
       @add('addModule', path, options)
+      @
 
     ###*
      * @function Piler.Main.JSManager#addOb
      * @param {String} ob
      * @param {Boolean} [options]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSManager}
     ###
     addOb: (ob, options) ->
       @_isReserved(options)
       @add('addOb', ob, options)
+      @
 
     ###*
      * @function Piler.Main.JSManager#addExec
      * @param {String} fn
      * @param {Boolean} [options]
-     * @returns {Promise}
+     * @returns {Piler.Main.JSManager}
     ###
     addExec: (fn, options) ->
       @_isReserved(options)
       @add('addExec', fn, options)
+      @
 
     ###*
      * @function Piler.Main.JSManager#setMiddleware
-     * @returns {Promise}
+     * @returns {Piler.Main.JSManager}
     ###
     locals: (response) ->
       super(response)
@@ -175,7 +190,7 @@ module.exports = (Piler) ->
       else
         namespace = @js.namespace
 
-      response.piler.js =
+      response.piler.js = {
         namespace: namespace
         addExec: @bindToPile('addExec', namespace)
         addRaw: @bindToPile('addRaw', namespace)
@@ -184,6 +199,7 @@ module.exports = (Piler) ->
         addFile: @bindToPile('addFile', namespace)
         addUrl: @bindToPile('addUrl', namespace)
         addMultiline: @bindToPile('addMultiline', namespace)
+      }
 
       @
 
@@ -194,34 +210,36 @@ module.exports = (Piler) ->
   Piler.addSerializable('fn', ->
     # Creates immediately executable string presentation of given function.
     # context will be function's "this" if given.
-    executableFrom = (fn, context) ->
-      return "(#{ fn })();\n" unless context
-      return "(#{ fn }).call(#{ context });\n"
+    executableFrom = (fn, options) ->
+      return "(#{ fn })();\n" unless options.context
+      return "(#{ fn }).call(#{ options.context });\n"
 
     (ob) ->
-      executableFrom ob.object()
+      executableFrom(ob.raw(), ob.options)
   )
 
   # Add the object serializable
   Piler.addSerializable('obj', ->
-    toGlobals = (globals) ->
+    toGlobals = (globals, options) ->
       code = []
+      options = Piler.Serialize.stringify(options)
       for nsString, v of globals
-        code.push "piler.set(#{ JSON.stringify nsString }, #{ Piler.Serialize.stringify v });"
+        code.push("piler.set(#{ JSON.stringify(nsString) }, #{ Piler.Serialize.stringify(v) }, #{ options });")
       code.join('\n')
 
     (ob) ->
-      toGlobals ob.object()
+      toGlobals(ob.raw(), Piler.utils._.merge({}, ob.options.js))
   )
 
   # Add the module serializable
   Piler.addSerializable('module', ->
 
     (ob) ->
-      @file(ob).then (code) ->
-        """require.register("#{ Piler.utils.path.basename(ob.object()).split(".")[0] }", function(module, exports, require) {
+      @file(ob).then((code) ->
+        """require.register("#{ Piler.utils.path.basename(ob.options.filePath).split(".")[0] }", function(module, exports, require) {
         #{ code }
         });"""
+      )
   )
 
   Piler.addManager('js', ->

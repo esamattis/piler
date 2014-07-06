@@ -16,7 +16,7 @@
     "cleverLinks"      : true,
     "monospaceLinks"   : false,
     "dateFormat"       : "MMM DD YYYY",
-    "outputSourceFiles": false,
+    "outputSourceFiles": true,
     "outputSourcePath" : false,
     "systemName"       : "Awesome Asset Manager for Node.js | Piler",
     "footer"           : "",
@@ -24,7 +24,7 @@
     "navType"          : "vertical",
     "theme"            : "cerulean",
     "linenums"         : true,
-    "collapseSymbols"  : false,
+    "collapseSymbols"  : true,
     "inverseNav"       : false
   },
   "markdown" : {
