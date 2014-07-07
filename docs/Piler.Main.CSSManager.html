@@ -109,6 +109,20 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#wait">wait</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
 			</ul>
 		</div>
 	</div>
@@ -419,7 +433,7 @@
 	<dt class="tag-default">Default Value:</dt>
 	<dd class="tag-default">
 		<ul class="dummy">
-			<li>null</li>
+			<li>{Piler.Main.BasePile}</li>
 		</ul>
 	</dd>
 	
@@ -432,7 +446,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-573">line 573</a>
+				 <a href="main.js.html#sunlight-1-line-586">line 586</a>
 			</li>
 		</ul>
 	</dd>
@@ -509,7 +523,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-689">line 689</a>
+				 <a href="main.js.html#sunlight-1-line-702">line 702</a>
 			</li>
 		</ul>
 	</dd>
@@ -594,7 +608,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-935">line 935</a>
+				 <a href="main.js.html#sunlight-1-line-973">line 973</a>
 			</li>
 		</ul>
 	</dd>
@@ -802,7 +816,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-885">line 885</a>
+				 <a href="main.js.html#sunlight-1-line-923">line 923</a>
 			</li>
 		</ul>
 	</dd>
@@ -887,7 +901,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-988">line 988</a>
+				 <a href="main.js.html#sunlight-1-line-1053">line 1053</a>
 			</li>
 		</ul>
 	</dd>
@@ -936,7 +950,7 @@
         
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(type, data, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(type, data, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1168,7 +1182,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-701">line 701</a>
+				 <a href="main.js.html#sunlight-1-line-714">line 714</a>
 			</li>
 		</ul>
 	</dd>
@@ -1194,6 +1208,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Current contents of the selected pile</p>
+</div>
+
 
 
 <dl>
@@ -1202,7 +1220,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1217,7 +1235,7 @@ normalizing options</p>
         
             
 <dt>
-    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1409,7 +1427,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-792">line 792</a>
+				 <a href="main.js.html#sunlight-1-line-811">line 811</a>
 			</li>
 		</ul>
 	</dd>
@@ -1435,6 +1453,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -1443,7 +1465,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1458,7 +1480,7 @@ normalizing options</p>
         
             
 <dt>
-    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a>}</span></h4>
+    <h4 class="name" id="addFiles"><span class="type-signature"></span>addFiles<span class="signature">(arr, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1575,6 +1597,43 @@ normalizing options</p>
         </tr>
 
 	
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+	
 	</tbody>
 </table>
 
@@ -1617,7 +1676,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-726">line 726</a>
+				 <a href="main.js.html#sunlight-1-line-738">line 738</a>
 			</li>
 		</ul>
 	</dd>
@@ -1655,7 +1714,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Main.PileManager.html">Piler.Main.PileManager</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1676,7 +1735,7 @@ normalizing options</p>
         
             
 <dt>
-    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="addMultiline"><span class="type-signature"></span>addMultiline<span class="signature">(path, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -1868,7 +1927,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-806">line 806</a>
+				 <a href="main.js.html#sunlight-1-line-824">line 824</a>
 			</li>
 		</ul>
 	</dd>
@@ -1894,6 +1953,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -1902,7 +1965,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -1917,7 +1980,7 @@ normalizing options</p>
         
             
 <dt>
-    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="addRaw"><span class="type-signature"></span>addRaw<span class="signature">(raw, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -2109,7 +2172,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-820">line 820</a>
+				 <a href="main.js.html#sunlight-1-line-837">line 837</a>
 			</li>
 		</ul>
 	</dd>
@@ -2135,6 +2198,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -2143,7 +2210,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -2158,7 +2225,7 @@ normalizing options</p>
         
             
 <dt>
-    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {<a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a>}</span></h4>
+    <h4 class="name" id="addUrl"><span class="type-signature"></span>addUrl<span class="signature">(url, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -2350,7 +2417,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-834">line 834</a>
+				 <a href="main.js.html#sunlight-1-line-850">line 850</a>
 			</li>
 		</ul>
 	</dd>
@@ -2376,6 +2443,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -2384,7 +2455,7 @@ normalizing options</p>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="Piler.Serialize.html#CodeObject">Piler.Serialize.CodeObject</a></span>
+<span class="param-type">Promise</span>
 
 
 	</dd>
@@ -2598,7 +2669,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-750">line 750</a>
+				 <a href="main.js.html#sunlight-1-line-769">line 769</a>
 			</li>
 		</ul>
 	</dd>
@@ -2624,6 +2695,10 @@ normalizing options</p>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p><code>this</code></p>
+</div>
+
 
 
 <dl>
@@ -2757,7 +2832,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-607">line 607</a>
+				 <a href="main.js.html#sunlight-1-line-620">line 620</a>
 			</li>
 		</ul>
 	</dd>
@@ -2972,7 +3047,7 @@ normalizing options</p>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-533">line 533</a>
+				 <a href="main.js.html#sunlight-1-line-546">line 546</a>
 			</li>
 		</ul>
 	</dd>
@@ -3032,7 +3107,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
         
             
 <dt>
-    <h4 class="name" id="contents"><span class="type-signature"></span>contents<span class="signature">(<span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="contents"><span class="type-signature"></span>contents<span class="signature">(<span class="optional">namespaces</span>, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -3072,6 +3147,75 @@ addSingularity(&#x27;doh&#x27;);</pre>
 	</thead>
 
 	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>namespaces</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Piler.html#NodeCallback">Piler.NodeCallback</a></span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>You can use a callback if you want</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options to pass to <a href="Piler.Main.PileManager.html#_prepareNamespaces"><code>_prepareNamespaces</code></a></p></td>
+        </tr>
+
 	
 
         <tr>
@@ -3148,7 +3292,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-849">line 849</a>
+				 <a href="main.js.html#sunlight-1-line-864">line 864</a>
 			</li>
 		</ul>
 	</dd>
@@ -3175,7 +3319,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
     
             
 <div class="param-desc">
-    <p>The current array of all content</p>
+    <p><code>this</code> The current array of all content</p>
 </div>
 
 
@@ -3256,7 +3400,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-649">line 649</a>
+				 <a href="main.js.html#sunlight-1-line-662">line 662</a>
 			</li>
 		</ul>
 	</dd>
@@ -3421,7 +3565,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-627">line 627</a>
+				 <a href="main.js.html#sunlight-1-line-640">line 640</a>
 			</li>
 		</ul>
 	</dd>
@@ -3474,7 +3618,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
         
             
 <dt>
-    <h4 class="name" id="findAssetsBy"><span class="type-signature"></span>findAssetsBy<span class="signature">(member, search, <span class="optional">namespace</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="findAssetBy"><span class="type-signature"></span>findAssetBy<span class="signature">(member, search, <span class="optional">namespace</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
@@ -3681,7 +3825,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 	<dd class="inherited-from">
 		<ul class="dummy">
 			<li>
-				<a href="Piler.Main.PileManager.html#findAssetsBy">Piler.Main.PileManager#findAssetsBy</a>
+				<a href="Piler.Main.PileManager.html#findAssetBy">Piler.Main.PileManager#findAssetBy</a>
 			</li>
 		</ul>
 	</dd>
@@ -3705,7 +3849,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-1071">line 1071</a>
+				 <a href="main.js.html#sunlight-1-line-1127">line 1127</a>
 			</li>
 		</ul>
 	</dd>
@@ -3731,6 +3875,10 @@ addSingularity(&#x27;doh&#x27;);</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Array of found objects</p>
+</div>
+
 
 
 <dl>
@@ -3913,7 +4061,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-667">line 667</a>
+				 <a href="main.js.html#sunlight-1-line-680">line 680</a>
 			</li>
 		</ul>
 	</dd>
@@ -4086,7 +4234,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-915">line 915</a>
+				 <a href="main.js.html#sunlight-1-line-953">line 953</a>
 			</li>
 		</ul>
 	</dd>
@@ -4331,7 +4479,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-1096">line 1096</a>
+				 <a href="main.js.html#sunlight-1-line-1152">line 1152</a>
 			</li>
 		</ul>
 	</dd>
@@ -4380,12 +4528,16 @@ addSingularity(&#x27;doh&#x27;);</pre>
         
             
 <dt>
-    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">(<span class="optional">namespaces</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">(<span class="optional">namespaces</span>, <span class="optional">options</span>, <span class="optional">cb</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
     
 </dt>
 <dd>
     
+    
+    <div class="description">
+        <p>Render the underlaying tags to be sent to the browser</p>
+    </div>
     
 
     
@@ -4409,6 +4561,8 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<th>Argument</th>
 		
 
+		
+		<th>Default</th>
 		
 
 		<th class="last">Description</th>
@@ -4445,8 +4599,51 @@ addSingularity(&#x27;doh&#x27;);</pre>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last"><p>Array of namespaces</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"><p>Pass options to <code>_prepareNamespaces</code></p></td>
         </tr>
 
 	
@@ -4478,8 +4675,12 @@ addSingularity(&#x27;doh&#x27;);</pre>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last"><p>Pass a callback if you want</p></td>
         </tr>
 
 	
@@ -4525,7 +4726,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-971">line 971</a>
+				 <a href="main.js.html#sunlight-1-line-1015">line 1015</a>
 			</li>
 		</ul>
 	</dd>
@@ -4552,7 +4753,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
     
             
 <div class="param-desc">
-    <p>Returns the rendered tags</p>
+    <p><code>this</code> Returns the rendered tags</p>
 </div>
 
 
@@ -4572,6 +4773,24 @@ addSingularity(&#x27;doh&#x27;);</pre>
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">Manager.render().then(function(tags){
+
+  res.render(&#x27;index&#x27;, {
+    tags: tags
+  });
+
+});
+// or using callbacks
+Manager.render(function(err, tags){
+  res.render(&#x27;index&#x27;, {
+    tags: tags
+  });
+});</pre>
+
+
     
 </dd>
 
@@ -4725,7 +4944,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 		<ul class="dummy">
 			<li>
 				<a href="main.js.html">main.js</a>,
-				 <a href="main.js.html#sunlight-1-line-1026">line 1026</a>
+				 <a href="main.js.html#sunlight-1-line-1095">line 1095</a>
 			</li>
 		</ul>
 	</dd>
@@ -4792,7 +5011,7 @@ addSingularity(&#x27;doh&#x27;);</pre>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
-		on Jul 06 2014 using the <a
+		on Jul 07 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

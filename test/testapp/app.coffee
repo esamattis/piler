@@ -64,6 +64,7 @@ js.addOb({'namespaceob.first': true})
 js.addOb({'namespaceob.second': true})
 
 app.get('/namespace', (req, res) ->
+
   res.piler.render('namespace', {
     layout: false
     js: js.render(['mynamespace'])

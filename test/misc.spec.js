@@ -39,5 +39,18 @@ describe('misc', function(){
     });
   });
 
+  it('PileManager._objectToAttr', function(){
+    var m = Piler.getManager('PileManager').prototype._objectToAttr;
+
+    expect(m({id:{internal:'value'}})).to.be('id="{&quot;internal&quot;: &quot;value&quot;}"');
+    expect(m(['id="10"','data="click()"'])).to.be('id="10" data="click()"');
+    expect(m({id: function(){}})).to.be('id="function (){}"');
+    expect(m({id:'piler-id10','data-click':'click()'})).to.be('id="piler-id10" data-click="click()"');
+    expect(m({})).to.be('');
+    expect(m('')).to.be('');
+    expect(m(1)).to.be('');
+    expect(m(true)).to.be('');
+  });
+
 
 });

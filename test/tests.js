@@ -4,7 +4,7 @@ var
   cp = require('child_process'),
   path = require('path'),
   env = process.env,
-  cwd = path.join('.', 'test', 'testapp'),
+  cwd = path.join(__dirname, 'testapp'),
   app = [
     path.join('..', '..', 'node_modules', 'coffee-script', 'bin', 'coffee'),
     'app.coffee'
@@ -27,11 +27,12 @@ var production = cp.spawn('node', app, {
 });
 
 if (production && development) {
+  process.env.NODE_ENV = 'development';
   // launch tests on loaded apps
   if (process.argv.indexOf('--start') === -1) {
-    var mocha = cp.spawn('node', [path.join('.', 'node_modules', 'mocha', 'bin', '_mocha')], {
-      cwd  : process.cwd(),
-      env  : {},
+    var mocha = cp.spawn('node', [path.join(__dirname, '..', 'node_modules', 'mocha', 'bin', '_mocha')], {
+      cwd  : path.join(__dirname, '..'),
+      env  : process.env,
       stdio: 'inherit'
     });
 

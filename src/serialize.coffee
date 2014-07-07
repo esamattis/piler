@@ -48,6 +48,11 @@ module.exports = (Piler, mainExports) ->
    * @property {Piler.Serialize.CodeObjectOptions} options Get the registered type
   ###
 
+  multiline = (ob) ->
+    matches = /\/\*!?(?:\@preserve)?([\s\S]*?)\*\//.exec(ob)
+    throw new Error('Multiline failed to match') if not matches
+    matches[1]
+
   serializables = {
     raw: (ob) ->
       ob.raw()
@@ -56,7 +61,7 @@ module.exports = (Piler, mainExports) ->
       ob.raw()
 
     multiline: (ob)->
-      Piler.utils.multiline(ob.raw())
+      multiline(ob.raw())
 
     file: (ob) ->
       Piler.utils.fs.readFileAsync(ob.raw())

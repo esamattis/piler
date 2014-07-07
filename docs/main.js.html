@@ -109,6 +109,20 @@
 					</ul>
 				</li>
 				
+				<li class="dropdown">
+					<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="global.html#wait">wait</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
 			</ul>
 		</div>
 	</div>
@@ -133,8 +147,11 @@
   /**
    * @namespace Piler.Main
    */
-  var BasePile, PileManager, debug, managers, op, out, piles;
+  var BasePile, PileManager, debug, escape, managers, op, out, piles;
   op = Piler.utils.objectPath;
+  escape = function(html) {
+    return String(html).replace(/&amp;/g, '&amp;amp;').replace(/"/g, '&amp;quot;').replace(/'/g, '&amp;#39;').replace(/&lt;/g, '&amp;lt;').replace(/>/g, '&amp;gt;');
+  };
   out = {
 
     /**
@@ -149,7 +166,9 @@
         logger: Piler.Logger,
         urlRoot: '/piler/',
         env: 'development',
-        commentLines: true
+        commentLines: true,
+        encoding: 'utf-8',
+        join: '\n\n'
       });
     }
   };
@@ -217,7 +236,7 @@
 
     BasePile.prototype.add = function(config) {
       var object, type;
-      if (!Piler.utils._.isObject(config)) {
+      if (!Piler.utils._.isPlainObject(config)) {
         throw new Error('add expects an object as parameter');
       }
       op.ensureExists(config, 'options', {
@@ -230,6 +249,10 @@
         options: config.options
       }));
       return object;
+    };
+
+    BasePile.prototype.commentLine = function() {
+      return '';
     };
 
 
@@ -578,7 +601,7 @@
       }).call(this), function(total, asset) {
         return Piler.utils.Promise["try"](function() {
           var fn;
-          fn = op.get(asset, [member]);
+          fn = op.get(asset, member);
           if (typeof fn === 'function') {
             return fn.call(asset);
           } else {
@@ -631,14 +654,18 @@
           return '';
         }
         return codeOb.contents().then(function(code) {
-          return "" + (self.options.commentLines ? self.commentLine("" + self.name + "." + (codeOb.type()) + "-" + (codeOb.id()) + "." + self.ext) : '') + "\n" + code;
+          var _out;
+          _out = [];
+          if (self.options.commentLines) {
+            _out.push(self.commentLine("" + self.name + "." + (codeOb.type()) + "-" + (codeOb.id()) + "." + self.ext));
+          }
+          _out.push(code);
+          return _out.join('');
         });
       }).then(function(result) {
-        self.rawPile = result.join('\n\n').trim();
+        self.rawPile = result.join(self.options.join);
         self._computeHash();
         return self.rawPile;
-      }, function(err) {
-        return err;
       }).bind(this).nodeify(cb);
     };
 
@@ -701,10 +728,10 @@
 
     /**
      * @member {Piler.Main.BasePile} Piler.Main.PileManager#type
-     * @default null
+     * @default {Piler.Main.BasePile}
      */
 
-    PileManager.prototype.type = null;
+    PileManager.prototype.type = BasePile;
 
 
     /**
@@ -835,7 +862,7 @@
      * @param {*} data Any type of data that should be piled
      * @param {Piler.Main.AddConfig} [options={}]
      * @param {Piler.NodeCallback} [cb] Use a callback instead
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} Current contents of the selected pile
      */
 
     PileManager.prototype.add = function(type, data, options, cb) {
@@ -847,8 +874,7 @@
       debug('Adding:', type, data, options);
       pile = this.getPile(options.namespace);
       obj = pile["" + type](data, options);
-      pile.pileUp(cb);
-      return obj;
+      return pile.pileUp().bind(this).nodeify(cb);
     };
 
 
@@ -862,17 +888,24 @@
      *
      * @param {Array} arr
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Promise} `this`
      */
 
-    PileManager.prototype.addFiles = function(arr, options) {
-      var file, _i, _len;
+    PileManager.prototype.addFiles = function(arr, options, cb) {
+      var file;
       arr = Piler.utils.ensureArray(arr);
-      for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
-        file = arr[_i];
-        this.addFile(file, options);
-      }
-      return this;
+      return Piler.utils.Promise.reduce((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = arr.length; _i &lt; _len; _i++) {
+          file = arr[_i];
+          _results.push(this.addFile(file, options));
+        }
+        return _results;
+      }).call(this), function(total, value) {
+        return value;
+      }, '').bind(this).nodeify(cb);
     };
 
 
@@ -887,7 +920,7 @@
      * @param {String|Array} paths You can give a glob string or an array of glob strings
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise}
+     * @returns {Promise} `this`
      */
 
     PileManager.prototype.addWildcard = function(arr, options, cb) {
@@ -902,7 +935,7 @@
               cwd: Piler.utils.path.dirname(file)
             }, function(err, matches) {
               if (err) {
-                reject(aerr);
+                reject(err);
               } else {
                 resolve(matches);
               }
@@ -910,11 +943,11 @@
           });
         })(file));
       }
-      return Piler.utils.Promise.map(promises, (function(_this) {
-        return function(value) {
+      return Piler.utils.Promise.reduce(promises, (function(_this) {
+        return function(total, value) {
           return _this.addFiles(value, options);
         };
-      })(this)).bind(this).nodeify(cb);
+      })(this), '').bind(this).nodeify(cb);
     };
 
 
@@ -923,12 +956,11 @@
      * @param {String} path
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
      */
 
     PileManager.prototype.addFile = function(path, options, cb) {
-      this.add('addFile', path, options, cb);
-      return this;
+      return this.add('addFile', path, options, cb);
     };
 
 
@@ -937,12 +969,11 @@
      * @param {Function} path
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
      */
 
     PileManager.prototype.addMultiline = function(fn, options, cb) {
-      this.add('addMultiline', fn, options, cb);
-      return this;
+      return this.add('addMultiline', fn, options, cb);
     };
 
 
@@ -951,12 +982,11 @@
      * @param {String} raw
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
      */
 
     PileManager.prototype.addRaw = function(raw, options, cb) {
-      this.add('addRaw', raw, options, cb);
-      return this;
+      return this.add('addRaw', raw, options, cb);
     };
 
 
@@ -966,12 +996,11 @@
      * @param {String} url
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
      */
 
     PileManager.prototype.addUrl = function(url, options, cb) {
-      this.add('addUrl', url, options, cb);
-      return this;
+      return this.add('addUrl', url, options, cb);
     };
 
 
@@ -980,31 +1009,54 @@
      *
      * @function Piler.Main.PileManager#contents
      *
+     * @param {Piler.NodeCallback|Array} [namespaces] You can use a callback if you want
+     * @param {Object} [options] Options to pass to {@link Piler.Main.PileManager#_prepareNamespaces _prepareNamespaces}
      * @param {Piler.NodeCallback} [cb] You can use a callback if you want
-     * @returns {Promise} The current array of all content
+     * @returns {Promise} `this` The current array of all content
      */
 
-    PileManager.prototype.contents = function(cb) {
-      var options, piles;
-      piles = this.piles;
+    PileManager.prototype.contents = function(namespaces, options, cb) {
+      var namespace, piles;
+      if (typeof namespaces === 'function') {
+        cb = namespaces;
+        namespaces = [];
+      }
+      namespaces = this._prepareNamespaces(namespaces, options);
+      piles = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
+          namespace = namespaces[_i];
+          _results.push(this.piles[namespace]);
+        }
+        return _results;
+      }).call(this);
       options = this.options;
       return Piler.utils.Promise.reduce(Object.keys(piles), function(total, name) {
-        var pile;
+        var ext, pile;
         pile = piles[name];
-        options.logger.notice("Generating assets for '" + pile.name + "' in '" + pile.ext + "'");
+        ext = '';
+        if (pile.ext) {
+          ext = "." + pile.ext;
+        }
+        options.logger.info("Generating assets for '" + pile.name + ext + "'");
         return pile.pileUp().then(function(code) {
           var outputPath;
-          if (options.outputDirectory) {
-            if (pile.options.volatile === true) {
+          if (code) {
+            if (options.outputDirectory) {
+              if (pile.options.volatile === true) {
+                return total.concat(code);
+              }
+              outputPath = Piler.utils.path.join(options.outputDirectory, "" + pile.name + ext);
+              return Piler.utils.fs.writeFileAsync(outputPath, code).then(function() {
+                options.logger.info("Wrote pile '" + pile.name + ext + "' to '" + outputPath + "'");
+                return total.concat(code);
+              });
+            } else {
               return total.concat(code);
             }
-            outputPath = Piler.utils.path.join(options.outputDirectory, "" + pile.name + "." + pile.ext);
-            return Piler.utils.fs.writeFileAsync(outputPath, code).then(function() {
-              options.logger.info("Wrote " + pile.ext + " pile " + pile.name + " to " + outputPath);
-              return total.concat(code);
-            });
           } else {
-            return total.concat(code);
+            return total;
           }
         });
       }, []).bind(this).nodeify(cb);
@@ -1047,9 +1099,9 @@
      * @returns {Array}
      */
 
-    PileManager.prototype.getSources = function(namespaces) {
+    PileManager.prototype.getSources = function(namespaces, options) {
       var ns, pile, sources, _i, _len;
-      namespaces = this._prepareNamespaces(namespaces);
+      namespaces = this._prepareNamespaces(namespaces, options);
       sources = [];
       for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
         ns = namespaces[_i];
@@ -1070,13 +1122,19 @@
      */
 
     PileManager.prototype._objectToAttr = function(obj) {
-      var code, k;
+      var attr, code, k;
       if (Piler.utils._.isArray(obj)) {
         return obj.join(' ');
       } else if (obj) {
         code = [];
         for (k in obj) {
-          code.push("" + k + "=" + (Piler.Serialize.stringify(obj[k])));
+          if (typeof obj[k] !== 'string') {
+            attr = escape(Piler.Serialize.stringify(obj[k]));
+          } else {
+            attr = obj[k];
+          }
+          attr = "\"" + attr + "\"";
+          code.push("" + k + "=" + attr);
         }
         return code.join(' ');
       } else {
@@ -1098,15 +1156,36 @@
 
 
     /**
+     * Render the underlaying tags to be sent to the browser
+     *
+     * @example
+     *   Manager.render().then(function(tags){
+     *
+     *     res.render('index', {
+     *       tags: tags
+     *     });
+     *
+     *   });
+     *   // or using callbacks
+     *   Manager.render(function(err, tags){
+     *     res.render('index', {
+     *       tags: tags
+     *     });
+     *   });
+     *
      * @function Piler.Main.PileManager#render
-     * @param {Array.&lt;String>} [namespaces]
-     * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise} Returns the rendered tags
+     * @param {Array.&lt;String>} [namespaces] Array of namespaces
+     * @param {Object} [options={}] Pass options to {@link Piler.Main.PilerManager#_prepareNamespaces _prepareNamespaces}
+     * @param {Piler.NodeCallback} [cb] Pass a callback if you want
+     * @returns {Promise} `this` Returns the rendered tags
      */
 
-    PileManager.prototype.render = function(namespaces, cb) {
-      namespaces = Piler.utils.ensureArray(namespaces);
-      return Piler.utils.Promise.reduce(this.getSources(namespaces), (function(_this) {
+    PileManager.prototype.render = function(namespaces, options, cb) {
+      if (Piler.utils._.isFunction(namespaces)) {
+        cb = namespaces;
+        namespaces = [];
+      }
+      return Piler.utils.Promise.reduce(this.getSources(namespaces, options), (function(_this) {
         return function(tags, source) {
           return tags += "" + (_this.wrapInTag(source[0], _this._objectToAttr(source[1]))) + "\n";
         };
@@ -1125,10 +1204,14 @@
     PileManager.prototype._render = function(response) {
       return function(name, locals, callback) {
         var _locals;
-        if (!Piler.utils._.isObject(locals)) {
+        if (!Piler.utils._.isPlainObject(locals)) {
           _locals = {};
         } else {
           _locals = locals;
+        }
+        if (Piler.utils._.isFunction(locals)) {
+          callback = locals;
+          _locals = {};
         }
         return Piler.utils.Promise.props(_locals).then(function(locals) {
           response.render(name, locals, callback);
@@ -1161,11 +1244,11 @@
      */
 
     PileManager.prototype.stream = function(namespaces, options) {
-      var main, namespace, pm, promises;
+      var namespace, pm, stream;
       namespaces = this._prepareNamespaces(namespaces, options);
       pm = this;
-      main = Piler.utils.Promise.resolve();
-      promises = (function() {
+      stream = Piler.utils.through();
+      Piler.utils.Promise.each((function() {
         var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = namespaces.length; _i &lt; _len; _i++) {
@@ -1175,39 +1258,26 @@
           }
         }
         return _results;
-      })();
-      return Piler.utils.through(function(chunk, enc, callback) {
-        var promise, _i, _len;
-        if (promises.length) {
-          for (_i = 0, _len = promises.length; _i &lt; _len; _i++) {
-            promise = promises[_i];
-            main = main.then(promise).then((function(_this) {
-              return function(value) {
-                _this.push(value);
-              };
-            })(this));
-          }
-          main["finally"](function() {
-            callback();
-          });
-        } else {
-          callback();
-        }
+      })(), function(value) {
+        return stream.write(value);
+      })["finally"](function() {
+        return stream.end();
       });
+      return stream;
     };
 
 
     /**
      * Find an asset from a namespace
-     * @function Piler.Main.PileManager#findAssetsBy
+     * @function Piler.Main.PileManager#findAssetBy
      * @param {String} member
      * @param {*} search
      * @param {String} [namespace='global']
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise}
+     * @returns {Promise} Array of found objects
      */
 
-    PileManager.prototype.findAssetsBy = function(member, search, namespace, cb) {
+    PileManager.prototype.findAssetBy = function(member, search, namespace, cb) {
       var pile, promise;
       if (namespace == null) {
         namespace = 'global';
@@ -1256,7 +1326,7 @@
         if (asset.ext !== self.type.prototype.ext) {
           return next();
         }
-        res.setHeader('Content-Type', self.contentType);
+        res.set('Content-Type', "" + self.contentType + "; charset=" + self.options.encoding);
         pile = self.piles[asset.name];
         if (!pile) {
           debug('pile not found', asset.name);
@@ -1265,13 +1335,10 @@
           return;
         }
         if (asset.min) {
-          res.setHeader('Cache-Control', 'max-age=31556900');
+          res.set('Cache-Control', 'max-age=31556900');
           res.send(pile.rawPile);
           res.end();
           return;
-        }
-        if (!asset.dev &amp;&amp; !asset.temp) {
-          return next();
         }
         uid = asset.temp ? asset.temp.uid : asset.dev.uid;
         pile.findAssetBy('id', uid).then(function(codeOb) {
@@ -1374,7 +1441,7 @@
     if (!managers[type]) {
       throw new Error("Manager " + type + " not available");
     }
-    if (Piler.utils._.isObject(name)) {
+    if (Piler.utils._.isPlainObject(name)) {
       options = name;
       name = null;
     }
@@ -1456,7 +1523,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
-		on Jul 06 2014 using the <a
+		on Jul 07 2014 using the <a
 			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>

@@ -7,6 +7,15 @@ module.exports = (Piler, mainExports) ->
 
   op = Piler.utils.objectPath
 
+  # inline version of escape-html
+  escape = (html) ->
+    String(html)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+
   out = {
     ###*
      * Output debug messages as if it was from {@link Piler.Main}
@@ -21,6 +30,8 @@ module.exports = (Piler, mainExports) ->
         urlRoot: '/piler/'
         env: 'development'
         commentLines: true
+        encoding: 'utf-8'
+        join: '\n\n'
       })
 
   }
@@ -82,7 +93,7 @@ module.exports = (Piler, mainExports) ->
      * @returns {Piler.Serialize.CodeObject}
     ###
     add: (config) ->
-      throw new Error('add expects an object as parameter') if not Piler.utils._.isObject(config)
+      throw new Error('add expects an object as parameter') if not Piler.utils._.isPlainObject(config)
 
       op.ensureExists(config, 'options', {
         env: @options.env
@@ -98,6 +109,9 @@ module.exports = (Piler, mainExports) ->
         })
       )
       object
+
+    commentLine: ->
+      ''
 
     ###*
      * Permanently remove an asset from this pile
@@ -284,7 +298,7 @@ module.exports = (Piler, mainExports) ->
           ])
       else
         if @options.env is 'production'
-          sources.push(["#{ @options.urlRoot }min/#{@pileHash}/#{ @name }.#{ @ext }"])
+          sources.push(["#{ @options.urlRoot }min/#{ @pileHash }/#{ @name }.#{ @ext }"])
         else
           devCacheKey = ''
 
@@ -328,7 +342,7 @@ module.exports = (Piler, mainExports) ->
         (asset for asset in @assets)
         (total, asset) ->
           Piler.utils.Promise.try(->
-            fn = op.get(asset, [member])
+            fn = op.get(asset, member)
 
             if typeof fn is 'function'
               fn.call(asset)
@@ -376,20 +390,22 @@ module.exports = (Piler, mainExports) ->
           return ''
 
         codeOb.contents().then((code) ->
-          """
-            #{if self.options.commentLines then self.commentLine("#{ self.name }.#{ codeOb.type() }-#{ codeOb.id() }.#{self.ext}") else ''}
-            #{ code }
-          """
+          _out = []
+
+          if self.options.commentLines
+            _out.push(self.commentLine("#{ self.name }.#{ codeOb.type() }-#{ codeOb.id() }.#{self.ext}"))
+
+          _out.push(code)
+
+          _out.join('')
         )
 
       ).then(
         (result) ->
           #Piler.Processors.process 'post',
-          self.rawPile = result.join('\n\n').trim()
+          self.rawPile = result.join(self.options.join)
           self._computeHash()
           self.rawPile
-        (err) ->
-          err
       ).bind(@).nodeify(cb)
 
   ###*
@@ -435,9 +451,9 @@ module.exports = (Piler, mainExports) ->
 
     ###*
      * @member {Piler.Main.BasePile} Piler.Main.PileManager#type
-     * @default null
+     * @default {Piler.Main.BasePile}
     ###
-    type: null
+    type: BasePile
 
     ###*
      * @member {String} Piler.Main.PileManager#contentType
@@ -538,7 +554,7 @@ module.exports = (Piler, mainExports) ->
      * @param {*} data Any type of data that should be piled
      * @param {Piler.Main.AddConfig} [options={}]
      * @param {Piler.NodeCallback} [cb] Use a callback instead
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} Current contents of the selected pile
     ###
     add: (type, data, options = {}, cb) ->
       @_defaultOptions(options)
@@ -547,9 +563,8 @@ module.exports = (Piler, mainExports) ->
 
       pile = @getPile(options.namespace)
       obj = pile["#{type}"](data, options)
-      pile.pileUp(cb)
 
-      obj
+      pile.pileUp().bind(@).nodeify(cb)
 
     ###*
      * Add an array of files at once
@@ -561,14 +576,18 @@ module.exports = (Piler, mainExports) ->
      *
      * @param {Array} arr
      * @param {Object} [options={}]
-     * @returns {Piler.Main.PileManager} `this`
+     * @param {Piler.NodeCallback} [cb]
+     * @returns {Promise} `this`
     ###
-    addFiles:  (arr, options) ->
+    addFiles:  (arr, options, cb) ->
       arr = Piler.utils.ensureArray(arr)
 
-      (@addFile(file, options) for file in arr)
-
-      @
+      Piler.utils.Promise.reduce(
+        (@addFile(file, options) for file in arr)
+        (total, value) ->
+          value
+        ''
+      ).bind(@).nodeify(cb)
 
     ###*
      * Add a match of files
@@ -581,7 +600,7 @@ module.exports = (Piler, mainExports) ->
      * @param {String|Array} paths You can give a glob string or an array of glob strings
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise}
+     * @returns {Promise} `this`
     ###
     addWildcard:  (arr, options, cb) ->
       arr = Piler.utils.ensureArray(arr)
@@ -595,7 +614,7 @@ module.exports = (Piler, mainExports) ->
             (resolve, reject) ->
               Piler.utils.glob(file, {cwd: Piler.utils.path.dirname(file)}, (err, matches)->
                 if err
-                  reject(aerr)
+                  reject(err)
                 else
                   resolve(matches)
                 return
@@ -605,10 +624,11 @@ module.exports = (Piler, mainExports) ->
         )
 
 
-      Piler.utils.Promise.map(
+      Piler.utils.Promise.reduce(
         promises
-        (value) =>
+        (total, value) =>
           @addFiles(value, options)
+        ''
       ).bind(@).nodeify(cb)
 
 
@@ -617,33 +637,30 @@ module.exports = (Piler, mainExports) ->
      * @param {String} path
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
     ###
     addFile: (path, options, cb) ->
       @add('addFile', path, options, cb)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addMultiline
      * @param {Function} path
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
     ###
     addMultiline: (fn, options, cb) ->
       @add('addMultiline', fn, options, cb)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addRaw
      * @param {String} raw
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
     ###
     addRaw: (raw, options, cb) ->
       @add('addRaw', raw, options, cb)
-      @
 
     ###*
      * @function Piler.Main.PileManager#addUrl
@@ -651,22 +668,30 @@ module.exports = (Piler, mainExports) ->
      * @param {String} url
      * @param {Object} [options={}]
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Piler.Serialize.CodeObject}
+     * @returns {Promise} `this`
     ###
     addUrl: (url, options, cb) ->
       @add('addUrl', url, options, cb)
-      @
 
     ###*
      * Update all related piles and assets and if this pile has set outputDirectory save, them to disk.
      *
      * @function Piler.Main.PileManager#contents
      *
+     * @param {Piler.NodeCallback|Array} [namespaces] You can use a callback if you want
+     * @param {Object} [options] Options to pass to {@link Piler.Main.PileManager#_prepareNamespaces _prepareNamespaces}
      * @param {Piler.NodeCallback} [cb] You can use a callback if you want
-     * @returns {Promise} The current array of all content
+     * @returns {Promise} `this` The current array of all content
     ###
-    contents: (cb) ->
-      piles = @piles
+    contents: (namespaces, options, cb) ->
+      if typeof namespaces is 'function'
+        cb = namespaces
+        namespaces = []
+
+      namespaces = @_prepareNamespaces(namespaces, options)
+
+      piles = (@piles[namespace] for namespace in namespaces)
+
       options = @options
 
       Piler.utils.Promise.reduce(
@@ -674,23 +699,30 @@ module.exports = (Piler, mainExports) ->
         (total, name) ->
           pile = piles[name]
 
-          options.logger.notice("Generating assets for '#{ pile.name }' in '#{ pile.ext }'")
+          ext = ''
+
+          if pile.ext
+            ext = ".#{pile.ext}"
+
+          options.logger.info("Generating assets for '#{ pile.name }#{ ext }'")
 
           pile.pileUp().then(
             (code) ->
+              if code
+                if options.outputDirectory
+                  # skip volatile piles
+                  return total.concat(code) if pile.options.volatile is true
 
-              if options.outputDirectory
-                # skip volatile piles
-                return total.concat(code) if pile.options.volatile is true
+                  outputPath = Piler.utils.path.join(options.outputDirectory, "#{ pile.name }#{ ext }")
 
-                outputPath = Piler.utils.path.join(options.outputDirectory, "#{ pile.name }.#{ pile.ext }")
-
-                Piler.utils.fs.writeFileAsync(outputPath, code).then(->
-                  options.logger.info("Wrote #{ pile.ext } pile #{ pile.name } to #{ outputPath }")
+                  Piler.utils.fs.writeFileAsync(outputPath, code).then(->
+                    options.logger.info("Wrote pile '#{ pile.name }#{ ext }' to '#{ outputPath }'")
+                    total.concat(code)
+                  )
+                else
                   total.concat(code)
-                )
               else
-                total.concat(code)
+                total
           )
         []
       ).bind(@).nodeify(cb)
@@ -719,8 +751,8 @@ module.exports = (Piler, mainExports) ->
      * @param {Array} [namespaces=["global"]]
      * @returns {Array}
     ###
-    getSources: (namespaces) ->
-      namespaces = @_prepareNamespaces(namespaces)
+    getSources: (namespaces, options) ->
+      namespaces = @_prepareNamespaces(namespaces, options)
 
       sources = []
 
@@ -738,13 +770,21 @@ module.exports = (Piler, mainExports) ->
      * @returns {String}
     ###
     _objectToAttr: (obj)->
+
       if Piler.utils._.isArray(obj)
         obj.join(' ')
       else if obj
         code = []
 
         for k of obj
-          code.push("#{k}=#{Piler.Serialize.stringify(obj[k])}")
+          if typeof obj[k] isnt 'string'
+            attr = escape(Piler.Serialize.stringify(obj[k]))
+          else
+            attr = obj[k]
+
+          attr = "\"#{attr}\""
+
+          code.push("#{k}=#{attr}")
 
         code.join(' ')
       else
@@ -760,16 +800,37 @@ module.exports = (Piler, mainExports) ->
       "#{code}"
 
     ###*
+     * Render the underlaying tags to be sent to the browser
+     *
+     * @example
+     *   Manager.render().then(function(tags){
+     *
+     *     res.render('index', {
+     *       tags: tags
+     *     });
+     *
+     *   });
+     *   // or using callbacks
+     *   Manager.render(function(err, tags){
+     *     res.render('index', {
+     *       tags: tags
+     *     });
+     *   });
+     *
      * @function Piler.Main.PileManager#render
-     * @param {Array.<String>} [namespaces]
-     * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise} Returns the rendered tags
+     * @param {Array.<String>} [namespaces] Array of namespaces
+     * @param {Object} [options={}] Pass options to {@link Piler.Main.PilerManager#_prepareNamespaces _prepareNamespaces}
+     * @param {Piler.NodeCallback} [cb] Pass a callback if you want
+     * @returns {Promise} `this` Returns the rendered tags
     ###
-    render: (namespaces, cb) ->
-      namespaces = Piler.utils.ensureArray(namespaces)
+    render: (namespaces, options, cb) ->
+
+      if Piler.utils._.isFunction(namespaces)
+        cb = namespaces
+        namespaces = []
 
       Piler.utils.Promise.reduce(
-        @getSources(namespaces)
+        @getSources(namespaces, options)
         (tags, source) =>
           tags += "#{@wrapInTag(source[0], @_objectToAttr(source[1]))}\n"
         ''
@@ -784,10 +845,14 @@ module.exports = (Piler, mainExports) ->
     ###
     _render: (response) ->
       (name, locals, callback) ->
-        if not Piler.utils._.isObject(locals)
+        if not Piler.utils._.isPlainObject(locals)
           _locals = {}
         else
           _locals = locals
+
+        if Piler.utils._.isFunction(locals)
+          callback = locals
+          _locals = {}
 
         Piler.utils.Promise.props(_locals).then((locals) ->
           response.render(name, locals, callback)
@@ -816,39 +881,28 @@ module.exports = (Piler, mainExports) ->
 
       pm = @
 
-      main = Piler.utils.Promise.resolve()
+      stream = Piler.utils.through()
 
-      promises = (pm.piles[namespace].pileUp() for namespace in namespaces when pm.piles[namespace])
-
-      Piler.utils.through(
-        (chunk, enc, callback) ->
-          if promises.length
-            for promise in promises
-              main = main.then(promise).then((value) =>
-                @push(value)
-                return
-              )
-
-            main.finally(->
-              callback()
-              return
-            )
-          else
-            callback()
-
-          return
+      Piler.utils.Promise.each(
+        (pm.piles[namespace].pileUp() for namespace in namespaces when pm.piles[namespace])
+        (value) ->
+          stream.write(value)
+      ).finally(->
+        stream.end()
       )
+
+      stream
 
     ###*
      * Find an asset from a namespace
-     * @function Piler.Main.PileManager#findAssetsBy
+     * @function Piler.Main.PileManager#findAssetBy
      * @param {String} member
      * @param {*} search
      * @param {String} [namespace='global']
      * @param {Piler.NodeCallback} [cb]
-     * @returns {Promise}
+     * @returns {Promise} Array of found objects
     ###
-    findAssetsBy: (member, search, namespace = 'global', cb) ->
+    findAssetBy: (member, search, namespace = 'global', cb) ->
       pile = @piles[namespace]
 
       if not pile
@@ -892,7 +946,7 @@ module.exports = (Piler, mainExports) ->
         if asset.ext isnt self.type::ext
           return next()
 
-        res.setHeader('Content-Type', self.contentType)
+        res.set('Content-Type', "#{self.contentType}; charset=#{self.options.encoding}")
 
         pile = self.piles[asset.name]
 
@@ -905,13 +959,11 @@ module.exports = (Piler, mainExports) ->
           return
 
         if asset.min
-          res.setHeader('Cache-Control', 'max-age=31556900')
+          res.set('Cache-Control', 'max-age=31556900')
           res.send(pile.rawPile)
           res.end()
 
           return
-
-        return next() if not asset.dev and not asset.temp
 
         uid = if asset.temp then asset.temp.uid else asset.dev.uid
 
@@ -1004,7 +1056,7 @@ module.exports = (Piler, mainExports) ->
   out.createManager = mainExports.createManager = (type, name, options = {}) ->
     throw new Error("Manager #{type} not available") if not managers[type]
 
-    if Piler.utils._.isObject(name)
+    if Piler.utils._.isPlainObject(name)
       options = name
       name = null
 

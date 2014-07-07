@@ -5,7 +5,7 @@ module.exports = (Piler) ->
      * @member {String} Piler.Main.HTMLPile#ext
      * @default "html"
     ###
-    ext: "html"
+    ext: 'html'
 
     ###*
      * Add line comment
@@ -33,7 +33,7 @@ module.exports = (Piler) ->
      * @member {String} Piler.Main.HTMLManager#contentType
      * @default "text/html"
     ###
-    contentType: "text/html"
+    contentType: 'text/html'
 
     ###*
      * @constructor Piler.Main.HTMLManager
@@ -75,11 +75,13 @@ module.exports = (Piler) ->
       namespaces = @_prepareNamespaces(namespaces)
 
       Piler.utils.Promise.reduce(
-        (pile for id,pile of @piles when id in namespaces)
-        (tags, source) =>
-          source.pileUp().then (code) ->
+        (@piles[namespace] for namespace in namespaces when @piles[namespace])
+        (tags, source) ->
+          source.pileUp().then((code) ->
             tags += "#{code}\n"
-      , "")
+          )
+        ''
+      )
 
     middleware: ->
       super

@@ -147,34 +147,31 @@ module.exports = (Piler) ->
      * @function Piler.Main.JSManager#addModule
      * @param {String} path
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager}
+     * @returns {Promise}
     ###
     addModule: (path, options) ->
       @_isReserved(options)
       @add('addModule', path, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#addOb
      * @param {String} ob
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager}
+     * @returns {Promise}
     ###
     addOb: (ob, options) ->
       @_isReserved(options)
       @add('addOb', ob, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#addExec
      * @param {String} fn
      * @param {Boolean} [options]
-     * @returns {Piler.Main.JSManager}
+     * @returns {Promise}
     ###
     addExec: (fn, options) ->
       @_isReserved(options)
       @add('addExec', fn, options)
-      @
 
     ###*
      * @function Piler.Main.JSManager#setMiddleware

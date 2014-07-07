@@ -3,6 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/epeli/piler.svg)](http://travis-ci.org/epeli/piler)
 [![Coverage Status](https://coveralls.io/repos/epeli/piler/badge.png)](https://coveralls.io/r/epeli/piler)
 [![Dependency Status](https://david-dm.org/epeli/piler.svg)](https://david-dm.org/epeli/piler)
+[![Module Version](http://img.shields.io/npm/v/npm.svg)](https://npmjs.org/package/piler)
 
 [![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
 
@@ -538,10 +539,12 @@ Piler.getManager('js').prototype.processors.livescript = {};
 
 From now on, you can use livescript files without the need to manually setting the `processors` option
 
-#### Using the power of promises
+#### Using the power of composable interfaces
 
 Since the promise interface is in core of Piler, you can compose a cascade of promise and non-promise interfaces
-together, in this example, create a stream out of the contents of a manager:
+together, returning synchronous values and adding them to the promise chain.
+
+But it also comes with a `stream` method, so you can pipe the contents of the manager to another stream:
 
 ```javascript
 var
@@ -551,12 +554,12 @@ var
 js
   .addOb({'some.namespace': thatFn})
   .addFile(__dirname + '/file.coffee')
-  .contents()
-  .then(function(code){
-    return require('someStreamModule')(code); // make a stream out of a promise
-  })
-  .pipe(require('someWriteStreamModule'));
+  .stream()
+  .pipe(require('someTransformStreamModule'))
+  .pipe(fs.createWriteStream('/transformed-bundle.js'));
 ```
+
+This enables you to use any third party solution alongside with *Piler*.
 
 #### Supported out-of-the-box
 
@@ -571,8 +574,6 @@ CSS:
 * [LESS][] (npm install less)
 
 ## Installing
-
-From [npm][]
 
 ```bash
 npm install piler
@@ -617,5 +618,4 @@ Questions and suggestions are very welcome
 [LESS]: http://lesscss.org/
 [Stylus]: http://learnboost.github.com/stylus/
 [nib]: https://github.com/visionmedia/nib
-[npm]: http://npmjs.org/
 [CoffeeScript]: http://jashkenas.github.com/coffee-script/

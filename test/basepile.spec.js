@@ -72,6 +72,16 @@ _fn = function (Pile){
       js.addMultiline(dummyFn);
       expect(js.assets.length).to.be(1);
     });
+
+    it('throws on wrong comment', function(done){
+      var pile = new Pile();
+
+      pile.addMultiline(function(){});
+
+      pile.pileUp().catch(function(err){
+        expect('' + err).to.match(/failed/);
+      }).done(done);
+    });
   });
 
   describe('addRaw works as expected in ' + Pile.name, function (){
@@ -94,6 +104,19 @@ _fn = function (Pile){
     });
   });
 
+  describe('remove works as expected in ' + Pile.name, function(){
+    it('removes', function(){
+      var pile = new Pile();
+      var o = pile.addRaw('dummy');
+      expect(pile.assets).to.have.length(1);
+      pile.remove(o);
+      expect(pile.assets).to.have.length(0);
+      pile.remove(o);
+      expect(pile.assets).to.have.length(0);
+    });
+
+  });
+
 };
 
 describe('basepile', function(){
@@ -101,11 +124,71 @@ describe('basepile', function(){
     _fn(piles[_i]);
   }
 
+  var
+    Base = Piler.getPile('BasePile');
+
   describe('instance', function(){
 
     it('throws', function(){
-      var base = Piler.Main.BasePile.prototype;
+      var base = Base.prototype;
       expect(base.add).to.throwError();
+    });
+
+    describe('getObjects', function(){
+
+      it('gets raw by default', function(done){
+        var base = new Base('base');
+        base.addRaw('raw');
+
+        base.getObjects().then(function(result){
+          expect(result).to.eql(['raw']);
+          done();
+        });
+      });
+
+      it('get path', function(done){
+        var base = new Base('base');
+        base.addRaw('raw', {name: 'rawed'});
+
+        base.getObjects(false, 'options.name').then(function(result){
+          expect(result).to.eql(['rawed']);
+          done();
+        });
+      });
+
+      it('get by type', function(done){
+        var base = new Base('base');
+        base.addRaw('raw', {name: 'rawed'});
+        base.addMultiline(function(){/* adfasd */});
+
+        base.getObjects('raw').then(function(result){
+          expect(result).to.eql(['raw']);
+          return base.getObjects('raw', false);
+        }).then(function(result){
+          expect(result).to.have.length(1);
+          return base.getObjects('raw', 'nono');
+        }).then(function(result){
+          expect(result).to.have.length(0);
+          return base.getObjects(false, false);
+        }).then(function(result){
+          expect(result).to.eql([]);
+        }).done(done);
+      });
+
+      it('dual api', function(done){
+        var base = new Base('base');
+        base.addRaw('raw');
+        base.addMultiline(function(){/*
+          asdfa
+        */});
+
+        base.getObjects(false, 'contents', function(err, result){
+          expect(err).to.not.be.ok();
+          expect(result).to.eql(['raw', '\n          asdfa\n        ']);
+          done();
+        });
+      });
+
     });
 
   });

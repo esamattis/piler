@@ -14,7 +14,6 @@ files = {
    * @property {Object} objectPath {@link http://npmjs.org/package/object-path objectPath} library
    * @property {Function} debug {@link http://npmjs.org/package/debug Debug} library
    * @property {Array} reserved {@link http://npmjs.org/package/reserved ECMAScript Reserved keywords}
-   * @property {Object} multiline {@link http://npmjs.org/package/multiline multiline} library
    * @property {Object} glob {@link http://npmjs.org/package/glob glob} library
    * @property {Function} extension Extract file extension
    * @property {Function} ensureArray Ensure that its an array
@@ -30,7 +29,6 @@ files = {
     debug: require('debug')
     glob: require('glob')
     reserved: require('reserved')
-    multiline: require('multiline')
     ensureArray: (args) ->
       return [] if not args
       files.utils.fast.concat(args)
@@ -73,6 +71,27 @@ for file of files when files.utils._.isFunction(files[file])
 ###
 module.exports.require = pilerRequire = (path, options = {}) ->
   require("#{path}")(files, options)
+
+###*
+ * Shortcut for Piler.utils.Promise.all. By adding your files using this, you ensure, in
+ * production mode, that your hash is always up-to-date
+ *
+ * @example
+ *   Piler.wait([
+ *     manager.addFile('somefile'),
+ *     manager.addWildcard(['folder/files-*.js','someotherfolder/files*.es6.js'])
+ *   ]).done(function(results){
+ *     // do something
+ *   });
+ *
+ * @param  {Array} them Promises or values
+ * @param  {Piler.NodeCallback} [cb] Use a callback instead
+ * @returns {Promise}
+###
+module.exports.wait = (them, cb) ->
+  them = files.utils.ensureArray(them)
+
+  files.utils.Promise.all(them).nodeify(cb)
 
 ###*
  * Render all managers as a single chunk of data

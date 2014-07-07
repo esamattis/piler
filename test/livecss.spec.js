@@ -52,6 +52,10 @@ describe('livecss', function (){
     var io = require('socket.io')();
 
     sinon.stub(JSManager.options.logger, 'info');
+    sinon.stub(Piler.utils.fs, 'readFileAsync', function(){
+      return Piler.utils.Promise.resolve('');
+    });
+
     var calls = 2;
 
     sinon.stub(Piler.utils.fs, 'watch', function(file){
@@ -60,6 +64,7 @@ describe('livecss', function (){
       } else if (calls === 1) {
         expect(file).to.be('test2.css');
       }
+
       if (--calls === 0) {
         expect(JSManager.piles.global.assets.length).to.be.above(3);
 
@@ -82,12 +87,17 @@ describe('livecss', function (){
           }
         }
 
+
+        expect(io.of.calledWith('/pile')).to.be(true);
+
+        io.of.restore();
         JSManager.options.logger.info.restore();
+        Piler.utils.fs.watch.restore();
+        Piler.utils.fs.readFileAsync.restore();
+
         done();
       }
     });
-
-    sinon.spy(io, 'of');
 
     CSSManager.batch([
       ['addFile','test.css'],
@@ -95,12 +105,9 @@ describe('livecss', function (){
       ['addFile','test2.css', {namespace:'dummy'}]
     ]);
 
+    sinon.spy(io, 'of');
+
     LiveCSS.init(JSManager, CSSManager, 'dummy', io);
-
-    expect(io.of.calledWith('/pile')).to.be(true);
-
-    Piler.utils.fs.watch.restore();
-
   });
 
 });

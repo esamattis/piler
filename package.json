@@ -62,11 +62,10 @@
     "glob": "4.x",
     "graceful-fs": "3.x.x",
     "lodash": "*",
-    "multiline": "*",
     "object-path": "0.x",
     "reserved": "*",
     "socket.io": "1.x.x",
-    "through2": "*",
+    "through2": "1.x.x",
     "uglify-js": "2.x.x",
     "underscore.string": "2.x.x"
   },
