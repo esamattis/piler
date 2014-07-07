@@ -3,7 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/epeli/piler.svg)](http://travis-ci.org/epeli/piler)
 [![Coverage Status](https://coveralls.io/repos/epeli/piler/badge.png)](https://coveralls.io/r/epeli/piler)
 [![Dependency Status](https://david-dm.org/epeli/piler.svg)](https://david-dm.org/epeli/piler)
-[![Module Version](http://img.shields.io/npm/v/npm.svg)](https://npmjs.org/package/piler)
+[![Module Version](http://img.shields.io/npm/v/piler.svg)](https://npmjs.org/package/piler)
 
 [![NPM](https://nodei.co/npm/piler.svg?downloads=true&stars=true)](https://nodei.co/npm/piler/)
 
