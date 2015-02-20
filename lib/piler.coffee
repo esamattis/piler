@@ -320,8 +320,8 @@ class PileManager
 
 
     app.use (req, res, next) =>
-
-      if not _.startsWith req.url, @settings.urlRoot
+      url = @settings.urlRoot.replace(/^.*\/\/[^\/]+/, '')
+      if not _.startsWith req.url, url
         return next()
 
       res.setHeader "Content-type", @contentType
