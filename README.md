@@ -220,7 +220,7 @@ clientjs.addOb({MY: {
 Now on the client you can find the isEmail-function from MY.isEmail.
 
 *addOb* takes an object which will be merged to global window-object on the
-client. So be carefull when choosing the keys. The object can be almost any
+client. So be careful when choosing the keys. The object can be almost any
 JavaScript object. It will be serialized and sent to the browser. Few caveats:
 
   1. No circural references
