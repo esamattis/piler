@@ -1,16 +1,16 @@
 fs = require "fs"
 path = require "path"
 crypto = require 'crypto'
-path = require "path"
 
 _ = require "underscore"
 async = require "async"
 
-{jsMinify, cssMinify} = require "./minify"
+{jsMinify, cssMinify, htmlMinify} = require "./minify"
 OB = require "./serialize"
 compilers = require "./compilers"
 assetUrlParse = require "./asseturlparse"
 logger = require "./logger"
+walker = require "./walker"
 
 toGlobals = (globals) ->
   code = ""
@@ -38,7 +38,7 @@ asCodeOb = do ->
     sum = crypto.createHash('sha1')
 
 
-    if @type is "file"
+    if @type in ["file", "tmpl"]
       # If code is on filesystem the url to the file should only change when
       # the path to it changes.
       sum.update @filePath
@@ -67,7 +67,9 @@ asCodeOb = do ->
         return cb? err if err
         getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
           cb err, code
-
+    tmpl: (ob, cb) ->
+      getCompiler(ob.filePath) ob.filePath, ob.data, (err, html) ->
+        cb err, html
     module: (ob, cb) ->
       this.file ob, (err, code) ->
         return cb? err if err
@@ -106,6 +108,10 @@ class BasePile
         type: "file"
         filePath: filePath
 
+  addDir: (dir, patterns) ->
+    dir = path.normalize dir
+    @warnPiledUp "addDir"
+    @addFile file for file in walker.walk dir, patterns
 
   addRaw: (raw) ->
     @warnPiledUp "addRaw"
@@ -119,7 +125,6 @@ class BasePile
   addUrl: (url) ->
     if url not in @urls
       @urls.push url
-
 
   getSources: ->
     devCacheKey = Date.now()
@@ -210,9 +215,41 @@ class JSPile extends BasePile
       object: fn
 
 
+class TemplatePile extends BasePile
+  ext: 'html'
 
+  commentLine: (line) ->
+    return "<!--#{ line.trim() }-->"
 
+  minify: (code) ->
+    if @production
+      htmlMinify code
+    else
+      code
 
+  addFile: (file) ->
+    @warnPiledUp "addFile"
+    @code.push asCodeOb.call
+      type: "tmpl"
+      filePath: file
+      id: file
+
+  addOb: (ob) ->
+    @warnPiledUp "addOb"
+    for id, file of ob
+      @code.push asCodeOb.call
+        type: "tmpl"
+        id: id
+        filePath: file
+
+  getSources: (data={}) ->
+    devCacheKey = Date.now()
+
+    # Start with plain urls
+    sources = ([u] for u in @urls)
+    for ob in @code
+      sources.push [ ob.id, getCompiler(ob.filePath) ob.filePath, data ]
+    return sources
 
 
 class CSSPile extends BasePile
@@ -260,6 +297,17 @@ class PileManager
   addFile: defNs (ns, path) ->
     pile = @getPile ns
     pile.addFile path
+
+  addFiles: (ns, files) ->
+    addFile(ns, file) for file in files
+
+  addDir: (ns, dir, patterns) ->
+    if arguments.length is 1 or (arguments.length is 2 and _(arguments[1]).isArray())
+      patterns = dir or []
+      dir = ns
+      ns = "global"
+    pile = @getPile ns
+    pile.addDir dir, patterns
 
   addRaw: defNs (ns, raw) ->
     pile = @getPile ns
@@ -349,8 +397,6 @@ class PileManager
         return
 
 
-
-
 class JSManager extends PileManager
   Type: JSPile
   contentType: "application/javascript"
@@ -418,6 +464,43 @@ class CSSManager extends PileManager
 
   setMiddleware: (app) ->
 
+class TemplateManager extends PileManager
+  Type: TemplatePile
+  contentType: "text/html"
+
+  wrapInTag: (uri, extra="") ->
+    "<script type=\"text/#{ @settings.templateType }\" id=\"#{ uri }\">#{ extra }</script>"
+
+  getSources: (namespaces...) ->
+    if typeof _.last(namespaces) is "object"
+      opts = namespaces.pop()
+    else
+      opts = {}
+
+    if not opts.disableGlobal
+      namespaces.unshift "global"
+
+    sources = []
+    for ns in namespaces
+      if pile = @piles[ns]
+        sources.push pile.getSources(opts)...
+    return sources
+
+  renderTags: (namespaces...) ->
+
+    tags = ""
+    for src in @getSources namespaces...
+      tags += @wrapInTag src[0], src[1], src[2]
+      tags += "\n"
+    return tags
+
+  addOb: defNs (ns, ob) ->
+    pile = @getPile ns
+    pile.addOb ob
+
+  setMiddleware: (app) ->
+
+
 # Creates immediately executable string presentation of given function.
 # context will be function's "this" if given.
 executableFrom = (fn, context) ->
@@ -433,8 +516,10 @@ exports.production = production = process.env.NODE_ENV is "production"
 
 exports.CSSPile = CSSPile
 exports.JSPile = JSPile
+exports.TemplatePile = TemplatePile
 exports.JSManager = JSManager
 exports.CSSManager = CSSManager
+exports.TemplateManager = TemplateManager
 
 exports.createJSManager = (settings={}) ->
   settings.production = production
@@ -444,7 +529,13 @@ exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
 
+exports.createTemplateManager = (settings={}) ->
+  settings.production = production
+  new TemplateManager settings
 
+exports.registerCompiler = (ext, fn) ->
+    compilers[ext] =
+      render: fn
 
 
 
