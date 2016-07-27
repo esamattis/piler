@@ -65,7 +65,7 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        console.log ob.filePath
+        logger.notice ob.filePath
         
         getCompiler(ob.filePath) ob.filePath, data.toString(), cb
 
@@ -101,6 +101,7 @@ class BasePile
 
   addFile: (filePath) ->
     filePath = path.normalize filePath
+    logger.notice filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
       @code.push asCodeOb.call
@@ -163,7 +164,8 @@ class BasePile
 
     , (err, result) =>
       return cb? err if err
-      @rawPile = @minify result.join("\n\n").trim()      
+      @rawPile = @minify result.join("\n\n").trim() 
+      logger.notice @rawPile     
       @_computeHash()
       cb? null, @rawPile
 
@@ -259,6 +261,7 @@ class PileManager
 
 
   addFile: defNs (ns, path) ->
+    logger.notice path
     pile = @getPile ns
     pile.addFile path
 
@@ -312,7 +315,9 @@ class PileManager
     @app = app
     @server = server
 
-    listener = if server then server else app
+    logger.notice "binded"
+
+    listener = if server? then server else app
     listener.on "listening", =>
       @pileUp()
 
