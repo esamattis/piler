@@ -65,6 +65,8 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
+        console.log ob.filePath
+        
         getCompiler(ob.filePath) ob.filePath, data.toString(), cb
 
     module: (ob, cb) ->
