@@ -339,7 +339,6 @@ class PileManager
 
       # TODO: set cache headers to forever
       if asset.min
-        console.log pile
         res.end pile.rawPile
         return
       
