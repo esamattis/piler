@@ -52,7 +52,7 @@ if less?
       less.render code,
         paths: [path.dirname filename]
         (err, output)-> 
-          console.log filename, err, output
+          console.warn filename, err if err?
           cb err, output.css or ""
     targetExt: "css"
 
