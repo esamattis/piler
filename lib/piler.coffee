@@ -65,8 +65,7 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->          
-          cb err, if code.css? then code.css else code
+        getCompiler(ob.filePath) ob.filePath, data.toString(), cb
 
     module: (ob, cb) ->
       this.file ob, (err, code) ->
