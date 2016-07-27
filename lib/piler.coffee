@@ -65,7 +65,7 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        logger.notice ob.filePath
+        logger.error ob.filePath
         
         getCompiler(ob.filePath) ob.filePath, data.toString(), cb
 
@@ -101,7 +101,7 @@ class BasePile
 
   addFile: (filePath) ->
     filePath = path.normalize filePath
-    logger.notice filePath
+    logger.error filePath
     @warnPiledUp "addFile"
     if filePath not in @getFilePaths()
       @code.push asCodeOb.call
@@ -165,7 +165,7 @@ class BasePile
     , (err, result) =>
       return cb? err if err
       @rawPile = @minify result.join("\n\n").trim() 
-      logger.notice @rawPile     
+      logger.error @rawPile     
       @_computeHash()
       cb? null, @rawPile
 
@@ -246,7 +246,7 @@ class PileManager
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
-    @logger = @settings.logger || logger
+    @logger = logger
 
 
 
@@ -261,7 +261,7 @@ class PileManager
 
 
   addFile: defNs (ns, path) ->
-    logger.notice path
+    logger.error path
     pile = @getPile ns
     pile.addFile path
 
@@ -315,7 +315,7 @@ class PileManager
     @app = app
     @server = server
 
-    logger.notice "binded"
+    logger.error "binded"
 
     listener = if server? then server else app
     listener.on "listening", =>
