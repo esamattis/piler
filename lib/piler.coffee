@@ -65,8 +65,8 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
-          cb err, code
+        getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->          
+          cb err, if code.css? then code.css else code
 
     module: (ob, cb) ->
       this.file ob, (err, code) ->
@@ -162,7 +162,7 @@ class BasePile
 
     , (err, result) =>
       return cb? err if err
-      @rawPile = @minify result.join("\n\n").trim()
+      @rawPile = @minify result.join("\n\n").trim()      
       @_computeHash()
       cb? null, @rawPile
 
@@ -339,13 +339,14 @@ class PileManager
 
       # TODO: set cache headers to forever
       if asset.min
+        console.log pile
         res.end pile.rawPile
         return
-
+      
       codeOb = pile.findCodeObById asset.dev.uid
       codeOb.getCode (err, code) ->
-        throw err if err
-        res.end code
+        throw err if err?
+        res.end code.css or code
         return
 
 
@@ -443,8 +444,3 @@ exports.createJSManager = (settings={}) ->
 exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
-
-
-
-
-
