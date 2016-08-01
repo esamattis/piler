@@ -51,7 +51,9 @@ if less?
     render: (filename, code, cb) ->
       less.render code,
         paths: [path.dirname filename]
-        cb
+        (err, output)-> 
+          console.warn filename, err if err?
+          cb err, output.css or ""
     targetExt: "css"
 
 module.exports = compilers

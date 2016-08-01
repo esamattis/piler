@@ -1,5 +1,4 @@
-fs = require "fs"
-
+Gaze = require('gaze').Gaze
 
 
 try
@@ -53,10 +52,6 @@ class LiveUpdateMixin
     else
       io = userio
 
-    # Why does not work?
-    io.configure ->
-      io.set 'log level', 0
-
     @io = io.of "/pile"
 
 
@@ -74,18 +69,18 @@ class LiveUpdateMixin
     listener = if @server then @server else @app
     listener.on "listening", =>
       @logger.info "Activating CSS updater"
-
+      files = {}
+      
       for k, pile of cssmanager.piles
         for codeOb in pile.code
-          @_watch pile, codeOb
-
-
-  _watch: (pile, codeOb) ->
-    return unless codeOb.type is "file"
-    @logger.info "watching #{ codeOb.filePath } for changes"
-    fs.watch codeOb.filePath, =>
-      @logger.info "updated", codeOb.filePath
-      @io.emit "update", codeOb.getId()
+          continue unless codeOb.type is "file"
+          files[codeOb.filePath] = codeOb
+       
+      gaze = new Gaze(Object.keys files)
+      gaze.on "changed", (filePath)=>
+        @logger.info "updated", filePath 
+        @io.emit "update", files[filePath].getId()
+    
 
 # For testing
 LiveUpdateMixin.incUrlSeq = incUrlSeq

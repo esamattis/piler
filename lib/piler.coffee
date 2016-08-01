@@ -65,8 +65,7 @@ asCodeOb = do ->
     file: (ob, cb) ->
       fs.readFile ob.filePath, (err, data) =>
         return cb? err if err
-        getCompiler(ob.filePath) ob.filePath, data.toString(), (err, code) ->
-          cb err, code
+        getCompiler(ob.filePath) ob.filePath, data.toString(), cb
 
     module: (ob, cb) ->
       this.file ob, (err, code) ->
@@ -162,7 +161,7 @@ class BasePile
 
     , (err, result) =>
       return cb? err if err
-      @rawPile = @minify result.join("\n\n").trim()
+      @rawPile = @minify result.join("\n\n").trim()     
       @_computeHash()
       cb? null, @rawPile
 
@@ -243,7 +242,7 @@ class PileManager
   constructor: (@settings) ->
     @production = @settings.production
     @settings.urlRoot ?= "/pile/"
-    @logger = @settings.logger || logger
+    @logger = logger
 
 
 
@@ -311,7 +310,7 @@ class PileManager
     @app = app
     @server = server
 
-    listener = if server then server else app
+    listener = if server? then server else app
     listener.on "listening", =>
       @pileUp()
 
@@ -336,16 +335,18 @@ class PileManager
       if not pile
         res.send "Cannot find pile #{ asset.name }", 404
         return
-
+      
+      res.setHeader 'Cache-Control', 'public, max-age=0'
+      
       # TODO: set cache headers to forever
       if asset.min
         res.end pile.rawPile
         return
-
+      
       codeOb = pile.findCodeObById asset.dev.uid
       codeOb.getCode (err, code) ->
-        throw err if err
-        res.end code
+        throw err if err?
+        res.end code.css or code
         return
 
 
@@ -443,8 +444,3 @@ exports.createJSManager = (settings={}) ->
 exports.createCSSManager = (settings={}) ->
   settings.production = production
   new CSSManager settings
-
-
-
-
-
