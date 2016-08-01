@@ -335,7 +335,9 @@ class PileManager
       if not pile
         res.send "Cannot find pile #{ asset.name }", 404
         return
-
+      
+      res.setHeader 'Cache-Control', 'public, max-age=0'
+      
       # TODO: set cache headers to forever
       if asset.min
         res.end pile.rawPile

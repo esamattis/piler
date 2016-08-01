@@ -74,7 +74,6 @@ class LiveUpdateMixin
       for k, pile of cssmanager.piles
         for codeOb in pile.code
           continue unless codeOb.type is "file"
-          @logger.info "watching #{ codeOb.filePath } for changes"
           files[codeOb.filePath] = codeOb
        
       gaze = new Gaze(Object.keys files)
