@@ -1,6 +1,6 @@
 # Piler
 
-[![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler)
+[![Build Status](https://secure.travis-ci.org/epeli/piler.png)](http://travis-ci.org/epeli/piler) [![Greenkeeper badge](https://badges.greenkeeper.io/epeli/piler.svg)](https://greenkeeper.io/)
 
 Feature highlights
 
