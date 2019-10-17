@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "jasmine-node": "",
-    "express": "2.x",
+    "express": "4.x",
     "zombie": "1.2.x",
     "supervisor": "",
     "jade": "",
